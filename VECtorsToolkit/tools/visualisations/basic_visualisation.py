@@ -1,10 +1,10 @@
 import copy
+
 import matplotlib.pyplot as plt
-
-from src.tools.auxiliary.sanity_checks import check_is_vector_field
-from src.tools.auxiliary.generators_vector_fields import generate_identity_lagrangian
-
+from VECtorsToolkit.auxiliary.generators_vector_fields import generate_identity_lagrangian
 from matplotlib.widgets import Slider, Button, RadioButtons
+
+from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):

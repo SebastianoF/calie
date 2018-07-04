@@ -1,8 +1,8 @@
 import numpy as np
+from VECtorsToolkit.auxiliary.matrices_manipulations import matrix_vector_field_product
 from scipy import ndimage
 
-from src.tools.auxiliary.sanity_checks import get_omega_from_vf
-from src.tools.auxiliary.matrices_manipulations import matrix_vector_field_product
+from VECtorsToolkit.tools.auxiliary.sanity_checks import get_omega_from_vf
 
 
 def compose_eulerian_vf_with_lagrangian_vf(vf_left_eul, vf_right_lag,

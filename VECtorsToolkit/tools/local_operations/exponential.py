@@ -1,12 +1,10 @@
-import numpy as np
 import copy
-from scipy.misc import factorial as fact
+
+import numpy as np
 from scipy.linalg import expm
-import nibabel as nib
+from scipy.misc import factorial as fact
 
-from scipy.integrate import ode
-
-from VECtorsToolkit.auxiliary.sanity_checks import check_is_vector_field
+from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field
 
 
 def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix_dims=None):
