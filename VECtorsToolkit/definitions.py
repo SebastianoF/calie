@@ -6,7 +6,7 @@ default_saver_loader_modality = 'txt'  # 'txt', 'npy' (or 'np')
 default_image_saver_modality = 'nifti1'  # 'nifti1' or 'nifti2'
 
 info = {
-        "name": "VectorFieldsManager",
+        "name": "VECtorsToolkit",
         "version": "0.0.0",
         "description": "Methods to manage vector fields.",
         "web_infos" : "http://arxiv.org/abs/1511.06142",

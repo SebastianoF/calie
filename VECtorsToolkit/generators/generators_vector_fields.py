@@ -3,9 +3,7 @@ import numpy as np
 import scipy.ndimage.filters as fil
 import nibabel as nib
 
-from src.tools.auxiliary.sanity_checks import check_omega, get_v_shape_from_omega
-
-from src.tools.auxiliary.sanity_checks import get_omega_from_vf
+from VECtorsToolkit.auxiliary.sanity_checks import check_omega, get_v_shape_from_omega, get_omega_from_vf
 
 
 #########################

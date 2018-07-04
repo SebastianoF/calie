@@ -6,7 +6,7 @@ import nibabel as nib
 
 from scipy.integrate import ode
 
-from src.tools.auxiliary.sanity_checks import check_is_vector_field
+from VECtorsToolkit.auxiliary.sanity_checks import check_is_vector_field
 
 
 def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix_dims=None):

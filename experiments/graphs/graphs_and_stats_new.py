@@ -535,7 +535,7 @@ def plot_custom_step_versus_error_multiple(list_steps,
             fig.text(.78, .75, r'N =' + str(input_parameters[3]))
             fig.text(.78, .60, r'$\sigma_i$ = ' + str(input_parameters[4]))
             fig.text(.78, .55, r'$\sigma_g$ = ' + str(input_parameters[5]))
-            print len(input_parameters)
+            print(len(input_parameters))
 
             fig.text(.78, .50, r'Ground truth method, steps: ')
             fig.text(.78, .45, str(input_parameters[6]) + ' ' + str(input_parameters[7]))
@@ -553,7 +553,7 @@ def plot_custom_step_versus_error_multiple(list_steps,
             fig.text(.78, .75, r'N =' + str(input_parameters[3]))
             fig.text(.78, .60, r'$\sigma_i$ = ' + str(input_parameters[4]))
             fig.text(.78, .55, r'$\sigma_g$ = ' + str(input_parameters[5]))
-            print len(input_parameters)
+            print(len(input_parameters))
 
         elif kind == 'multiple_REAL_ic':
             fig.text(.765, .85,  r'Real Data: ')

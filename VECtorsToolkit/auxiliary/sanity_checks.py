@@ -8,9 +8,9 @@ def check_omega(omega):
     """
     d = len(omega)
     if not all(isinstance(x, int) for x in omega):
-        raise IOError('Input omega of the wrong type. \n' + description_omega)
+        raise IOError('Input omega of the wrong type. \n' + omega)
     if not (d == 2 or d == 3):
-        raise IOError('Input omega of the wrong dimension. \n' + description_omega)
+        raise IOError('Input omega of the wrong dimension. \n' + omega)
     return d
 
 

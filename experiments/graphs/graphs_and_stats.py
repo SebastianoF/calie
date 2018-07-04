@@ -241,7 +241,7 @@ def plot_steps_vs_multiple_lines(list_steps_number,
             fig.text(.78, .75, r'$\sigma_i = $ ' + str(input_parameters[0]))
             fig.text(.78, .70, r'$\sigma_g = $ ' + str(input_parameters[1]))
         else:
-            print '(plot_steps_vs_multiple_lines: No additional Text Added)'
+            print('(plot_steps_vs_multiple_lines: No additional Text Added)')
 
     fig.set_tight_layout(True)
     return fig
