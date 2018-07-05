@@ -7,9 +7,9 @@ def check_omega(omega):
     """
     d = len(omega)
     if not all(isinstance(x, int) for x in omega):
-        raise IOError('Input omega of the wrong type. \n' + omega)
+        raise IOError('Input omega {} of the wrong type. \n'.format(omega))
     if not (d == 2 or d == 3):
-        raise IOError('Input omega of the wrong dimension. \n' + omega)
+        raise IOError('Input omega  {} of the wrong dimension. \n'.format(omega))
     return d
 
 
@@ -57,3 +57,50 @@ def get_omega(input_vf):
         else:
             omega = list(vf_shape[:3])
         return omega
+
+
+def vf_norm(input_vf, passe_partout_size=1, normalized=False):
+    """
+    Returns the L2-norm of the discretised vector field.
+    The computation makes sense only with svf.
+    Based on the norm function from numpy.linalg of ord=2 for the vectorized matrix.
+    The result can be computed with a passe partout
+    (the discrete domain is reduced on each side by the same value, keeping the proportion
+    of the original image) and can be normalized with the size of the domain.
+
+    -> F vector field from a compact \Omega to R^d
+    \norm{F} = (\frac{1}{|\Omega|}\int_{\Omega}|F(x)|^{2}dx)^{1/2}
+    Discretisation:
+    \Delta\norm{F} = \frac{1}{\sqrt{dim(x)dim(y)dim(z)}}\sum_{v \in \Delta\Omega}|v|^{2})^{1/2}
+                   = \frac{1}{\sqrt{XYZ}}\sum_{i,j,k}^{ X,Y,Z}|a_{i,j,k}|^{2})^{1/2}
+
+    -> f scalar field from \Omega to R, f is an element of the L^s space
+    \norm{f} = (\frac{1}{|\Omega|}\int_{\Omega}f(x)^{2}dx)^{1/2}
+    Discretisation:
+    \Delta\norm{F} = \frac{1}{\sqrt{XYZ}}\sum_{i,j,k}^{ X,Y,Z} a_{i,j,k}^{2})^{1/2}
+
+    Parameters:
+    ------------
+    :param input_vf: input vector field.
+    :param passe_partout_size: size of the passe partout (rectangular mask, with constant offset on each side).
+    :param normalized: if the result is divided by the normalization constant.
+    """
+    d = check_is_vf(input_vf)
+    if passe_partout_size > 0:
+        if d == 2:
+            masked_field = input_vf[passe_partout_size:-passe_partout_size,
+                                    passe_partout_size:-passe_partout_size, ...]
+        else:
+            masked_field = input_vf[passe_partout_size:-passe_partout_size,
+                                    passe_partout_size:-passe_partout_size,
+                                    passe_partout_size:-passe_partout_size, ...]
+    else:
+        masked_field = input_vf
+
+    if normalized:
+        # volume of the field after masking (to compute the normalization factor):
+        mask_vol = (np.array(input_vf.shape[0:d]) - np.array([2 * passe_partout_size] * d)).clip(min=1)
+
+        return np.linalg.norm(masked_field.ravel(), ord=2) / np.sqrt(np.prod(mask_vol))
+    else:
+        return np.linalg.norm(masked_field.ravel(), ord=2)

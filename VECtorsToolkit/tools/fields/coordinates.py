@@ -29,9 +29,9 @@ def vf_homogeneous_to_affine(input_vf):
     return input_vf[..., :-1]
 
 
-def vf_from_eulerian_to_lagrangian(input_vf_eul):
+def vf_eulerian_to_lagrangian(input_vf_eul):
     return input_vf_eul - vf_identity_lagrangian_like(input_vf_eul)
 
 
-def vf_from_lagrangian_to_eulerian(input_vf_lag):
+def vf_lagrangian_to_eulerian(input_vf_lag):
     return input_vf_lag + vf_identity_lagrangian_like(input_vf_lag)

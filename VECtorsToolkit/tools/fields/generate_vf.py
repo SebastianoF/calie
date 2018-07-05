@@ -66,7 +66,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 
     if d == 2:
 
-        v = vf_affine_to_homogeneous(vf_identity_lagrangian(v_shape))
+        v = vf_affine_to_homogeneous(vf_identity_lagrangian(list(omega)))
 
         x_intervals, y_intervals = omega
         for i in range(x_intervals):

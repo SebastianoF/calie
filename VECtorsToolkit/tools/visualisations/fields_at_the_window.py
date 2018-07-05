@@ -2,8 +2,6 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 
-from utils.fields import Field
-
 
 def see_field(input_obj,
               anatomical_plane='axial',
@@ -710,10 +708,9 @@ def triptych_quiver_quiver_image(vector_field_1,
 
     ax_1 = plt.subplot(131)
     x1, y1 = np.meshgrid(np.arange(vector_field_1.shape[0]), np.arange(vector_field_1.shape[1]))
-    ax_1.quiver(y1,
-                x1,
-                vector_field_1[:, :, 0, 0, 0],
-                vector_field_1[:, :, 0, 0, 1], scale=1, scale_units='xy')
+    ax_1.quiver(y1, x1,
+                vector_field_1[:, :, 0, 0, 0], vector_field_1[:, :, 0, 0, 1],
+                scale=1, scale_units='xy')
     ax_1.axes.xaxis.set_ticklabels([])
     ax_1.axes.yaxis.set_ticklabels([])
     ax_1.set_xlabel('(a)', fontdict=font)

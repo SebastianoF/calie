@@ -6,6 +6,9 @@ is provided.
 import copy
 import matplotlib.pyplot as plt
 
+from VECtorsToolkit.tools.fields.queries import check_is_vf
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+
 
 def see_overlay_of_n_fields_and_flow(list_of_obj,
                                      list_of_integral_curves,
@@ -38,23 +41,19 @@ def see_overlay_of_n_fields_and_flow(list_of_obj,
 
         if input_obj is not None:
 
-            if not len(input_obj.shape) == 5:
-                raise TypeError('Wrong input size for a the field' + str(input_obj))
+            assert check_is_vf(input_obj) == 2
 
-            if not (input_obj.dim == input_obj.shape[4] == 2 or input_obj.dim == input_obj.shape[4] == 3):
-                raise TypeError('See field 2d works only for 2d to 2d fields.')
-
-            id_field = input_obj.__class__.generate_id_from_obj(input_obj)
+            id_field = vf_identity_lagrangian_like(input_obj)
             input_field_copy = copy.deepcopy(input_obj)
 
             if subtract_id[num_obj]:
                 input_field_copy -= id_field
 
         if anatomical_plane == 'axial':
-            q = ax0.quiver(id_field.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                           id_field.field[::sample[0], ::sample[1], h_slice, 0, 1],
-                           input_field_copy.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                           input_field_copy.field[::sample[0], ::sample[1], h_slice, 0, 1],
+            q = ax0.quiver(id_field[::sample[0], ::sample[1], h_slice, 0, 0],
+                           id_field[::sample[0], ::sample[1], h_slice, 0, 1],
+                           input_field_copy[::sample[0], ::sample[1], h_slice, 0, 0],
+                           input_field_copy[::sample[0], ::sample[1], h_slice, 0, 1],
                            color=input_color[num_obj], linewidths=0.01, width=0.03, scale=scale,
                            scale_units='xy', units='xy', angles='xy',
                            alpha=list_of_alpha_for_obj[num_obj])

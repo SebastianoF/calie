@@ -3,7 +3,7 @@ from numpy.random import uniform, choice
 import numpy as np
 
 import se2_a
-from src.tools.auxiliary.angles_manipulations import mod_pipi
+from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
 
 class se2_g(object):

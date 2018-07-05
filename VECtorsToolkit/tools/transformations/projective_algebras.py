@@ -194,7 +194,6 @@ def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False):
     return h_a.matrix, h_g.matrix
 
 
-
 def get_random_hom_matrices(d=2, center=None, random_kind='diag', scale_factor=None, sigma=1.0, special=False):
     """
     :param d: dimension of the homography in pgl by default or in psl
