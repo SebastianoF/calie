@@ -4,105 +4,9 @@ import nibabel as nib
 import numpy as np
 import scipy.ndimage.filters as fil
 
-from VECtorsToolkit.tools.fields.queries import check_omega, vf_shape_from_omega_and_timepoints, get_omega
-
-
-# TODO erase ALL after fields is done.
-
-#########################
-# Change coordinates #
-#########################
-
-def change_coordinates_vf_to_homogeneous(input_v):
-    """
-    Adds the homogeneous coordinates to the given vector field.
-
-    input_v(x,y,z,0,:) = (vx, vy, vz)
-
-    output_v(x,y,z,0,:) = (vx, vy, vz, 1)
-
-    :param input_v:
-    """
-
-    slice_shape = list(input_v.shape)
-    slice_shape[4] = 1
-
-    return np.append(input_v, np.ones(slice_shape), axis=4)
-
-
-def change_coordinates_vf_to_affine(input_v):
-    """
-    Removes the homogeneous coordinates to the given homogeneous field.
-    It changes the provided data structure instead of creating a new one.
-    :param input_v:
-    :return: field in affine coordinates.
-
-    NOTE: it works only for vector fields, so for fields with one more coordinate.
-    If the given vector field was already affine nothing happen.
-    """
-    return input_v[..., :-1]
-
-
-def change_coordinates_vf_from_eulerian_to_lagrangian(input_vf_eul):
-    # from a vector field in eulerian returns the equivalent in lagrangian
-    return input_vf_eul - generate_identity_lagrangian_like(input_vf_eul)
-
-
-def change_coordinates_vf_from_lagrangian_to_eulerian(input_vf_lag):
-    # from a vector field in lagrangian returns the equivalent in eulerian
-    return input_vf_lag + generate_identity_lagrangian_like(input_vf_lag)
-
-
-############################
-# Vector Fields Generators #
-############################
-
-
-def generate_identity_lagrangian(omega, t=1):
-
-    d = len(omega)
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t=t)
-    id_vf = np.zeros(v_shape)
-
-    if d == 2:
-        x = range(v_shape[0])
-        y = range(v_shape[1])
-        gx, gy = np.meshgrid(x, y, indexing='ij')
-
-        id_vf[..., 0, :, 0] = np.repeat(gx, t).reshape(omega + [t])
-        id_vf[..., 0, :, 1] = np.repeat(gy, t).reshape(omega + [t])
-
-    elif d == 3:
-        x = range(v_shape[0])
-        y = range(v_shape[1])
-        z = range(v_shape[2])
-        gx, gy, gz = np.meshgrid(x, y, z, indexing='ij')
-
-        id_vf[..., :, 0] = np.repeat(gx, t).reshape(omega + [t])
-        id_vf[..., :, 1] = np.repeat(gy, t).reshape(omega + [t])
-        id_vf[..., :, 2] = np.repeat(gz, t).reshape(omega + [t])
-
-    else:
-        raise IOError("Dimensions allowed: 2, 3")
-
-    return id_vf
-
-
-def generate_identity_lagrangian_like(input_vf):
-    """
-    :param input_vf: input vector field.
-    :return: corresponding grid position, i.e. the identity vector field sampled in the input_vf grid matrix
-    in Lagrangian coordinates.
-    """
-    return generate_identity_lagrangian(get_omega(input_vf), t=input_vf.shape[3])
-
-
-def generate_identity_eulerian_like(input_vf):
-    """
-    :param input_vf: input vector field.
-    :return: corresponding identity grid position in Eulerian coordinates
-    """
-    return np.zeros_like(input_vf)
+from VECtorsToolkit.tools.fields.queries import check_omega, vf_shape_from_omega_and_timepoints
+from VECtorsToolkit.tools.fields.coordinates import vf_affine_to_homogeneous, vf_homogeneous_to_affine
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
 
 
 def generate_id_matrix(omega):
@@ -122,12 +26,12 @@ def generate_id_matrix(omega):
     return np.repeat(flat_id, np.prod(omega)).reshape(shape, order='F')
 
 
-def generate_random(omega, t=1, parameters=(5,2)):
+def generate_random(omega, t=1, parameters=(5, 2)):
     """
     Return a random vector field v.
     :param omega: domain of the vector field
     :param t: time not yet implemented.
-    :param parameters:
+    :param parameters: (sigma initial randomness, sigma of the gaussian filter).
     :return:
     """
     v_shape = vf_shape_from_omega_and_timepoints(omega, t)
@@ -162,14 +66,14 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 
     if d == 2:
 
-        v = change_coordinates_vf_to_homogeneous(generate_identity_lagrangian(v_shape))
+        v = vf_affine_to_homogeneous(vf_identity_lagrangian(v_shape))
 
         x_intervals, y_intervals = omega
         for i in range(x_intervals):
             for j in range(y_intervals):
                 v[i, j, 0, 0, :] = input_matrix.dot(v[i, j, 0, 0, :])
 
-        v = change_coordinates_vf_to_affine(v)
+        v = vf_homogeneous_to_affine(v)
 
     elif d == 3:
 
@@ -181,7 +85,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
             v = np.zeros(v_shape)
 
             # Create the slice at the ground of the domain (x,y,z) , z = 0, as a 2d rotation:
-            base_slice = change_coordinates_vf_to_homogeneous(generate_identity_lagrangian(list(omega[:2]) + [1, 1, 2]))
+            base_slice = vf_affine_to_homogeneous(vf_identity_lagrangian(list(omega[:2]) + [1, 1, 2]))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -194,14 +98,14 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         # If the matrix is 2d the rotation axis is perpendicular to the plane z=0.
         elif np.alltrue(input_matrix.shape == (4, 4)):
 
-            v = change_coordinates_vf_to_homogeneous(generate_identity_lagrangian(v_shape))
+            v = vf_affine_to_homogeneous(vf_identity_lagrangian(v_shape))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
                     for k in range(y_intervals):
                         v[i, j, k, 0, :] = input_matrix.dot(v[i, j, k, 0, :])
 
-            v = change_coordinates_vf_to_affine(v)
+            v = vf_homogeneous_to_affine(v)
         else:
             raise IOError('Wrong input parameter.')
 
@@ -214,10 +118,9 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 def generate_from_projective_matrix(omega, input_homography, structure='algebra'):
 
     t = 1  # TODO t depends on the value of the matrix, if it is a stack of matrices (one for each time point)
-           # or if it is a single matrix.
+    # or if it is a single matrix.
 
     if structure == 'algebra':
-
 
         d = check_omega(omega)
         v_shape = vf_shape_from_omega_and_timepoints(omega, t)
@@ -227,10 +130,10 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
 
         if d == 2:
 
-            idd = generate_identity_lagrangian(v_shape)
+            idd = vf_identity_lagrangian(v_shape)
             vf = np.zeros(v_shape)
 
-            idd = change_coordinates_vf_to_homogeneous(idd)
+            idd = vf_affine_to_homogeneous(idd)
 
             x_intervals, y_intervals = omega
             for i in range(x_intervals):
@@ -242,10 +145,10 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
 
         elif d == 3:
 
-            idd = generate_identity_lagrangian(v_shape)
+            idd = vf_identity_lagrangian(v_shape)
             vf = np.zeros(v_shape)
 
-            idd = change_coordinates_vf_to_homogeneous(idd)
+            idd = vf_affine_to_homogeneous(idd)
 
             x_intervals, y_intervals, z_intervals = omega
             for i in range(x_intervals):
@@ -296,9 +199,7 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
                         if abs(s[3]) > 1e-5:
                             vf[i, j, k, 0, :] = (s[0:3] / float(s[3])) - np.array([i, j, k])
 
-
-
-
+            # TODO
         else:
             raise IOError("Dimensions allowed: 2 or 3")
         return vf

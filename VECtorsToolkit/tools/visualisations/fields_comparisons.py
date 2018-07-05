@@ -5,36 +5,31 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 
-from utils.fields import Field
+from VECtorsToolkit.tools.fields.queries import check_is_vf
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
 
 
-def see_2_fields_separate_and_overlay(input_obj_0, input_obj_1,
+def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
                                       anatomical_plane='axial',
                                       h_slice_0=0, h_slice_1=0,
                                       sample_0=(1, 1), sample_1=(1, 1),
                                       window_title_input='quiver 2 screens',
                                       input_color_0='b', input_color_1='r',
-                                      title_input_0= 'Vector field 1', title_input_1= 'Vector field 2',
+                                      title_input_0='Vector field 1', title_input_1= 'Vector field 2',
                                       title_input_both='Overlay',
                                       long_title_0=False, long_title_1=False,
                                       long_title_both=False,
                                       fig_tag=1, scale_0=1, scale_1=1,
                                       subtract_id_0=True, subtract_id_1=False):
 
-    if not len(input_obj_0.shape) == 5 and len(input_obj_1.shape) == 5:
-        raise TypeError('Wrong input size for a field')
+    assert check_is_vf(input_vf_0) == 2
+    assert check_is_vf(input_vf_1) == 2
 
-    if not (input_obj_0.dim == input_obj_0.shape[4] == 2 or input_obj_0.dim == input_obj_0.shape[4] == 3):
-            raise TypeError('First input elements: see 2 fields works only for 2d to 2d Fields or children.')
+    id_field_0 = vf_identity_lagrangian_like(input_vf_0)  # other option is casting with Field()
+    id_field_1 = vf_identity_lagrangian_like(input_vf_1)
 
-    if not (input_obj_1.dim == input_obj_1.shape[4] == 2 or input_obj_1.dim == input_obj_1.shape[4] == 3):
-            raise TypeError('First input elements: see 2 fields works only for 2d to 2d Fields or children.')
-
-    id_field_0 = input_obj_0.__class__.generate_id_from_obj(input_obj_0)  # other option is casting with Field()
-    id_field_1 = input_obj_1.__class__.generate_id_from_obj(input_obj_1)
-
-    input_field_0 = copy.deepcopy(input_obj_0)
-    input_field_1 = copy.deepcopy(input_obj_1)
+    input_field_0 = copy.deepcopy(input_vf_0)
+    input_field_1 = copy.deepcopy(input_vf_1)
 
     if subtract_id_0:
         input_field_0 -= id_field_0
@@ -53,78 +48,78 @@ def see_2_fields_separate_and_overlay(input_obj_0, input_obj_1,
     # anatomical plane is the same for both figures
     if anatomical_plane == 'axial':
 
-        ax0.quiver(id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+        ax0.quiver(id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
 
-        ax1.quiver(id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+        ax1.quiver(id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
                    color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
 
-        ax2.quiver(id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+        ax2.quiver(id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
-        ax2.quiver(id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+        ax2.quiver(id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
                    color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
 
     elif anatomical_plane == 'sagittal':
 
-        ax0.quiver(id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+        ax0.quiver(id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
 
-        ax1.quiver(id_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
-                   id_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
-                   input_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
-                   input_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
-                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
+        ax1.quiver(id_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
+                   id_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
+                   input_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
+                   input_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
+                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_1, scale_units='xy')
 
-        ax2.quiver(id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+        ax2.quiver(id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
-        ax2.quiver(id_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
-                   id_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
-                   input_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
-                   input_field_1.field[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
-                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
+        ax2.quiver(id_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
+                   id_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
+                   input_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 0],
+                   input_field_1[::sample_1[0], h_slice_1, ::sample_1[1], 0, 1],
+                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_1, scale_units='xy')
 
     elif anatomical_plane == 'coronal':
 
-        ax0.quiver(id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+        ax0.quiver(id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
 
-        ax1.quiver(id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
-                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
+        ax1.quiver(id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_1, scale_units='xy')
 
-        ax2.quiver(id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+        ax2.quiver(id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
                    color=input_color_0, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
-        ax2.quiver(id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
-                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_0, scale_units='xy')
+        ax2.quiver(id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+                   color=input_color_1, linewidths=0.2, units='xy', angles='xy', scale=scale_1, scale_units='xy')
 
     else:
         raise TypeError('anatomical_plane_0 must be axial, sagittal or coronal')
@@ -159,33 +154,36 @@ def see_2_fields_separate_and_overlay(input_obj_0, input_obj_1,
     fig.set_tight_layout(True)
 
 
-def see_n_fields_separate(list_of_obj,
+def see_n_fields_separate(list_of_vf,
                           row_fig=2,
                           col_fig=5,
                           input_figsize=(15, 6),
-                           anatomical_plane='axial',
-                           h_slice=0, sample=(1, 1),
-                           window_title_input='quiver',
-                           title_input=None,
-                           fig_tag=1, scale=1,
-                           subtract_id=None,
-                           input_color=None):
+                          anatomical_plane='axial',
+                          h_slice=0, sample=(1, 1),
+                          window_title_input='quiver',
+                          title_input=None,
+                          fig_tag=1, scale=1,
+                          subtract_id=None,
+                          input_color=None):
     """
-    :param list_of_obj: list of 10 of fields or children, or None.
+    :param list_of_vf:
+    :param row_fig:
+    :param col_fig:
+    :param input_figsize:
     :param anatomical_plane:
     :param h_slice:
     :param sample:
     :param window_title_input:
     :param title_input:
-    :param long_title:
     :param fig_tag:
     :param scale:
     :param subtract_id:
+    :param input_color:
     :return:
     """
     # TODO: input sanity check
 
-    n = len(list_of_obj)
+    n = len(list_of_vf)
 
     if title_input is None:
         title_input = ('2d vector field',) * n
@@ -199,51 +197,46 @@ def see_n_fields_separate(list_of_obj,
 
     fig.canvas.set_window_title(window_title_input)
 
-    for num_obj, input_obj in enumerate(list_of_obj):
+    for num_vf, input_vf in enumerate(list_of_vf):
 
         # add subplot here:
-        ax  = fig.add_subplot(row_fig, col_fig, num_obj+1)
+        ax  = fig.add_subplot(row_fig, col_fig, num_vf+1)
 
-        if input_obj is not None:
+        if input_vf is not None:
 
-            if not len(input_obj.shape) == 5:
-                raise TypeError('Wrong input size for a the field' + str(input_obj))
+            assert check_is_vf(input_vf) == 2
 
-            if not (input_obj.dim == input_obj.shape[4] == 2 or input_obj.dim == input_obj.shape[4] == 3):
-                raise TypeError('See field 2d works only for 2d to 2d fields.')
+            id_field = vf_identity_lagrangian_like(input_vf)
+            input_field_copy = copy.deepcopy(input_vf)
 
-            id_field = input_obj.__class__.generate_id_from_obj(input_obj)
-            input_field_copy = copy.deepcopy(input_obj)
-
-            if subtract_id[num_obj]:
+            if subtract_id[num_vf]:
                 input_field_copy -= id_field
 
             # anatomical plane and h axis is (at the moment) the same for every picture!
             if anatomical_plane == 'axial':
-                ax.quiver(id_field.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                               id_field.field[::sample[0], ::sample[1], h_slice, 0, 1],
-                               input_field_copy.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                               input_field_copy.field[::sample[0], ::sample[1], h_slice, 0, 1],
-                               color=input_color[num_obj], linewidths=0.01, width=0.03, scale=scale, scale_units='xy', units='xy', angles='xy', )
+                ax.quiver(id_field[::sample[0], ::sample[1], h_slice, 0, 0],
+                               id_field[::sample[0], ::sample[1], h_slice, 0, 1],
+                               input_field_copy[::sample[0], ::sample[1], h_slice, 0, 0],
+                               input_field_copy[::sample[0], ::sample[1], h_slice, 0, 1],
+                               color=input_color[num_vf], linewidths=0.01, width=0.03, scale=scale, scale_units='xy', units='xy', angles='xy', )
 
             elif anatomical_plane == 'sagittal':
                 ax.quiver(id_field[::sample[0], h_slice, ::sample[1], 0, 0],
                                id_field[::sample[0], h_slice, ::sample[1], 0, 1],
                                input_field_copy[::sample[0], h_slice, ::sample[1], 0, 0],
                                input_field_copy[::sample[0], h_slice, ::sample[1], 0, 1],
-                               color=input_color[num_obj], linewidths=1, units='xy', angles='xy', scale=scale, scale_units='xy')
+                               color=input_color[num_vf], linewidths=1, units='xy', angles='xy', scale=scale, scale_units='xy')
 
             elif anatomical_plane == 'coronal':
                 ax.quiver(id_field[h_slice, ::sample[0], ::sample[1], 0, 0],
                            id_field[h_slice, ::sample[0], ::sample[1], 0, 1],
                            input_field_copy[h_slice, ::sample[0], ::sample[1], 0, 0],
                            input_field_copy[h_slice, ::sample[0], ::sample[1], 0, 1],
-                           color=input_color[num_obj], linewidths=1, units='xy', angles='xy', scale=scale, scale_units='xy')
+                           color=input_color[num_vf], linewidths=1, units='xy', angles='xy', scale=scale, scale_units='xy')
             else:
                 raise TypeError('Anatomical_plane must be axial, sagittal or coronal')
 
-
-            ax.set_title(title_input[num_obj])
+            ax.set_title(title_input[num_vf])
 
             ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
             ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
@@ -252,35 +245,43 @@ def see_n_fields_separate(list_of_obj,
     fig.set_tight_layout(True)
 
 
-def see_n_fields_special(list_of_list_obj,
-                          row_fig=2,
-                          col_fig=5,
-                          anatomical_plane='axial',
-                          h_slice=0,
-                          sample=(1, 1),
-                          window_title_input='quiver',
-                          titles_input=None,
-                          input_figsize=(14, 5.5),
-                          zoom_input=None,
-                          fig_tag=1, scale=1,
-                          subtract_id=None,
-                          colors_input=None,
-                          labels_input=None, legend_on=False):
+def see_n_fields_special(list_of_list_vf,
+                         row_fig=2,
+                         col_fig=5,
+                         anatomical_plane='axial',
+                         h_slice=0,
+                         sample=(1, 1),
+                         window_title_input='quiver',
+                         titles_input=None,
+                         input_figsize=(14, 5.5),
+                         zoom_input=None,
+                         fig_tag=1, scale=1,
+                         subtract_id=None,
+                         colors_input=None,
+                         labels_input=None, legend_on=False):
     """
-    :param list_of_list_obj: list of n of fields or children, or None.
+
+    :param list_of_list_vf:
+    :param row_fig:
+    :param col_fig:
     :param anatomical_plane:
     :param h_slice:
     :param sample:
     :param window_title_input:
     :param titles_input:
+    :param input_figsize:
+    :param zoom_input:
     :param fig_tag:
     :param scale:
     :param subtract_id:
+    :param colors_input:
+    :param labels_input:
+    :param legend_on:
     :return:
     """
 
-    n     = len(list_of_list_obj)  # number of subplot
-    num_v = [len(vect) for vect in list_of_list_obj]
+    n     = len(list_of_list_vf)  # number of subplot
+    num_v = [len(vect) for vect in list_of_list_vf]
 
     if titles_input is None:
         titles_input = ('2d vector fields',) * n
@@ -302,35 +303,31 @@ def see_n_fields_special(list_of_list_obj,
 
     fig.canvas.set_window_title(window_title_input)
 
-    for num_list_of_obj, input_list_of_obj in enumerate(list_of_list_obj):
+    for num_list_of_obj, input_list_of_obj in enumerate(list_of_list_vf):
 
         # add subplot here:
         ax  = fig.add_subplot(row_fig, col_fig, num_list_of_obj + 1)
 
         if input_list_of_obj is not None:
 
-            for num_obj, input_obj in enumerate(input_list_of_obj):
+            for num_vf, input_vf in enumerate(input_list_of_obj):
 
-                main_index = int(np.sum(num_v[:num_list_of_obj]) + num_obj)
+                main_index = int(np.sum(num_v[:num_list_of_obj]) + num_vf)
 
-                if not len(input_obj.shape) == 5:
-                    raise TypeError('Wrong input size for a the field' + str(input_obj))
+                assert check_is_vf(input_vf) == 2
 
-                if not (input_obj.dim == input_obj.shape[4] == 2 or input_obj.dim == input_obj.shape[4] == 3):
-                    raise TypeError('See field 2d works only for 2d to 2d fields.')
+                id_field = vf_identity_lagrangian_like(input_vf)
+                input_field_copy = copy.deepcopy(input_vf)
 
-                id_field = input_obj.__class__.generate_id_from_obj(input_obj)
-                input_field_copy = copy.deepcopy(input_obj)
-
-                if subtract_id[num_obj]:
+                if subtract_id[num_vf]:
                     input_field_copy -= id_field
 
                 # anatomical plane and h axis is (at the moment) the same for every picture!
                 if anatomical_plane == 'axial':
-                    q = ax.quiver(id_field.field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 0],
-                                  id_field.field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 1],
-                                  input_field_copy.field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 0],
-                                  input_field_copy.field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 1],
+                    q = ax.quiver(id_field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 0],
+                                  id_field[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 1],
+                                  input_field_copy[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 0],
+                                  input_field_copy[x_0:x_1:sample[0], y_0:y_1:sample[1], h_slice, 0, 1],
                                   color=colors_input[main_index],
                                   label=labels_input[main_index],
                                   linewidths=0.01, width=0.03, scale=scale, scale_units='xy',
@@ -372,39 +369,37 @@ def see_n_fields_special(list_of_list_obj,
     fig.set_tight_layout(True)
 
 
-def see_overlay_of_n_fields(list_of_obj,
+def see_overlay_of_n_fields(list_of_vf,
                             sample=(1, 1),
                             window_title_input='quiver',
                             title_input='2d vector fields',
                             fig_tag=1, scale=1,
                             input_color=('r', 'b'),
-                            input_label=None,
                             subtract_id=None):
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
     fig.canvas.set_window_title(window_title_input)
 
-    for num_obj, input_obj in enumerate(list_of_obj):
+    for num_vf, input_vf in enumerate(list_of_vf):
 
-        if input_obj is not None:
+        if input_vf is not None:
 
-            id_field = input_obj.__class__.generate_id_from_obj(input_obj)
-            input_field = copy.deepcopy(input_obj)
+            id_field = vf_identity_lagrangian_like(input_vf)
+            input_field = copy.deepcopy(input_vf)
 
-            if not len(input_obj.shape) == 5:
-                raise TypeError('Wrong input size for a the field' + str(input_obj))
+            assert check_is_vf(input_vf) == 2
 
             if subtract_id is not None:
-                if subtract_id[num_obj]:
+                if subtract_id[num_vf]:
                     input_field -= id_field
 
             # figure 1
-            ax0.quiver(id_field.field[::sample[0], ::sample[1], 0, 0, 0],
-                       id_field.field[::sample[0], ::sample[1], 0, 0, 1],
-                       input_field.field[::sample[0], ::sample[1], 0, 0, 0],
-                       input_field.field[::sample[0], ::sample[1], 0, 0, 1],
-                       color=input_color[num_obj], linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale, scale_units='xy')
+            ax0.quiver(id_field[::sample[0], ::sample[1], 0, 0, 0],
+                       id_field[::sample[0], ::sample[1], 0, 0, 1],
+                       input_field[::sample[0], ::sample[1], 0, 0, 0],
+                       input_field[::sample[0], ::sample[1], 0, 0, 1],
+                       color=input_color[num_vf], linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale, scale_units='xy')
 
         ax0.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
         ax0.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
@@ -426,8 +421,8 @@ def see_overlay_of_n_fields_3dd(list_of_obj,
                                 input_label=None,
                                 subtract_id=None):
     """
-    NOT TESTED, DO NOT USE!
-    :param list_of_obj: list of fields or children, or None.
+    NOT TESTED!
+    :param list_of_obj:
     :param anatomical_plane:
     :param h_slice:
     :param sample:
@@ -436,6 +431,8 @@ def see_overlay_of_n_fields_3dd(list_of_obj,
     :param long_title:
     :param fig_tag:
     :param scale:
+    :param input_color:
+    :param input_label:
     :param subtract_id:
     :return:
     """
@@ -460,24 +457,24 @@ def see_overlay_of_n_fields_3dd(list_of_obj,
 
             # figure 1
             if anatomical_plane == 'axial':
-                ax0.quiver(id_field.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                           id_field.field[::sample[0], ::sample[1], h_slice, 0, 1],
-                           input_field.field[::sample[0], ::sample[1], h_slice, 0, 0],
-                           input_field.field[::sample[0], ::sample[1], h_slice, 0, 1],
+                ax0.quiver(id_field[::sample[0], ::sample[1], h_slice, 0, 0],
+                           id_field[::sample[0], ::sample[1], h_slice, 0, 1],
+                           input_field[::sample[0], ::sample[1], h_slice, 0, 0],
+                           input_field[::sample[0], ::sample[1], h_slice, 0, 1],
                            color=input_color[num_obj], linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale, scale_units='xy')
 
             elif anatomical_plane == 'sagittal':
-                ax0.quiver(id_field.field[::sample[0], h_slice, ::sample[1], 0, 0],
-                           id_field.field[::sample[0], h_slice, ::sample[1], 0, 1],
-                           input_field.field[::sample[0], h_slice, ::sample[1], 0, 0],
-                           input_field.field[::sample[0], h_slice, ::sample[1], 0, 1],
+                ax0.quiver(id_field[::sample[0], h_slice, ::sample[1], 0, 0],
+                           id_field[::sample[0], h_slice, ::sample[1], 0, 1],
+                           input_field[::sample[0], h_slice, ::sample[1], 0, 0],
+                           input_field[::sample[0], h_slice, ::sample[1], 0, 1],
                            color=input_color[num_obj], linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale, scale_units='xy')
 
             elif anatomical_plane == 'coronal':
-                ax0.quiver(id_field.field[h_slice, ::sample[0], ::sample[1], 0, 0],
-                           id_field.field[h_slice, ::sample[0], ::sample[1], 0, 1],
-                           input_field.field[h_slice, ::sample[0], ::sample[1], 0, 0],
-                           input_field.field[h_slice, ::sample[0], ::sample[1], 0, 1],
+                ax0.quiver(id_field[h_slice, ::sample[0], ::sample[1], 0, 0],
+                           id_field[h_slice, ::sample[0], ::sample[1], 0, 1],
+                           input_field[h_slice, ::sample[0], ::sample[1], 0, 0],
+                           input_field[h_slice, ::sample[0], ::sample[1], 0, 1],
                            color=input_color[num_obj], linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale, scale_units='xy')
             else:
                 raise TypeError('anatomical_plane_1 must be axial, sagittal or coronal')
