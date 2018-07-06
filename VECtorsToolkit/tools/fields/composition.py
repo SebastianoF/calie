@@ -88,10 +88,7 @@ def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
     d = len(omega_right)
 
     if affine_left_right is not None:
-        # affine matrices of the vector field from voxel space to real space. If defined the composition is
-        # computed in the real space. If dealing with nifty images they are the affine transformations.
         A_l, A_r = affine_left_right
-        # multiply each point of the vector field by the transformation matrix
         vf_right_lag = matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_lag)
 
     coord = [vf_right_lag[..., i].reshape(omega_right, order='F') for i in range(d)]
@@ -99,13 +96,14 @@ def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
 
     for i in range(d):  # see if the for can be avoided with tests.
 
-        ndimage.map_coordinates(np.squeeze(vf_left_eul[..., i]),  # BUG here!
+        ndimage.map_coordinates(np.squeeze(vf_left_eul[..., i]),
                                 coord,
                                 output=result[..., i],
                                 order=spline_interpolation_order,
                                 mode=mode,
                                 cval=cval,
                                 prefilter=prefilter)
+        print(result[..., i])
 
     return result.reshape(vf_left_eul.shape)
 

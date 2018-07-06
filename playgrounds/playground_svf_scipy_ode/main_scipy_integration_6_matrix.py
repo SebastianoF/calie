@@ -51,12 +51,12 @@ if __name__ == '__main__':
     spline_interpolation_order = 3
 
     #
-    sdisp_ss      = lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
-    sdisp_gss_ei  = lie_exponential(svf_0, algorithm='gss_ei', s_i_o=spline_interpolation_order)
-    sdisp_euler   = lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
-    sdisp_mid_p   = lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
+    sdisp_ss      = lie_exponential(svf_0, algorithm='ss',        s_i_o=spline_interpolation_order)
+    sdisp_gss_ei  = lie_exponential(svf_0, algorithm='gss_ei',    s_i_o=spline_interpolation_order)
+    sdisp_euler   = lie_exponential(svf_0, algorithm='euler',     s_i_o=spline_interpolation_order)
+    sdisp_mid_p   = lie_exponential(svf_0, algorithm='midpoint',  s_i_o=spline_interpolation_order)
     sdisp_euler_m = lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
-    sdisp_rk4     = lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
+    sdisp_rk4     = lie_exponential(svf_0, algorithm='rk4',       s_i_o=spline_interpolation_order)
     #
 
     if use_also_scipy:

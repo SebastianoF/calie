@@ -18,11 +18,11 @@ from visualizer.fields_comparisons import see_2_fields_separate_and_overlay
 svf_0  = SVF.generate_random_smooth(shape=(20, 20, 1, 1, 2))
 
 # Initialize the displacement field that will be computed using the integral curves.
-disp_0 =  SVF.generate_id_from_obj(svf_0)
+disp_0 = SVF.generate_id_from_obj(svf_0)
 
 
 # Vector field function, from the :
-def vf(t, x):
+def vf(_, x):
     global svf_0
     return list(svf_0.one_point_interpolation(point=x, method='cubic'))
 
@@ -106,12 +106,10 @@ plt.ylabel(r"$y$")
 plt.grid()
 '''
 
-
 see_2_fields_separate_and_overlay(disp_0, svf_0,
                                   fig_tag=2,
                                   title_input_0='disp',
                                   title_input_1='svf',
                                   title_input_both='overlay')
-
 
 plt.show()
