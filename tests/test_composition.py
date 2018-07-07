@@ -163,19 +163,19 @@ def test_easy_composition_with_identity(get_figures=False):
                               decimal=dec)
 
 
-test_easy_composition_with_identity(get_figures=True)
+# test_easy_composition_with_identity(get_figures=True)
 
-'''
+
 def test_less_easy_composition_with_identity(get_figures=False):
 
     dec = 0  # decimal for the error
     passe_partout = 4
 
-    shape = (20, 20, 1, 1, 2)
+    omega = (20, 25)
 
-    svf_zeros = SVF.generate_zero(shape=shape)
-    svf_f     = SVF.generate_zero(shape=shape)
-    svf_id    = SVF.generate_zero(shape=shape)
+    svf_zeros = vf_identity_eulerian(omega=omega)
+    svf_f     = vf_identity_eulerian(omega=omega)
+    svf_id    = vf_identity_eulerian(omega=omega)
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -183,40 +183,43 @@ def test_less_easy_composition_with_identity(get_figures=False):
 
     for x in range(20):
         for y in range(20):
-            svf_f.field[x, y, 0, 0, :] = function_f(1, [x, y])
+            svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
 
-    f_o_id = SVF.composition(svf_f, svf_id)
-    id_o_f = SVF.composition(svf_id, svf_f)
+    f_o_id = eulerian_dot_eulerian(svf_f, svf_id)
+    id_o_f = eulerian_dot_eulerian(svf_id, svf_f)
 
     # test if the compositions are still in lagrangian coordinates, as attributes and as shape
-    assert_array_almost_equal(f_o_id.field[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
-    assert_array_almost_equal(id_o_f.field[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
+    assert_array_almost_equal(f_o_id[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
+    assert_array_almost_equal(id_o_f[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
 
     # results of a composition of 2 lagrangian must be a lagrangian zero field
 
-    assert_array_almost_equal(f_o_id.field[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
-                              svf_zeros.field[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
+    assert_array_almost_equal(f_o_id[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
+                              svf_zeros[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
                               decimal=dec)
-    assert_array_almost_equal(id_o_f.field[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
-                              svf_zeros.field[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
+    assert_array_almost_equal(id_o_f[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
+                              svf_zeros[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
                               decimal=dec)
 
     # sfv_0 is provided in Lagrangian coordinates!
     if get_figures:
-        see_field(svf_f, fig_tag=41, input_color='b')
+        see_field(svf_f, fig_tag=41)
         see_field(svf_id, fig_tag=41, input_color='r', title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=42, input_color='b')
+        see_field(svf_f, fig_tag=42)
         see_field(svf_id, fig_tag=42, input_color='r')
         see_field(f_o_id, fig_tag=42, input_color='g', title_input='composition (f o id) in green')
 
-        see_field(svf_f, fig_tag=43, input_color='b')
+        see_field(svf_f, fig_tag=43)
         see_field(svf_id, fig_tag=43, input_color='r')
         see_field(id_o_f, fig_tag=43, input_color='g', title_input='composition (id o f) in green')
 
     plt.show()
 
 
+test_less_easy_composition_with_identity(get_figures=True)
+
+'''
 def test_2_random_vector_fields_svf(get_figures=False):
     """
     Of course the composition is not the identity since we are working in the tangent space.

@@ -103,9 +103,8 @@ def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
                                 mode=mode,
                                 cval=cval,
                                 prefilter=prefilter)
-        print(result[..., i])
 
-    return result.reshape(vf_left_eul.shape)
+    return result.reshape(vf_left_eul.shape) + vf_lagrangian_to_eulerian(vf_right_lag)
 
 
 def scalar_dot_eulerian(sf_left, vf_right_eul,
