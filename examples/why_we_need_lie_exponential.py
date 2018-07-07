@@ -1,5 +1,11 @@
 """
-We consider the svf v in the Lie
+We consider a randomly generated svf v in the Lie algebra.
+We then consider its inverse in the lie Algebra: -v
+
+The composition in the Lie algebra does not exist. But we apply the numerical method anyway to see what may happen.
+v dot (-v) and (-v) dot v does not return the approximated identity (in green).
+
+Afterwards we compose exp(v) and exp(-v) to see the approximated identity with the correct composition (again in green).
 
 """
 import numpy as np
@@ -35,7 +41,7 @@ if __name__ == '__main__':
     see_2_fields(svf_v, svf_v, fig_tag=78)
     see_2_fields(svf_v_inv, svf_v_inv, fig_tag=78, input_color='r')
     see_2_fields(v_inv_o_v_alg, v_o_v_inv_alg, fig_tag=78, input_color='g',
-                 title_input_0='(f^(-1) o f)', title_input_1='(f o f^(-1))')
+                 title_input_0='(v^(-1) o v)', title_input_1='(v o v^(-1))')
 
     see_2_fields(disp_v, disp_v, fig_tag=79)
     see_2_fields(disp_v_inv, disp_v_inv, fig_tag=79, input_color='r')
