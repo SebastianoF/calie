@@ -131,26 +131,26 @@ def see_2_fields(input_obj_0, input_obj_1,
 
     # figure 0
     if anatomical_plane_0 == 'axial':
-        ax0.quiver(id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   id_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
-                   input_field_0.field[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+        ax0.quiver(id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   id_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 0],
+                   input_field_0[::sample_0[0], ::sample_0[1], h_slice_0, 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_0,
                    scale_units='xy')
 
     elif anatomical_plane_0 == 'sagittal':
-        ax0.quiver(id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   id_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
-                   input_field_0.field[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+        ax0.quiver(id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   id_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 0],
+                   input_field_0[::sample_0[0], h_slice_0, ::sample_0[1], 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_0,
                    scale_units='xy')
 
     elif anatomical_plane_0 == 'coronal':
-        ax0.quiver(id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   id_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
-                   input_field_0.field[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+        ax0.quiver(id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   id_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 0],
+                   input_field_0[h_slice_0, ::sample_0[0], ::sample_0[1], 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_0,
                    scale_units='xy')
     else:
@@ -167,26 +167,26 @@ def see_2_fields(input_obj_0, input_obj_1,
 
     # figure 1
     if anatomical_plane_1 == 'axial':
-        ax1.quiver(id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   id_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
-                   input_field_1.field[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+        ax1.quiver(id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   id_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 0],
+                   input_field_1[::sample_1[0], ::sample_1[1], h_slice_1, 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_1,
                    scale_units='xy')
 
     elif anatomical_plane_1 == 'sagittal':
-        ax1.quiver(id_field_0.field[::sample_1[0], h_slice_0, ::sample_1[1], 0, 0],
-                   id_field_0.field[::sample_1[0], h_slice_0, ::sample_1[1], 0, 1],
-                   input_field_0.field[::sample_1[0], h_slice_0, ::sample_1[1], 0, 0],
-                   input_field_0.field[::sample_1[0], h_slice_0, ::sample_1[1], 0, 1],
+        ax1.quiver(id_field_0[::sample_1[0], h_slice_0, ::sample_1[1], 0, 0],
+                   id_field_0[::sample_1[0], h_slice_0, ::sample_1[1], 0, 1],
+                   input_field_0[::sample_1[0], h_slice_0, ::sample_1[1], 0, 0],
+                   input_field_0[::sample_1[0], h_slice_0, ::sample_1[1], 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_1,
                    scale_units='xy')
 
     elif anatomical_plane_1 == 'coronal':
-        ax1.quiver(id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   id_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
-                   input_field_1.field[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+        ax1.quiver(id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   id_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 0],
+                   input_field_1[h_slice_1, ::sample_1[0], ::sample_1[1], 0, 1],
                    color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale_1,
                    scale_units='xy')
     else:
