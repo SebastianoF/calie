@@ -17,6 +17,7 @@ from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field, 
 from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
 
 
+
 if __name__ == '__main__':
 
     # generate two vector fields

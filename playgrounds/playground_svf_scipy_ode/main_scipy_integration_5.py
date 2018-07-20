@@ -11,7 +11,7 @@ from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangi
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.fields.composition import one_point_interpolation
 from VECtorsToolkit.tools.visualisations.fields_comparisons import see_2_fields_separate_and_overlay
-
+from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
 
 # Auxiliary vector fields function
 
@@ -50,7 +50,7 @@ if __name__ == '__main__':
                input_field_copy[..., 0, 0, 1], color='r', alpha=0.9,
                linewidths=0.01, width=0.05, scale=1, scale_units='xy', units='xy', angles='xy')
 
-    print 'Beginning of the integral curves computations'
+    print('Beginning of the integral curves computations')
 
     # Plot integral curves
 
@@ -75,11 +75,11 @@ if __name__ == '__main__':
             ax.plot(i, j, 'go', alpha=0.5)
             ax.plot(S[S.shape[0]-1, 0], S[S.shape[0]-1, 1], 'bo', alpha=0.5)
             if S.shape[0] < steps-2:  # the first step is not directly considered
-                print "--------"
-                print "Warning!"  # steps jumped for the point
-                print "--------"
+                print("--------")
+                print("Warning!")  # steps jumped for the point
+                print("--------")
 
-    print 'End of the integral curves computations'
+    print('End of the integral curves computations')
 
     plt.xlim([0, 20])
     plt.ylim([0, 20])
@@ -93,28 +93,15 @@ if __name__ == '__main__':
                                       title_input_1='svf',
                                       title_input_both='overlay')
 
-
-    # TODO correct the following code after local_operations package is done.
-    """
-    
-    # Show that the two methods are the same
-    
-    # Initialize the random field with the function input:
-    #svf_1  = SVF.generate_random_smooth(shape=(20, 20, 1, 1, 2))
-    
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_1 =  svf_0.exponential_scipy(verbose=True, passepartout=4)
-    
+    disp_1 = lie_exponential(svf_0)
     
     see_2_fields_separate_and_overlay(disp_1, svf_0,
                                       fig_tag=3,
                                       title_input_0='disp',
                                       title_input_1='svf',
                                       title_input_both='overlay',
-                                      window_title_input='embedded',
-                                      subtract_id_0=True,
-                                      subtract_id_1=False)
-    
-    """
+                                      window_title_input='embedded')
+
     print('Showing outcome: ...')
     plt.show()

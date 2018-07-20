@@ -77,26 +77,26 @@ def one_point_interpolation_rdf(input_vf, point, epsilon=50, as_float=True):
 
 # ---- CORE methods ---- #
 
-def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
-                            affine_left_right=None,
-                            spline_interpolation_order=2,
-                            mode='constant',
-                            cval=0.0,
-                            prefilter=True):
+def lagrangian_dot_eulerian_(vf_left_lag, vf_right_eul,
+                             affine_left_right=None,
+                             spline_interpolation_order=2,
+                             mode='constant',
+                             cval=0.0,
+                             prefilter=True):
 
-    omega_right = get_omega_from_vf(vf_right_lag)
+    omega_right = get_omega_from_vf(vf_right_eul)
     d = len(omega_right)
 
     if affine_left_right is not None:
         A_l, A_r = affine_left_right
-        vf_right_lag = matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_lag)
+        vf_right_eul = matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
 
-    coord = [vf_right_lag[..., i].reshape(omega_right, order='F') for i in range(d)]
-    result = np.squeeze(np.zeros_like(vf_left_eul))
+    coord = [vf_right_eul[..., i].reshape(omega_right, order='F') for i in range(d)]
+    result = np.squeeze(np.zeros_like(vf_left_lag))
 
     for i in range(d):  # see if the for can be avoided with tests.
 
-        ndimage.map_coordinates(np.squeeze(vf_left_eul[..., i]),
+        ndimage.map_coordinates(np.squeeze(vf_left_lag[..., i]),
                                 coord,
                                 output=result[..., i],
                                 order=spline_interpolation_order,
@@ -104,15 +104,15 @@ def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
                                 cval=cval,
                                 prefilter=prefilter)
 
-    return result.reshape(vf_left_eul.shape) + vf_lagrangian_to_eulerian(vf_right_lag)
+    return result.reshape(vf_left_lag.shape) + vf_lagrangian_to_eulerian(vf_right_eul)
 
 
-def scalar_dot_eulerian(sf_left, vf_right_eul,
-                        affine_left_right=None,
-                        spline_interpolation_order=2,
-                        mode='constant',
-                        cval=0.0,
-                        prefilter=True):
+def scalar_dot_eulerian_(sf_left, vf_right_eul,
+                         affine_left_right=None,
+                         spline_interpolation_order=2,
+                         mode='constant',
+                         cval=0.0,
+                         prefilter=True):
 
     omega_right = get_omega_from_vf(vf_right_eul)
     d = len(omega_right)
@@ -146,32 +146,32 @@ def lagrangian_dot_lagrangian(vf_left_lag, vf_right_lag,
                               cval=0.0,
                               prefilter=True):
 
-    vf_left_eul = vf_lagrangian_to_eulerian(vf_left_lag)
+    vf_right_eul = vf_lagrangian_to_eulerian(vf_right_lag)
 
-    return eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
-                                   affine_left_right=affine_left_right,
-                                   spline_interpolation_order=spline_interpolation_order,
-                                   mode=mode,
-                                   cval=cval,
-                                   prefilter=prefilter)
+    return lagrangian_dot_eulerian_(vf_left_lag, vf_right_eul,
+                                    affine_left_right=affine_left_right,
+                                    spline_interpolation_order=spline_interpolation_order,
+                                    mode=mode,
+                                    cval=cval,
+                                    prefilter=prefilter)
 
 
-def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
+def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
                             affine_left_right=None,
                             spline_interpolation_order=2,
                             mode='constant',
                             cval=0.0,
                             prefilter=True):
 
-    vf_left_eul = vf_eulerian_to_lagrangian(vf_left_lag)
-    vf_right_lag = vf_eulerian_to_lagrangian(vf_right_eul)
+    vf_left_lag = vf_eulerian_to_lagrangian(vf_left_eul)
+    vf_right_eul = vf_lagrangian_to_eulerian(vf_right_lag)
 
-    return eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
-                                   affine_left_right=affine_left_right,
-                                   spline_interpolation_order=spline_interpolation_order,
-                                   mode=mode,
-                                   cval=cval,
-                                   prefilter=prefilter)
+    return lagrangian_dot_eulerian_(vf_left_lag, vf_right_eul,
+                                    affine_left_right=affine_left_right,
+                                    spline_interpolation_order=spline_interpolation_order,
+                                    mode=mode,
+                                    cval=cval,
+                                    prefilter=prefilter)
 
 
 def eulerian_dot_eulerian(vf_left_eul, vf_right_eul,
@@ -181,28 +181,28 @@ def eulerian_dot_eulerian(vf_left_eul, vf_right_eul,
                           cval=0.0,
                           prefilter=True):
 
-    vf_right_lag = vf_eulerian_to_lagrangian(vf_right_eul)
+    vf_left_lag = vf_eulerian_to_lagrangian(vf_left_eul)
 
-    return eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
-                                   affine_left_right=affine_left_right,
-                                   spline_interpolation_order=spline_interpolation_order,
-                                   mode=mode,
-                                   cval=cval,
-                                   prefilter=prefilter)
+    return lagrangian_dot_eulerian_(vf_left_lag, vf_right_eul,
+                                    affine_left_right=affine_left_right,
+                                    spline_interpolation_order=spline_interpolation_order,
+                                    mode=mode,
+                                    cval=cval,
+                                    prefilter=prefilter)
 
 
 def scalar_dot_lagrangian(sf_left, vf_right_lag,
-                          affine_left_right=None,
-                          spline_interpolation_order=2,
-                          mode='constant',
-                          cval=0.0,
-                          prefilter=True):
+                        affine_left_right=None,
+                        spline_interpolation_order=2,
+                        mode='constant',
+                        cval=0.0,
+                        prefilter=True):
 
-    vf_eul = vf_lagrangian_to_eulerian(vf_right_lag)
+    vf_right_eul = vf_lagrangian_to_eulerian(vf_right_lag)
 
-    return scalar_dot_eulerian(sf_left, vf_eul,
-                               affine_left_right=affine_left_right,
-                               spline_interpolation_order=spline_interpolation_order,
-                               mode=mode,
-                               cval=cval,
-                               prefilter=prefilter)
+    return scalar_dot_eulerian_(sf_left, vf_right_eul,
+                                affine_left_right=affine_left_right,
+                                spline_interpolation_order=spline_interpolation_order,
+                                mode=mode,
+                                cval=cval,
+                                prefilter=prefilter)

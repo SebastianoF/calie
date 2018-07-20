@@ -42,7 +42,7 @@ if __name__ == '__main__':
                input_field_copy[..., 0, 0, 1], color='r', alpha=0.8,
                linewidths=0.01, width=0.05, scale=1, scale_units='xy', units='xy', angles='xy', )
 
-    print 'Beginning of the integral curves computations'
+    print('Beginning of the integral curves computations')
 
     # Plot integral curves
     for k in range(len(ic)):
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         S = np.array(np.real(Y))
         ax.plot(S[:, 0], S[:, 1], color=colors[k], lw=1)
 
-    print 'End of the integral curves computations'
+    print('End of the integral curves computations')
 
     plt.xlim([0, 20])
     plt.ylim([0, 20])

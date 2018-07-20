@@ -39,11 +39,11 @@ if __name__ == '__main__':
     x1 = 5.22
     y1 = 1.2
 
-    print 'ground truth =  ' + str(function_1(1, [x1, y1]))
+    print('ground truth =  ' + str(function_1(1, [x1, y1])))
     print
-    print 'values interpolated nearest = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='nearest'))
-    print 'values interpolated linear  = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='linear'))
-    print 'values interpolated cubic   = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='cubic'))
+    print('values interpolated nearest = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='nearest')))
+    print('values interpolated linear  = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='linear')))
+    print('values interpolated cubic   = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='cubic')))
 
     # Vector field function:
 
@@ -89,5 +89,5 @@ if __name__ == '__main__':
     plt.xlabel(r"$x$")
     plt.ylabel(r"$y$")
 
-    print 'finish!'
+    print('finish!')
     plt.show()

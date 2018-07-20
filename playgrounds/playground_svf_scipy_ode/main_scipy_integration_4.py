@@ -48,7 +48,7 @@ if __name__ == '__main__':
                input_field_copy[..., 0, 0, 1], color='r', alpha=0.9,
                linewidths=0.01, width=0.05, scale=1, scale_units='xy', units='xy', angles='xy', )
 
-    print 'Beginning of the integral curves computations'
+    print('Beginning of the integral curves computations')
 
     # Plot integral curves
     for k in range(len(ic)):
@@ -63,15 +63,14 @@ if __name__ == '__main__':
         print('final point of ' + str(ic[k]) + ':')
         print(ic[k])
         print('size of S : ' + str(S.shape[0]))
-        print('content : ' + str([steps-2, 0]))
         # ic and S are the searched bi-points.
         ax.plot(ic[k][0], ic[k][1], 'go', alpha=0.5)
         ax.plot(S[S.shape[0]-1, 0], S[S.shape[0]-1, 1], 'bo', alpha=0.5)
         if S.shape[0] < steps-2:
-            print "Warning!"  # steps jumped for the point
-            print "--------"
+            print("Warning!")  # steps jumped for the point
+            print("--------")
 
-    print 'End of the integral curves computations'
+    print('End of the integral curves computations')
 
     plt.xlim([0, 20])
     plt.ylim([0, 20])

@@ -63,8 +63,6 @@ def test_2_easy_vector_fields(get_figures=False):
 
     plt.show()
 
-# test_2_easy_vector_fields(True)
-
 
 def test_2_less_easy_vector_fields(get_figures=False):
 
@@ -165,9 +163,6 @@ def test_easy_composition_with_identity(get_figures=False):
                               decimal=dec)
 
 
-# test_easy_composition_with_identity(get_figures=True)
-
-
 def test_less_easy_composition_with_identity(get_figures=False):
 
     dec = 0  # decimal for the error
@@ -217,9 +212,6 @@ def test_less_easy_composition_with_identity(get_figures=False):
         see_field(id_o_f, fig_tag=43, input_color='g', title_input='composition (id o f) in green')
 
     plt.show()
-
-
-# test_less_easy_composition_with_identity(get_figures=True)
 
 
 def test_2_random_vector_fields_svf(get_figures=False):
@@ -304,4 +296,181 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
 
     plt.show()
 
-test_2_random_vector_fields_as_deformations(get_figures=True)
+#
+# def test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True):
+#
+#     alpha = 0.1
+#
+#     def u(x, y):
+#         return np.cos(alpha * x), np.sin(alpha * y)
+#
+#     def v(x, y):
+#         return 1 - np.sin(alpha * y), 2 * np.cos(alpha * x)
+#
+#     def u_dot_v(x,y):
+#         return np.cos(1 - np.sin(alpha * y)), np.sin(2 * np.cos(alpha * x))
+#
+#     def v_dot_u(x, y):
+#         return 1 - np.sin(alpha * y), 2 * np.cos(np.cos(alpha * x))
+#
+#     omega = (20, 20)
+#
+#     svf_u = vf_identity_eulerian(omega=omega)
+#     svf_v = vf_identity_eulerian(omega=omega)
+#     svf_u_dot_v = vf_identity_eulerian(omega=omega)
+#     svf_v_dot_u = vf_identity_eulerian(omega=omega)
+#
+#     for x in range(omega[0]):
+#         for y in range(omega[1]):
+#             svf_u[x, y, 0, 0, :] = u(x, y)
+#             svf_v[x, y, 0, 0, :] = v(x, y)
+#             svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
+#             svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
+#
+#     svf_u_dot_v_numerical = eulerian_dot_eulerian(svf_u, svf_v)
+#     svf_v_dot_u_numerical = eulerian_dot_eulerian(svf_v, svf_u)
+#
+#     if get_figures:
+#         see_field(svf_u, fig_tag=61)
+#         see_field(svf_v, fig_tag=61, input_color='r', title_input='2 displacement fields: u blue, v red')
+#
+#         see_field(svf_u, fig_tag=62)
+#         see_field(svf_v, fig_tag=62, input_color='r')
+#         see_field(svf_u_dot_v, fig_tag=62, input_color='g', title_input='composition (u o v) closed form')
+#
+#         see_field(svf_u, fig_tag=63)
+#         see_field(svf_v, fig_tag=63, input_color='r')
+#         see_field(svf_u_dot_v_numerical, fig_tag=63, input_color='g', title_input='composition u o v numerical')
+#
+#         # see_field(svf_u, fig_tag=64)
+#         # see_field(svf_v, fig_tag=64, input_color='r')
+#         # see_field(svf_v_dot_u, fig_tag=64, input_color='g', title_input='composition v o u closed form')
+#         #
+#         # see_field(svf_u, fig_tag=65)
+#         # see_field(svf_v, fig_tag=65, input_color='r')
+#         # see_field(svf_v_dot_u_numerical, fig_tag=65, input_color='g', title_input='composition v o u numerical')
+#
+#         plt.show()
+#
+#
+# # test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True)
+#
+#
+# def test_less_easy_composition_of_two_closed_form_vector_fields_2d_2(get_figures=True):
+#     alpha = 0.05
+#     k = 0.2
+#
+#     def u(x, y):
+#         return alpha * y , -k * np.sin(x)
+#
+#     def v(x, y):
+#         return - alpha * y, alpha * x
+#
+#     def u_dot_v(x, y):
+#         return alpha * x, -k * np.sin(-alpha *y)
+#
+#     def v_dot_u(x, y):
+#         return - k * np.sin(alpha * x), alpha *y
+#
+#     omega = (20, 20)
+#
+#     svf_u = vf_identity_eulerian(omega=omega)
+#     svf_v = vf_identity_eulerian(omega=omega)
+#     svf_u_dot_v = vf_identity_eulerian(omega=omega)
+#     svf_v_dot_u = vf_identity_eulerian(omega=omega)
+#
+#     for x in range(omega[0]):
+#         for y in range(omega[1]):
+#             svf_u[x, y, 0, 0, :] = u(x, y)
+#             svf_v[x, y, 0, 0, :] = v(x, y)
+#             svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
+#             svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
+#
+#     svf_v_dot_u_numerical = eulerian_dot_eulerian(svf_v, svf_u)
+#     svf_u_dot_v_numerical = eulerian_dot_eulerian(svf_u, svf_v)
+#
+#     if get_figures:
+#         see_field(svf_u, fig_tag=61)
+#         see_field(svf_v, fig_tag=61, input_color='r', title_input='2 displacement fields: u blue, v red')
+#
+#         see_field(svf_u, fig_tag=62)
+#         see_field(svf_v, fig_tag=62, input_color='r')
+#         see_field(svf_v_dot_u, fig_tag=62, input_color='g', title_input='composition (v o u) closed form')
+#
+#         see_field(svf_u, fig_tag=63)
+#         see_field(svf_v, fig_tag=63, input_color='r')
+#         see_field(svf_v_dot_u_numerical, fig_tag=63, input_color='g', title_input='composition v o u numerical')
+#
+#         # see_field(svf_u, fig_tag=64)
+#         # see_field(svf_v, fig_tag=64, input_color='r')
+#         # see_field(svf_v_dot_u, fig_tag=64, input_color='g', title_input='composition v o u closed form')
+#         #
+#         # see_field(svf_u, fig_tag=65)
+#         # see_field(svf_v, fig_tag=65, input_color='r')
+#         # see_field(svf_v_dot_u_numerical, fig_tag=65, input_color='g', title_input='composition v o u numerical')
+#
+#         plt.show()
+
+#
+#
+# def test_less_easy_composition_of_two_closed_form_vector_fields_2d_3(get_figures=True):
+#     alpha = 0.05
+#     k = 0.2
+#
+#     def u(x, y):
+#         return alpha, alpha * y
+#
+#     def v(x, y):
+#         return - alpha * y, - alpha * x
+#
+#     def u_dot_v(x, y):
+#         return alpha, - (alpha ** 2) * x
+#
+#     def v_dot_u(x, y):
+#         return - alpha**2 * y, - alpha * x
+#
+#     omega = (20, 20)
+#
+#     svf_u = vf_identity_eulerian(omega=omega)
+#     svf_v = vf_identity_eulerian(omega=omega)
+#     svf_u_dot_v = vf_identity_eulerian(omega=omega)
+#     svf_v_dot_u = vf_identity_eulerian(omega=omega)
+#
+#     for x in range(omega[0]):
+#         for y in range(omega[1]):
+#             svf_u[x, y, 0, 0, :] = u(x, y)
+#             svf_v[x, y, 0, 0, :] = v(x, y)
+#             svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
+#             svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
+#
+#     svf_v_dot_u_numerical = eulerian_dot_eulerian(svf_v, svf_u)
+#     svf_u_dot_v_numerical = eulerian_dot_eulerian(svf_u, svf_v)
+#
+#     if get_figures:
+#         see_field(svf_u, fig_tag=61)
+#         see_field(svf_v, fig_tag=61, input_color='r', title_input='2 displacement fields: u blue, v red')
+#
+#         see_field(svf_u, fig_tag=62)
+#         see_field(svf_v, fig_tag=62, input_color='r')
+#         see_field(svf_v_dot_u, fig_tag=62, input_color='g', title_input='composition (v o u) closed form')
+#
+#         see_field(svf_u, fig_tag=63)
+#         see_field(svf_v, fig_tag=63, input_color='r')
+#         see_field(svf_v_dot_u_numerical, fig_tag=63, input_color='g', title_input='composition v o u numerical')
+#
+#         # see_field(svf_u, fig_tag=64)
+#         # see_field(svf_v, fig_tag=64, input_color='r')
+#         # see_field(svf_v_dot_u, fig_tag=64, input_color='g', title_input='composition v o u closed form')
+#         #
+#         # see_field(svf_u, fig_tag=65)
+#         # see_field(svf_v, fig_tag=65, input_color='r')
+#         # see_field(svf_v_dot_u_numerical, fig_tag=65, input_color='g', title_input='composition v o u numerical')
+#
+#         plt.show()
+#
+# test_less_easy_composition_of_two_closed_form_vector_fields_2d_3(get_figures=True)
+
+#
+#
+# def test_less_easy_composition_of_two_closed_form_vector_fields_3d(get_figures=True):
+#     pass
