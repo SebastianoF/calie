@@ -4,10 +4,10 @@ import scipy.linalg as lin
 from nose.tools import assert_equal, assert_raises
 from numpy.testing import assert_array_almost_equal, assert_array_equal
 
-from utils.aux_functions import mod_pipi
+from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
-import transformations.se2_a as se2_a
-import transformations.se2_g as se2_g
+import VECtorsToolkit.tools.transformations.se2_a as se2_a
+import VECtorsToolkit.tools.transformations.se2_g as se2_g
 
 '''
 Test for the module translation
@@ -124,9 +124,9 @@ def test_se2_a_add_random_input():
 
     elem_sum = se2_a.se2_a(sum_angle_mod, sum_tx, sum_ty)
 
-    print elem1.get
-    print elem2.get
-    print elem_sum.get
+    print(elem1.get)
+    print(elem2.get)
+    print(elem_sum.get)
 
     assert_array_equal((elem1 + elem2).get, elem_sum.get)
 
@@ -141,8 +141,8 @@ def test_se2_a_comparing_sum_restricted_form_and_matrix_form():
     elem1 = se2_a.se2_a(any_angle_1, any_tx_1, any_ty_1)
     elem2 = se2_a.se2_a(any_angle_2, any_tx_2, any_ty_2)
 
-    print elem1.get
-    print elem2.get
+    print(elem1.get)
+    print(elem2.get)
 
     matrix_output_of_sums = (elem1 + elem2).get_matrix
     # the matrix here must be constructed carefully. It is not the sum of the matrix
@@ -497,7 +497,7 @@ def test_se2_a_exp_pade_approx_comparison():
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     element = se2_a.se2_a(theta, tx, ty)
-    ans_exp = se2_a.exp(element).get_matrix
+    ans_exp = se2_a.se2_a_exp(element).get_matrix
     ans_pade = lin.expm(element.get_matrix)
     assert_array_almost_equal(ans_exp, ans_pade)
 
@@ -511,7 +511,7 @@ def test_se2_a_exp_0_angle():
     tx1 = tx
     ty1 = ty
 
-    ans_exp = se2_a.exp(element)
+    ans_exp = se2_a.se2_a_exp(element)
     if ans_exp.rotation_angle == 0 and ans_exp.tx == tx1 and ans_exp.ty == ty1:
         assert True
     else:
@@ -528,8 +528,8 @@ def test_se2_g_log_for_matrices_pade_approx_comparison():
     element_m = se2_a.se2_a(theta, tx, ty).get_matrix
     ans_exp_m = se2_a.exp_for_matrices(element_m)
     ans_pade = np.around(lin.expm(element_m), 10).real
-    print ans_exp_m
-    print ans_pade
+    print(ans_exp_m)
+    print(ans_pade)
     assert_array_almost_equal(ans_exp_m, ans_pade)
 
 
@@ -677,7 +677,7 @@ def test_se2_g_norm_translation_fixed_input_0():
 def test_se2_g_norm_fro_fixed_input_0():
     angle, tx,  ty = 0, 0, 0
     element = se2_g.se2_g(angle, tx, ty)
-    print element.get
+    print(element.get)
     assert_equal(element.norm('fro'), np.sqrt(3))
 
 
@@ -965,7 +965,7 @@ def test_se2_g_randomgen_fro_restricted_interval():
     b = 2.5
     interval = (a, b)
     given_output = se2_g.randomgen_fro(interval)
-    print str(given_output.get)
+    print(str(given_output.get))
     assert a <= given_output.norm('fro') <= b
 
 

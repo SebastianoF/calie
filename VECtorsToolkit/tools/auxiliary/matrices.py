@@ -243,6 +243,8 @@ def grid_generator(x_size=101,
 
     return m
 
+
+
 '''
 def trim_2d(array, passe_partout_size, return_copy=False):
         """

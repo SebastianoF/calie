@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import copy
 from scipy.integrate import ode
 
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.fields.composition import one_point_interpolation
 from VECtorsToolkit.tools.visualisations.fields_comparisons import see_2_fields_separate_and_overlay
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     svf_0  = generate_random(omega=(20, 20), parameters=(4, 2))
 
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_0 = vf_identity_lagrangian_like(svf_0)
+    disp_0 = vf_identity_eulerian_like(svf_0)
 
     t0, t1 = 0, 1
     steps = 10.
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     ax = fig.add_subplot(111)
 
     # Plot vector field
-    id_field = vf_identity_lagrangian_like(svf_0)
+    id_field = vf_identity_eulerian_like(svf_0)
 
     input_field_copy = copy.deepcopy(svf_0)
 

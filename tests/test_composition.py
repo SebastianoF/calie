@@ -8,8 +8,8 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 import matplotlib.pyplot as plt
 
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
-from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
+from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field
 from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
@@ -22,9 +22,9 @@ def test_2_easy_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = vf_identity_eulerian(omega)
-    svf_f     = vf_identity_eulerian(omega)
-    svf_f_inv = vf_identity_eulerian(omega)
+    svf_zeros = vf_identity_lagrangian(omega)
+    svf_f     = vf_identity_lagrangian(omega)
+    svf_f_inv = vf_identity_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -35,13 +35,13 @@ def test_2_easy_vector_fields(get_figures=False):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
             svf_f_inv[x, y, 0, 0, :] = -1 * function_f(1, [x, y])
 
-    f_o_f_inv = eulerian_dot_eulerian(svf_f, svf_f_inv)
-    f_inv_o_f = eulerian_dot_eulerian(svf_f_inv, svf_f)
+    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv)
+    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f)
 
     assert_array_almost_equal(f_o_f_inv[10, 10, 0, 0, :], [.0, .0], decimal=dec)
     assert_array_almost_equal(f_inv_o_f[10, 10, 0, 0, :], [.0, .0], decimal=dec)
 
-    # results of a composition of 2
+    # #results of a composition of 2
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
                               svf_zeros[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
                               decimal=dec)
@@ -71,9 +71,9 @@ def test_2_less_easy_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = vf_identity_eulerian(omega)
-    svf_f     = vf_identity_eulerian(omega)
-    svf_f_inv = vf_identity_eulerian(omega)
+    svf_zeros = vf_identity_lagrangian(omega)
+    svf_f     = vf_identity_lagrangian(omega)
+    svf_f_inv = vf_identity_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -84,8 +84,8 @@ def test_2_less_easy_vector_fields(get_figures=False):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
             svf_f_inv[x, y, 0, 0, :] = -1 * function_f(1, [x, y])
 
-    f_o_f_inv = eulerian_dot_eulerian(svf_f, svf_f_inv)
-    f_inv_o_f = eulerian_dot_eulerian(svf_f_inv, svf_f)
+    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv)
+    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f)
 
     assert_array_almost_equal(f_o_f_inv[10, 10, 0, 0, :], [.0, .0], decimal=dec)
     assert_array_almost_equal(f_inv_o_f[10, 10, 0, 0, :], [.0, .0], decimal=dec)
@@ -113,6 +113,9 @@ def test_2_less_easy_vector_fields(get_figures=False):
     plt.show()
 
 
+'''
+
+
 def test_easy_composition_with_identity(get_figures=False):
 
     dec = 6
@@ -120,9 +123,9 @@ def test_easy_composition_with_identity(get_figures=False):
 
     omega = (10, 10)
 
-    svf_zeros = vf_identity_eulerian(omega)
-    svf_f     = vf_identity_eulerian(omega)
-    svf_id    = vf_identity_eulerian(omega)  # id in lagrangian coordinates is the zero field
+    svf_zeros = vf_identity_lagrangian(omega)
+    svf_f     = vf_identity_lagrangian(omega)
+    svf_id    = vf_identity_lagrangian(omega)  # id in lagrangian coordinates is the zero field
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -170,9 +173,9 @@ def test_less_easy_composition_with_identity(get_figures=False):
 
     omega = (20, 25)
 
-    svf_zeros = vf_identity_eulerian(omega=omega)
-    svf_f     = vf_identity_eulerian(omega=omega)
-    svf_id    = vf_identity_eulerian(omega=omega)
+    svf_zeros = vf_identity_lagrangian(omega=omega)
+    svf_f     = vf_identity_lagrangian(omega=omega)
+    svf_id    = vf_identity_lagrangian(omega=omega)
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -223,12 +226,12 @@ def test_2_random_vector_fields_svf(get_figures=False):
 
     omega = (10, 10)
 
-    svf_f     = vf_identity_eulerian(omega=omega)
+    svf_f     = vf_identity_lagrangian(omega=omega)
     svf_f_inv = np.copy(-1 * svf_f)  # this does not provides the inverse!
 
     f_o_f_inv = eulerian_dot_eulerian(svf_f, svf_f_inv)
     f_inv_o_f = eulerian_dot_eulerian(svf_f_inv, svf_f)
-    svf_id = vf_identity_eulerian(omega=omega)
+    svf_id = vf_identity_lagrangian(omega=omega)
 
     # # results of a composition of 2 lagrangian must be a lagrangian zero field
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
@@ -264,7 +267,7 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
 
     sigma_init = 4
     sigma_gaussian_filter = 2
-    svf_zeros = vf_identity_eulerian(omega)
+    svf_zeros = vf_identity_lagrangian(omega)
     svf_0     = generate_random(omega, parameters=(sigma_init, sigma_gaussian_filter))
 
     sdisp_0 = lie_exponential(svf_0, algorithm='ss')
@@ -295,7 +298,7 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
         see_field(f_inv_o_f, fig_tag=63, input_color='g', title_input='composition (f^(-1) o f) in green')
 
     plt.show()
-
+'''
 #
 # def test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True):
 #

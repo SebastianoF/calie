@@ -7,12 +7,11 @@ from nose.tools import assert_equal, assert_raises
 import numpy as np
 from random import uniform
 
-from utils.aux_functions import split_the_time
-from utils.aux_functions import mod_pipi, bern, bernoulli_poly, bernoulli_numb_via_poly, bch_right_jacobian
-import transformations.se2_a as se2_a
-
-from utils.aux_functions import matrix_vector_field_product, matrix_fields_product, matrix_fields_product_iterative, \
-    id_matrix_field
+from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
+from VECtorsToolkit.tools.auxiliary.bernoulli import bern, bernoulli_numb_via_poly, bernoulli_poly
+from VECtorsToolkit.tools.auxiliary.matrices import bch_right_jacobian, matrix_vector_field_product, \
+    matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
+from VECtorsToolkit.tools.transformations.se2_a import se2_a, se2_a_exp
 
 
 ''' test for mod_pipi '''
@@ -142,12 +141,12 @@ def test_bch_ground_random_input_comparing_matrices_step_1():
     any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
-    a = se2_a.se2_a(any_angle_1, any_tx_1, any_ty_1)
-    da = se2_a.se2_a(any_angle_2, any_tx_2, any_ty_2)
+    a = se2_a(any_angle_1, any_tx_1, any_ty_1)
+    da = se2_a(any_angle_2, any_tx_2, any_ty_2)
     a_matrix = a.get_matrix
     da_matrix = da.get_matrix
     exp_exp_pade = lin.expm(a_matrix).real.dot(lin.expm(da_matrix).real).real
-    exp_exp_my = se2_a.exp(a)*se2_a.exp(da)
+    exp_exp_my = se2_a_exp(a) * se2_a_exp(da)
     assert_array_almost_equal(exp_exp_pade, exp_exp_my.get_matrix)
 
 
@@ -257,9 +256,6 @@ def test_matrix_vector_field_product_toy_example_3d():
     assert_array_equal(jac_v.shape, np.array([20, 20, 20, 3]))
     assert_array_almost_equal(jac_v, ground_jac_v)
 
-
-test_matrix_vector_field_product_2d()
-test_matrix_vector_field_product_toy_example_3d()
 
 ''' matrix_fields_product '''
 

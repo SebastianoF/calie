@@ -7,7 +7,7 @@ import copy
 import matplotlib.pyplot as plt
 
 from VECtorsToolkit.tools.fields.queries import check_is_vf
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
 
 
 def see_overlay_of_n_fields_and_flow(list_of_obj,
@@ -43,7 +43,7 @@ def see_overlay_of_n_fields_and_flow(list_of_obj,
 
             assert check_is_vf(input_obj) == 2
 
-            id_field = vf_identity_lagrangian_like(input_obj)
+            id_field = vf_identity_eulerian_like(input_obj)
             input_field_copy = copy.deepcopy(input_obj)
 
             if subtract_id[num_obj]:

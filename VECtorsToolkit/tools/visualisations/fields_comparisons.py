@@ -6,7 +6,7 @@ import copy
 import matplotlib.pyplot as plt
 
 from VECtorsToolkit.tools.fields.queries import check_is_vf
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
 
 
 def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
@@ -25,8 +25,8 @@ def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
     assert check_is_vf(input_vf_0) == 2
     assert check_is_vf(input_vf_1) == 2
 
-    id_field_0 = vf_identity_lagrangian_like(input_vf_0)  # other option is casting with Field()
-    id_field_1 = vf_identity_lagrangian_like(input_vf_1)
+    id_field_0 = vf_identity_eulerian_like(input_vf_0)  # other option is casting with Field()
+    id_field_1 = vf_identity_eulerian_like(input_vf_1)
 
     input_field_0 = copy.deepcopy(input_vf_0)
     input_field_1 = copy.deepcopy(input_vf_1)
@@ -206,7 +206,7 @@ def see_n_fields_separate(list_of_vf,
 
             assert check_is_vf(input_vf) == 2
 
-            id_field = vf_identity_lagrangian_like(input_vf)
+            id_field = vf_identity_eulerian_like(input_vf)
             input_field_copy = copy.deepcopy(input_vf)
 
             if subtract_id[num_vf]:
@@ -316,7 +316,7 @@ def see_n_fields_special(list_of_list_vf,
 
                 assert check_is_vf(input_vf) == 2
 
-                id_field = vf_identity_lagrangian_like(input_vf)
+                id_field = vf_identity_eulerian_like(input_vf)
                 input_field_copy = copy.deepcopy(input_vf)
 
                 if subtract_id[num_vf]:
@@ -385,7 +385,7 @@ def see_overlay_of_n_fields(list_of_vf,
 
         if input_vf is not None:
 
-            id_field = vf_identity_lagrangian_like(input_vf)
+            id_field = vf_identity_eulerian_like(input_vf)
             input_field = copy.deepcopy(input_vf)
 
             assert check_is_vf(input_vf) == 2

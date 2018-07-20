@@ -7,7 +7,7 @@ import copy
 
 from scipy.integrate import ode
 
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
 from VECtorsToolkit.tools.fields.composition import one_point_interpolation
 
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     # Plot vector field
 
-    id_field = vf_identity_lagrangian_like(field_0)
+    id_field = vf_identity_eulerian_like(field_0)
 
     input_field_copy = copy.deepcopy(field_0)
 

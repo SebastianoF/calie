@@ -5,7 +5,6 @@ import numpy as np
 
 import se2_g
 
-reload(aux_functions)
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
 

@@ -1,6 +1,6 @@
 """
 Module to test the scaling and squaring-based methods.
-Some tests are visual 
+Some tests are visual test only
 """
 
 import numpy as np

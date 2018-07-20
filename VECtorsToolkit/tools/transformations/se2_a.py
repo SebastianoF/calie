@@ -279,7 +279,7 @@ def list2se2_a(a):
     return se2_a(a[0], a[1], a[2])
 
 
-def exp(element):
+def se2_a_exp(element):
     """
     exp(element) \n
     algebra exponential 
@@ -324,7 +324,7 @@ def exp_for_matrices(m, eat_em_all=True):
         raise Exception("exp_for_matrices in se2_a: the inserted element is not a matrix in se2_a  ")
 
     # first step is to quotient the input element (if the input is a sum)
-    ans = exp(se2_a(m[1, 0], m[0, 2], m[1, 2]))
+    ans = se2_a_exp(se2_a(m[1, 0], m[0, 2], m[1, 2]))
     return ans.get_matrix
 
 

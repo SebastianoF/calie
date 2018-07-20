@@ -3,7 +3,7 @@ import copy
 import matplotlib.pyplot as plt
 
 from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian_like
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
 
 
 def see_field(input_vf,
@@ -19,7 +19,7 @@ def see_field(input_vf,
 
     check_is_vector_field(input_vf)
 
-    id_field = vf_identity_lagrangian_like(input_vf)
+    id_field = vf_identity_eulerian_like(input_vf)
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
@@ -111,8 +111,8 @@ def see_2_fields(input_obj_0, input_obj_1,
     check_is_vector_field(input_obj_0)
     check_is_vector_field(input_obj_1)
 
-    id_field_0 = vf_identity_lagrangian_like(input_obj_0)  # other option is casting with Field()
-    id_field_1 = vf_identity_lagrangian_like(input_obj_1)
+    id_field_0 = vf_identity_eulerian_like(input_obj_0)  # other option is casting with Field()
+    id_field_1 = vf_identity_eulerian_like(input_obj_1)
 
     input_field_0 = copy.deepcopy(input_obj_0)
     input_field_1 = copy.deepcopy(input_obj_1)

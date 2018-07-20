@@ -6,7 +6,7 @@ import scipy.ndimage.filters as fil
 
 from VECtorsToolkit.tools.fields.queries import check_omega, vf_shape_from_omega_and_timepoints
 from VECtorsToolkit.tools.fields.coordinates import vf_affine_to_homogeneous, vf_homogeneous_to_affine
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
 
 
 def generate_id_matrix(omega):
@@ -66,7 +66,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 
     if d == 2:
 
-        v = vf_affine_to_homogeneous(vf_identity_lagrangian(list(omega)))
+        v = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega)))
 
         x_intervals, y_intervals = omega
         for i in range(x_intervals):
@@ -85,7 +85,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
             v = np.zeros(v_shape)
 
             # Create the slice at the ground of the domain (x,y,z) , z = 0, as a 2d rotation:
-            base_slice = vf_affine_to_homogeneous(vf_identity_lagrangian(list(omega[:2]) + [1, 1, 2]))
+            base_slice = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega[:2]) + [1, 1, 2]))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -98,7 +98,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         # If the matrix is 2d the rotation axis is perpendicular to the plane z=0.
         elif np.alltrue(input_matrix.shape == (4, 4)):
 
-            v = vf_affine_to_homogeneous(vf_identity_lagrangian(v_shape))
+            v = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -130,7 +130,7 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
 
         if d == 2:
 
-            idd = vf_identity_lagrangian(v_shape)
+            idd = vf_identity_eulerian(v_shape)
             vf = np.zeros(v_shape)
 
             idd = vf_affine_to_homogeneous(idd)
@@ -145,7 +145,7 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
 
         elif d == 3:
 
-            idd = vf_identity_lagrangian(v_shape)
+            idd = vf_identity_eulerian(v_shape)
             vf = np.zeros(v_shape)
 
             idd = vf_affine_to_homogeneous(idd)

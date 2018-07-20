@@ -392,11 +392,11 @@ def test_norm_of_an_images_2d_normalized_passe_partout(verbose=False):
     for j in range(12):
         field_0[j, :] = [float(j)] * 12
     if verbose:
-        print field_0
+        print(field_0)
     f = Field(field_0)
     if verbose:
-        print f.norm(normalized=True, passe_partout_size=3)
-        print np.sqrt(6 * sum_squared_integer_between_m_and_n(3, 8)) / np.sqrt(6 * 6)
+        print(f.norm(normalized=True, passe_partout_size=3))
+        print(np.sqrt(6 * sum_squared_integer_between_m_and_n(3, 8)) / np.sqrt(6 * 6))
 
     assert_almost_equals(f.norm(normalized=True, passe_partout_size=3),
                          np.sqrt(6 * sum_squared_integer_between_m_and_n(3, 8)) / np.sqrt(6 * 6))

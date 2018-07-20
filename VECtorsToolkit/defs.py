@@ -1,5 +1,7 @@
 import os
 
+# Refactoring of the code https://github.com/gift-surg/lie_exponential
+
 
 root_dir = os.path.abspath(os.path.dirname(__file__))
 default_saver_loader_modality = 'txt'  # 'txt', 'npy' (or 'np')
@@ -9,10 +11,10 @@ info = {
         "name": "VECtorsToolkit",
         "version": "0.0.0",
         "description": "Methods to manage vector fields.",
-        "web_infos" : "http://arxiv.org/abs/1511.06142",
+        "web_infos" : "",
         "repository": {
                        "type": "git",
-                       "url": "https://github.com/SebastianoF/VectorFieldsManager.git"
+                       "url": "https://github.com/SebastianoF/VECtorsToolkit"
                         },
         "author": "Sebastiano Ferraris",
         "dependencies": {
