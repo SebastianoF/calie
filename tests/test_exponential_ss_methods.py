@@ -42,7 +42,20 @@ def test_visual_assessment_method_one_se2(show=False):
     passepartout = 5
     spline_interpolation_order = 3
 
-    res_time = np.zeros(4)
+    methods_list = ['ss',
+                    'gss_ei',
+                    'gss_ei_mod',
+                    'gss_aei',
+                    'midpoint',
+                    'series',
+                    'euler',
+                    'euler_aei',
+                    'euler_mod',
+                    'heun',
+                    'heun_mod',
+                    'rk4',
+                    'gss_rk4',
+                    ]
 
     # -----
     # model
@@ -58,17 +71,14 @@ def test_visual_assessment_method_one_se2(show=False):
 
     # -- compute exponential with different available methods:
 
-    start = time.time()
-    sdisp_ss      = lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
-    res_time[0] = (time.time() - start)
+    sdisp_list = []
+    res_time = np.zeros(len(methods_list))
 
-    start = time.time()
-    sdisp_gss_ei   = lie_exponential(svf_0, algorithm='gss_ei', s_i_o=spline_interpolation_order)
-    res_time[1] = (time.time() - start)
+    for num_met, met in enumerate(methods_list):
 
-    start = time.time()
-    sdisp_gss_aei = lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
-    res_time[2] = (time.time() - start)
+        start = time.time()
+        sdisp_list.append(lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order, input_num_steps=10))
+        res_time[num_met] = (time.time() - start)
 
     # ----
     # view
@@ -86,30 +96,17 @@ def test_visual_assessment_method_one_se2(show=False):
     print("Norm of the errors:")
     print('--------------------')
 
-    err_ss     = vf_norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)
-    err_ss_ei  = vf_norm(sdisp_gss_ei - sdisp_0, passe_partout_size=passepartout)
-    err_ss_aei = vf_norm(sdisp_gss_aei - sdisp_0, passe_partout_size=passepartout)
-
-    print('|ss - disp|        = ' + str(err_ss))
-    print('|ss_ei - disp|     = ' + str(err_ss_ei))
-    print('|ss_aei - disp|   = ' + str(err_ss_aei))
+    for num_met in range(len(methods_list)):
+        err = vf_norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
+        print('|{0:>12} - disp|  = {1}'.format(methods_list[num_met], err))
 
     print('--------------------')
     print("Computational Times: ")
     print('--------------------')
 
-    print(' ss        = ' + str(res_time[0]))
-    print(' ss_pa     = ' + str(res_time[1]))
-    print(' ss_pa_m   = ' + str(res_time[2]))
-
-    fields_list = [svf_0, sdisp_0, sdisp_ss,   sdisp_gss_ei,   sdisp_gss_aei]
-
     if 1:
-        title_input_l = ['Sfv Input',
-                         'Ground Output',
-                         'Scaling and Squaring',
-                         'gss ei',
-                         'gss aei']
+        title_input_l = ['Sfv Input', 'Ground Output'] + methods_list
+        fields_list = [svf_0, sdisp_0] + sdisp_list
 
         list_fields_of_field = [[svf_0], [sdisp_0]]
         list_colors = ['r', 'b']
@@ -118,21 +115,16 @@ def test_visual_assessment_method_one_se2(show=False):
             list_colors += ['r', 'b', 'm']
 
         see_n_fields_special(list_fields_of_field, fig_tag=50,
-                             row_fig=2,
-                             col_fig=3,
+                             row_fig=3,
+                             col_fig=5,
                              input_figsize=(14, 7),
                              colors_input=list_colors,
                              titles_input=title_input_l,
                              sample=(1, 1),
                              zoom_input=[0, 20, 0, 20],
-                             window_title_input='matrix, random generated',
-                             legend_on=False)
+                             window_title_input='matrix generated svf')
 
     if show:
         plt.show()
-
-    assert err_ss < 0.05
-    assert err_ss_ei < 0.05
-    assert err_ss_aei < 0.05
 
 test_visual_assessment_method_one_se2(True)
