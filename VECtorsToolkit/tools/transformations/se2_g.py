@@ -258,7 +258,7 @@ def list2se2_g(a):
     return se2_g(a[0], a[1], a[2])
 
 
-def log(element):
+def se2_g_log(element):
     """
     log(element) \n
     group logarithm 

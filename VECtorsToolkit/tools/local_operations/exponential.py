@@ -7,7 +7,7 @@ from scipy import integrate
 
 
 from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field, get_omega_from_vf
-from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, one_point_interpolation
+from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, one_point_interpolation, lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, iterative_jacobian_product, \
     jacobian_product
 from VECtorsToolkit.tools.auxiliary.matrices import matrix_vector_field_product
@@ -86,7 +86,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = eulerian_dot_eulerian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'gss_ei':  # Scaling and squaring exponential integrators
 
@@ -130,7 +130,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = eulerian_dot_eulerian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'gss_ei_mod':  # Affine scaling and squaring exponential integrators modified
 
@@ -164,7 +164,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = eulerian_dot_eulerian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'gss_aei':  # scaling and squaring approximated exponential integrators
 
@@ -184,7 +184,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = eulerian_dot_eulerian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'midpoint':
 
@@ -198,8 +198,8 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         else:
             h = 1.0 / num_steps
         for i in range(num_steps):
-            phi_tilda = phi + (h / 2) * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
-            phi += h * eulerian_dot_eulerian(vf, phi_tilda, spline_interpolation_order=s_i_o)
+            phi_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
+            phi += h * lagrangian_dot_lagrangian(vf, phi_tilda, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'series':  # Series method
 
@@ -212,7 +212,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             while max_norm / fact(k) > toll:
                 k += 1
             num_steps = k
-            print 'automatic steps selector for series method: ' + str(k)
+            print('automatic steps selector for series method: ' + str(k))
 
         else:
             num_steps = input_num_steps
@@ -244,7 +244,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
         for i in range(num_steps):
 
-            phi += h * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            phi += h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'euler_aei':  # Euler approximated exponential integrator
 
@@ -257,7 +257,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         vf += 0.5 * jv_prod_v
 
         for _ in range(num_steps):
-            phi = eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'euler_mod':  # Euler modified
 
@@ -273,10 +273,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(num_steps):
 
-            psi = phi + h * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            psi = phi + h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
-            phi += (h/2) * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o) + \
-                          eulerian_dot_eulerian(vf, psi, spline_interpolation_order=s_i_o)
+            phi += (h/2) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o) + \
+                   lagrangian_dot_lagrangian(vf, psi, spline_interpolation_order=s_i_o)
 
     elif algorithm == 'heun':  # Heun method
 
@@ -291,10 +291,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(num_steps):
 
-            psi_1 = phi + h * (2. / 3) * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            psi_1 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
-            psi_2 = eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o) + \
-                          3 * eulerian_dot_eulerian(vf, psi_1, spline_interpolation_order=s_i_o)
+            psi_2 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o) + \
+                          3 * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o)
 
             phi += (h / 4) * psi_2
 
@@ -311,12 +311,12 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
         for i in range(num_steps):
 
-            psi_1 = phi + (h / 3) * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            psi_1 = phi + (h / 3) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
-            psi_2 = phi + h * (2. / 3) * eulerian_dot_eulerian(vf, psi_1, spline_interpolation_order=s_i_o)
+            psi_2 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o)
 
-            psi_3 = eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o) + \
-                          3 * eulerian_dot_eulerian(vf, psi_2, spline_interpolation_order=s_i_o)
+            psi_3 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o) + \
+                          3 * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o)
 
             phi += (h / 4) * psi_3
 
@@ -334,16 +334,16 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(num_steps):
 
-            r_1 = h * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            r_1 = h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
             psi_1 = phi + .5 * r_1
 
-            r_2 = h  * eulerian_dot_eulerian(vf, psi_1, spline_interpolation_order=s_i_o)
+            r_2 = h  * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o)
 
             psi_2 = phi + .5 * r_2
-            r_3 = h * eulerian_dot_eulerian(vf, psi_2, spline_interpolation_order=s_i_o)
+            r_3 = h * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o)
 
             psi_3 = phi + r_3
-            r_4 = h  * eulerian_dot_eulerian(vf, psi_3, spline_interpolation_order=s_i_o)
+            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, spline_interpolation_order=s_i_o)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
@@ -367,22 +367,22 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(input_num_steps_rk4):
 
-            r_1   = h * eulerian_dot_eulerian(vf, phi, spline_interpolation_order=s_i_o)
+            r_1   = h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
 
             psi_1 = phi + .5 * r_1
-            r_2   = h  * eulerian_dot_eulerian(vf, psi_1, spline_interpolation_order=s_i_o)
+            r_2   = h  * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o)
 
             psi_2 = phi + .5 * r_2
-            r_3   = h  * eulerian_dot_eulerian(vf, psi_2, spline_interpolation_order=s_i_o)
+            r_3   = h  * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o)
 
             psi_3 = phi + r_3
-            r_4 = h  * eulerian_dot_eulerian(vf, psi_3, spline_interpolation_order=s_i_o)
+            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, spline_interpolation_order=s_i_o)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
         # (2)
         for _ in range(num_steps):
-            phi = eulerian_dot_eulerian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
 
     else:
         raise TypeError('Error: wrong algorithm name. You inserted {}'.format(algorithm))
@@ -452,14 +452,14 @@ def lie_exponential_scipy(input_vf,
                 phi[i, j, 0, 0, :] = - np.array([i, j])
 
             if verbose:
-                print 'Integral curve at grid point ' + str([i, j]) + ' is computed.'
+                print('Integral curve at grid point ' + str([i, j]) + ' is computed.')
 
             # In some cases as critical points, or when too closed to the closure of the domain
             # the number of steps can be reduced by the algorithm.
             if fl.shape[0] < max_steps - 2 and verbose:  # the first step is not directly considered
-                print "--------"
-                print "Warning!"  # steps jumped for the point
-                print "--------"
+                print("--------")
+                print("Warning!") # steps jumped for the point
+                print("--------")
 
             if return_integral_curves:
                 flows_collector += [fl]

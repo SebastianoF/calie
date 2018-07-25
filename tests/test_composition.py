@@ -9,11 +9,14 @@ from numpy.testing import assert_array_almost_equal
 import matplotlib.pyplot as plt
 
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
-from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, lagrangian_dot_lagrangian
+from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, lagrangian_dot_lagrangian, \
+    vf_eulerian_to_lagrangian, vf_lagrangian_to_eulerian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field
 from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
 
+
+# Lagrangian dot lagrangian
 
 def test_2_easy_vector_fields(get_figures=False):
 
@@ -113,9 +116,6 @@ def test_2_less_easy_vector_fields(get_figures=False):
     plt.show()
 
 
-'''
-
-
 def test_easy_composition_with_identity(get_figures=False):
 
     dec = 6
@@ -135,8 +135,8 @@ def test_easy_composition_with_identity(get_figures=False):
         for y in range(10):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
 
-    f_o_id = eulerian_dot_eulerian(svf_f, svf_id)
-    id_o_f = eulerian_dot_eulerian(svf_id, svf_f)
+    f_o_id = lagrangian_dot_lagrangian(svf_f, svf_id)
+    id_o_f = lagrangian_dot_lagrangian(svf_id, svf_f)
 
     # sfv_0 is provided in Lagrangian coordinates!
     if get_figures:
@@ -185,8 +185,8 @@ def test_less_easy_composition_with_identity(get_figures=False):
         for y in range(20):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
 
-    f_o_id = eulerian_dot_eulerian(svf_f, svf_id)
-    id_o_f = eulerian_dot_eulerian(svf_id, svf_f)
+    f_o_id = lagrangian_dot_lagrangian(svf_f, svf_id)
+    id_o_f = lagrangian_dot_lagrangian(svf_id, svf_f)
 
     # test if the compositions are still in lagrangian coordinates, as attributes and as shape
     assert_array_almost_equal(f_o_id[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
@@ -217,6 +217,7 @@ def test_less_easy_composition_with_identity(get_figures=False):
     plt.show()
 
 
+
 def test_2_random_vector_fields_svf(get_figures=False):
     """
     Of course the composition is not the identity since we are working in the tangent space.
@@ -229,8 +230,8 @@ def test_2_random_vector_fields_svf(get_figures=False):
     svf_f     = vf_identity_lagrangian(omega=omega)
     svf_f_inv = np.copy(-1 * svf_f)  # this does not provides the inverse!
 
-    f_o_f_inv = eulerian_dot_eulerian(svf_f, svf_f_inv)
-    f_inv_o_f = eulerian_dot_eulerian(svf_f_inv, svf_f)
+    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv)
+    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f)
     svf_id = vf_identity_lagrangian(omega=omega)
 
     # # results of a composition of 2 lagrangian must be a lagrangian zero field
@@ -273,8 +274,8 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
     sdisp_0 = lie_exponential(svf_0, algorithm='ss')
     sdisp_0_inv = lie_exponential(-1 * svf_0, algorithm='ss')
 
-    f_o_f_inv = eulerian_dot_eulerian(sdisp_0, sdisp_0_inv)
-    f_inv_o_f = eulerian_dot_eulerian(sdisp_0_inv, sdisp_0)
+    f_o_f_inv = lagrangian_dot_lagrangian(sdisp_0, sdisp_0_inv)
+    f_inv_o_f = lagrangian_dot_lagrangian(sdisp_0_inv, sdisp_0)
 
     # results of a composition of 2 lagrangian must be a lagrangian zero field
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
@@ -298,7 +299,9 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
         see_field(f_inv_o_f, fig_tag=63, input_color='g', title_input='composition (f^(-1) o f) in green')
 
     plt.show()
-'''
+
+test_2_random_vector_fields_as_deformations(get_figures=True)
+
 #
 # def test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True):
 #

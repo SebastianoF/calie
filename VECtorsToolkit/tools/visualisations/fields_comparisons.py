@@ -258,7 +258,8 @@ def see_n_fields_special(list_of_list_vf,
                          fig_tag=1, scale=1,
                          subtract_id=None,
                          colors_input=None,
-                         labels_input=None, legend_on=False):
+                         labels_input=None,
+                         legend_on=False):
     """
 
     :param list_of_list_vf:
@@ -356,9 +357,9 @@ def see_n_fields_special(list_of_list_vf,
                     raise TypeError('Anatomical_plane must be axial, sagittal or coronal')
 
                 if legend_on:
-                    qk = ax.quiverkey(q, 2, 2, 3, 'asdf', coordinates='data', labelcolor='k',
+                    qk = ax.quiverkey(q, 2, 2, 3, labels_input[num_list_of_obj], coordinates='data', labelcolor='k',
                                       fontproperties={'weight': 'bold', 'size': 8})
-                    #qk.text.set_backgroundcolor('w')
+                    # qk.text.set_backgroundcolor('w')
 
             ax.set_title(titles_input[num_list_of_obj])
 

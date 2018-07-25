@@ -7,12 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-from transformations.s_vf import SVF
-from transformations.s_disp import SDISP
-
-from transformations.se2_a import se2_g
-
-from visualizer.fields_comparisons import see_n_fields_special
+from VECtorsToolkit.tools.transformations.se2_g import se2_g, se2_g_log
+from VECtorsToolkit.tools.visualisations.fields_comparisons import see_n_fields_special
+from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
+from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
+from VECtorsToolkit.tools.fields.queries import vf_norm
 
 
 def test_visual_assessment_method_one_se2(show=False):
@@ -31,95 +30,86 @@ def test_visual_assessment_method_one_se2(show=False):
     # controller #
     ##############
 
-    domain = (14, 14)
+    domain = (20, 20)
 
-    x_c = 7
-    y_c = 7
-    theta = np.pi / 4
+    x_c = 10
+    y_c = 10
+    theta = np.pi / 8
 
     tx   = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
     ty   = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c
 
-    passepartout = 2
+    passepartout = 5
     spline_interpolation_order = 3
 
     res_time = np.zeros(4)
 
-    #########
-    # model #
-    #########
+    # -----
+    # model
+    # -----
 
-    m_0 = se2_g.se2_g(theta, tx, ty)
-    dm_0 = se2_g.log(m_0)
+    m_0 = se2_g(theta, tx, ty)
+    dm_0 = se2_g_log(m_0)
 
-    ### generate subsequent vector fields
+    # -- generate subsequent vector fields
 
-    svf_0   = SVF.generate_from_matrix(domain, dm_0.get_matrix, affine=np.eye(4))
-    sdisp_0 = SDISP.generate_from_matrix(domain, m_0.get_matrix - np.eye(3), affine=np.eye(4))
+    svf_0   = generate_from_matrix(domain, dm_0.get_matrix, structure='algebra')
+    sdisp_0 = generate_from_matrix(domain, m_0.get_matrix - np.eye(3), structure='group')
 
-    print type(svf_0)
-    print type(sdisp_0)
-
-    ### compute exponential with different available methods:
+    # -- compute exponential with different available methods:
 
     start = time.time()
-    sdisp_ss      = svf_0.exponential(algorithm='ss',        s_i_o=spline_interpolation_order)
+    sdisp_ss      = lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
     res_time[0] = (time.time() - start)
 
     start = time.time()
-    sdisp_ss_pa   = svf_0.exponential(algorithm='gss_ei',     s_i_o=spline_interpolation_order)
+    sdisp_gss_ei   = lie_exponential(svf_0, algorithm='gss_ei', s_i_o=spline_interpolation_order)
     res_time[1] = (time.time() - start)
 
     start = time.time()
-    sdisp_ss_pa_m = svf_0.exponential(algorithm='gss_aei',     s_i_o=spline_interpolation_order)
+    sdisp_gss_aei = lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
     res_time[2] = (time.time() - start)
 
-    ########
-    # view #
-    ########
+    # ----
+    # view
+    # ----
 
-    print '--------------------'
-    print "Norm of the svf:"
-    print svf_0.norm(passe_partout_size=4)
+    print('--------------------')
+    print("Norm of the svf:")
+    print(vf_norm(svf_0, passe_partout_size=4))
 
-    print '--------------------'
-    print "Norm of the displacement field:"
-    print sdisp_0.norm(passe_partout_size=4)
+    print('--------------------')
+    print("Norm of the displacement field:")
+    print(vf_norm(sdisp_0, passe_partout_size=4))
 
-    print '--------------------'
-    print "Norm of the errors:"
-    print '--------------------'
+    print('--------------------')
+    print("Norm of the errors:")
+    print('--------------------')
 
-    norm_ss     = (sdisp_ss - sdisp_0).norm(passe_partout_size=passepartout)
-    norm_ss_ei  = (sdisp_ss_pa - sdisp_0).norm(passe_partout_size=passepartout)
-    norm_ss_aei = (sdisp_ss_pa_m - sdisp_0).norm(passe_partout_size=passepartout)
+    err_ss     = vf_norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)
+    err_ss_ei  = vf_norm(sdisp_gss_ei - sdisp_0, passe_partout_size=passepartout)
+    err_ss_aei = vf_norm(sdisp_gss_aei - sdisp_0, passe_partout_size=passepartout)
 
-    print '|ss - disp|        = ' + str(norm_ss)
-    print '|ss_pa - disp|     = ' + str(norm_ss_ei)
-    print '|ss_pa_m - disp|   = ' + str(norm_ss_aei)
+    print('|ss - disp|        = ' + str(err_ss))
+    print('|ss_ei - disp|     = ' + str(err_ss_ei))
+    print('|ss_aei - disp|   = ' + str(err_ss_aei))
 
-    print
+    print('--------------------')
+    print("Computational Times: ")
+    print('--------------------')
 
-    assert norm_ss < 0.05
-    assert norm_ss_ei < 0.05
-    assert norm_ss_aei < 0.05
+    print(' ss        = ' + str(res_time[0]))
+    print(' ss_pa     = ' + str(res_time[1]))
+    print(' ss_pa_m   = ' + str(res_time[2]))
 
-    print '--------------------'
-    print "Computational Times: "
-    print '--------------------'
-
-    print ' ss        = ' + str(res_time[0])
-    print ' ss_pa     = ' + str(res_time[1])
-    print ' ss_pa_m   = ' + str(res_time[2])
-
-    fields_list = [svf_0, sdisp_0, sdisp_ss,   sdisp_ss_pa,   sdisp_ss_pa_m]
+    fields_list = [svf_0, sdisp_0, sdisp_ss,   sdisp_gss_ei,   sdisp_gss_aei]
 
     if 1:
         title_input_l = ['Sfv Input',
                          'Ground Output',
                          'Scaling and Squaring',
-                         'Poly Scal. and Sq.',
-                         'Poly Scal. and Sq. mod']
+                         'gss ei',
+                         'gss aei']
 
         list_fields_of_field = [[svf_0], [sdisp_0]]
         list_colors = ['r', 'b']
@@ -130,13 +120,19 @@ def test_visual_assessment_method_one_se2(show=False):
         see_n_fields_special(list_fields_of_field, fig_tag=50,
                              row_fig=2,
                              col_fig=3,
-                             input_figsize=(10, 7),
+                             input_figsize=(14, 7),
                              colors_input=list_colors,
                              titles_input=title_input_l,
                              sample=(1, 1),
-                             zoom_input=[0, 14, 0, 14],
+                             zoom_input=[0, 20, 0, 20],
                              window_title_input='matrix, random generated',
                              legend_on=False)
 
     if show:
         plt.show()
+
+    assert err_ss < 0.05
+    assert err_ss_ei < 0.05
+    assert err_ss_aei < 0.05
+
+test_visual_assessment_method_one_se2(True)
