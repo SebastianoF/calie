@@ -7,12 +7,11 @@ from scipy import integrate
 
 
 from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field, get_omega_from_vf
-from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, one_point_interpolation, \
-    lagrangian_dot_lagrangian, lagrangian_dot_eulerian
+from VECtorsToolkit.tools.fields.composition import one_point_interpolation, \
+    lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, iterative_jacobian_product, \
     jacobian_product
 from VECtorsToolkit.tools.auxiliary.matrices import matrix_vector_field_product
-from VECtorsToolkit.tools.fields.coordinates import vf_lagrangian_to_eulerian
 
 
 def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix_dims=None):

@@ -100,6 +100,9 @@ def test_visual_assessment_method_one_se2(show=False):
         err = vf_norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
         print('|{0:>12} - disp|  = {1}'.format(methods_list[num_met], err))
 
+        # only teset of the method. More test are visual.
+        assert err < 0.5
+
     print('--------------------')
     print("Computational Times: ")
     print('--------------------')
@@ -126,5 +129,3 @@ def test_visual_assessment_method_one_se2(show=False):
 
     if show:
         plt.show()
-
-test_visual_assessment_method_one_se2(True)

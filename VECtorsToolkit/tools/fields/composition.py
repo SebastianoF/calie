@@ -104,7 +104,7 @@ def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                                 mode=mode,
                                 cval=cval,
                                 prefilter=prefilter)
-    if add_right:
+    if add_right:  # option for the scaling and squaring.
         return result.reshape(vf_left_lag.shape) + vf_eulerian_to_lagrangian(vf_right_eul)
     else:
         return result.reshape(vf_left_lag.shape)
