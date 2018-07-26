@@ -1,7 +1,7 @@
 import copy
 
 import matplotlib.pyplot as plt
-from VECtorsToolkit.auxiliary.generators_vector_fields import generate_identity_lagrangian
+from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field
@@ -138,7 +138,7 @@ def see_one_slice(input_vf,
     if not d == 2:
             raise TypeError('See field 2d works only for 2d to 2d fields.')
 
-    id_field = generate_identity_lagrangian(list(input_vf.shape[:d]))
+    id_field = vf_identity_lagrangian(list(input_vf.shape[:d]))
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)

@@ -50,6 +50,30 @@ def compute_jacobian(input_vf, affine=np.eye(4), is_lagrangian=False):
     return jacobian
 
 
+def compute_jacobian_determinant(input_vf, is_lagrangian=False):
+    """
+    :param input_vf: The Field or children whose jacobian we need to compute.
+    :param is_lagrangian: add the identity to the jacobian matrix before the computation of the
+    jacobian determinant.
+    If it is none, it is allocated.
+    Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
+    !! It works only for 1 time point - provisional !!
+    """
+    d = check_is_vector_field(input_vf)
+
+    vf_jacobian = compute_jacobian(input_vf, is_lagrangian=is_lagrangian)
+
+    sh = list(input_vf.shape)
+    while len(sh) < 5:
+        sh.extend([1])
+    sh = sh[:-1]
+
+    sh.extend([d, d])
+
+    v = vf_jacobian.reshape(sh)
+    return np.linalg.det(v)
+
+
 def jacobian_product(vf_left, vf_right):
     """
     Compute the jacobian product between two 2d or 3d SVF self and right: J_{self}(right)
@@ -93,27 +117,3 @@ def lie_bracket(vf_left, vf_right):
     """
 
     return jacobian_product(vf_left, vf_right) - jacobian_product(vf_right, vf_left)
-
-
-def compute_jacobian_determinant(input_vf, is_lagrangian=False):
-    """
-    :param input_vf: The Field or children whose jacobian we need to compute.
-    :param is_lagrangian: add the identity to the jacobian matrix before the computation of the
-    jacobian determinant.
-    If it is none, it is allocated.
-    Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
-    !! It works only for 1 time point - provisional !!
-    """
-    d = check_is_vector_field(input_vf)
-
-    vf_jacobian = compute_jacobian(input_vf, is_lagrangian=is_lagrangian)
-
-    sh = list(input_vf.shape)
-    while len(sh) < 5:
-        sh.extend([1])
-    sh = sh[:-1]
-
-    sh.extend([d, d])
-
-    v = vf_jacobian.reshape(sh)
-    return np.linalg.det(v)

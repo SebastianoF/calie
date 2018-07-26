@@ -217,7 +217,6 @@ def test_less_easy_composition_with_identity(get_figures=False):
     plt.show()
 
 
-
 def test_2_random_vector_fields_svf(get_figures=False):
     """
     Of course the composition is not the identity since we are working in the tangent space.
@@ -300,7 +299,6 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
 
     plt.show()
 
-test_2_random_vector_fields_as_deformations(get_figures=True)
 
 #
 # def test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True):

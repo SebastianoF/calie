@@ -64,6 +64,21 @@ target/
 z_*
 
 
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
+
+
 # Created by .ignore support plugin (hsz.mobi)
 
 # will be added back once corrected!
