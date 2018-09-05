@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field, see_2_fields
-from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
+from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
 
 
 

@@ -10,7 +10,7 @@ import time
 from VECtorsToolkit.tools.transformations.se2_g import se2_g, se2_g_log
 from VECtorsToolkit.tools.visualisations.fields_comparisons import see_n_fields_special
 from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
-from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
+from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
 from VECtorsToolkit.tools.fields.queries import vf_norm
 
 

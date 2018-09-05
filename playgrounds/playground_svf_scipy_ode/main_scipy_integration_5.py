@@ -11,7 +11,7 @@ from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
 from VECtorsToolkit.tools.fields.composition import one_point_interpolation
 from VECtorsToolkit.tools.visualisations.fields_comparisons import see_2_fields_separate_and_overlay
-from VECtorsToolkit.tools.local_operations.exponential import lie_exponential
+from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
 
 # Auxiliary vector fields function
 
