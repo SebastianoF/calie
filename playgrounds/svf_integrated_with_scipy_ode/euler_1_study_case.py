@@ -1,5 +1,6 @@
 """
-Investigation of Euler method for integrating ODE: error vs number of steps
+Investigation of Euler method for integrating ODE: error vs number of steps.
+It shows that for unstable cases, increasing the number of steps does not always improve the approximation.
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -51,7 +52,7 @@ def euler_met_1(f, xa, xb, ya, n, verbose=False, y_ground=None, return_all=True)
             ans[0, 4] = np.abs(w - y_ground(x))
 
         if verbose:
-            print ans[0, :]
+            print(ans[0, :])
 
     for i in range(1, n+1):
         w += h * f(x, w)
@@ -66,7 +67,7 @@ def euler_met_1(f, xa, xb, ya, n, verbose=False, y_ground=None, return_all=True)
                 ans[i, 4] = np.abs(w - y_ground(x))
 
             if verbose:
-                print ans[i, :]
+                print(ans[i, :])
 
     if return_all:
         return ans
@@ -101,7 +102,7 @@ if __name__ == "__main__":
         return 1.0
 
     # ## Cauchy problem 1 ###
-    if 0:
+    if 1:
 
         x0 = 0
         x1 = 5
@@ -186,7 +187,7 @@ if __name__ == "__main__":
         ax2[1].set_ylabel(r'Error')
 
     # ## Cauchy problem 3 ###
-    if 0:
+    if 1:
 
         x0 = 0
         x1 = 1

@@ -1,5 +1,6 @@
 """
-Integral curve starting from 5 different points, dropped into a random generated vector field.
+Integral curve starting from 5 different initial points.
+Initial points are dropped in into a random generated vector field and the integral curves are computed with scipy.
 """
 
 import numpy as np

@@ -77,11 +77,16 @@ z_*
 *.cb
 *.cb2
 .*.lb
+*.jpg
+*.png
+
 
 
 # Created by .ignore support plugin (hsz.mobi)
 
 # will be added back once corrected!
 examples/
-playgrounds/
+playgrounds/helmotz.py
 experiments/
+
+.pytest_cache

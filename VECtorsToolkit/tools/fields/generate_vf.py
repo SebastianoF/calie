@@ -54,9 +54,10 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
     v_shape = vf_shape_from_omega_and_timepoints(omega, t)
 
     if structure == 'algebra':
-        # Need to subtract the id somewhere...!
+
         pass
     elif structure == 'group':
+        input_matrix = input_matrix - np.eye(d + 1)
         pass
     else:
         raise IOError

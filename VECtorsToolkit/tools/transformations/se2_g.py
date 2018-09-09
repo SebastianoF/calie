@@ -108,7 +108,7 @@ def randomgen_custom(interval_theta=(),
 
 
 def randomgen_custom_center(interval_theta=(-np.pi/2, np.pi/2),
-                            omega=(1, 6, 1, 6),
+                            omega=(1, 6),
                             avoid_zero_rotation=True,
                             epsilon_zero_avoidance=0.001):
     """
@@ -132,7 +132,7 @@ def randomgen_custom_center(interval_theta=(-np.pi/2, np.pi/2),
             theta = choice([uniform(interval_theta[0], 0 - epsilon), uniform(0 + epsilon, interval_theta[1])])
 
     x_c  = uniform(omega[0], omega[1])
-    y_c  = uniform(omega[2], omega[3])
+    y_c  = uniform(omega[0], omega[1])
 
     tx   = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
     ty   = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c

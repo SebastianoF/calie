@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
+
 
 def interpn(*args, **kw):
     """Interpolation on N-D.
@@ -21,7 +23,6 @@ def interpn(*args, **kw):
         a = interp1d(q[j], a, axis=j, kind=method)(qi[j])
     return a
 
-import matplotlib.pyplot as plt
 
 x = np.linspace(0, 1, 6)
 y = np.linspace(0, 1, 7)
