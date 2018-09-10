@@ -6,7 +6,7 @@ from nose.tools import assert_equals, assert_raises, assert_almost_equals
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 
 
-from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, initialise_jacobian
+from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
 from sympy.core.cache import clear_cache
 
@@ -91,228 +91,198 @@ def test_jacobian_toy_field_3():
                               jac_f_numeric[pp:-pp, pp:-pp, 0, 0, :])
 
 
-test_jacobian_toy_field_1()
-test_jacobian_toy_field_2()
-test_jacobian_toy_field_3()
-
-#
-# ### "Jacobian product" u*v = Jv.u for SVF tests ###
-#
-#
-# def test_jacobian_product_toy_example_2d_1():
-#
-#     def field_vector_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return x[0]**2 + 2*x[0] + x[1], 3 * x[0] + 2 * x[1]
-#
-#     def field_vector_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return x[1] - x[0], 2 * x[0]
-#
-#     def ground_jac_product_u_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return - x[0]**2 + x[0] + x[1], 2 * x[0]**2 + 4 * x[0] + 2 * x[1]
-#
-#     def ground_jac_product_v_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[0]*x[1] - 2*x[0]**2 + 2*x[1], 3 * x[1] + x[0]
-#
-#     # init:
-#     u   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#     v   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#
-#     ground_u_v = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#     ground_v_u = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#
-#     # construction:
-#     for i in range(0, 20):
-#         for j in range(0, 20):
-#             u.field[i, j, 0, 0, :]   = field_vector_u(1, [i, j])
-#             v.field[i, j, 0, 0, :]   = field_vector_v(1, [i, j])
-#             ground_u_v.field[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
-#             ground_v_u.field[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
-#
-#     jac_prod_u_v = SVF.jacobian_product(u, v)
-#     jac_prod_v_u = SVF.jacobian_product(v, u)
-#
-#     assert isinstance(jac_prod_u_v, SVF)
-#     pp = 1
-#     assert_array_almost_equal(jac_prod_u_v.field[pp:-pp, pp:-pp, 0, 0, :], ground_u_v.field[pp:-pp, pp:-pp, 0, 0, :])
-#     assert_array_almost_equal(jac_prod_v_u.field[pp:-pp, pp:-pp, 0, 0, :], ground_v_u.field[pp:-pp, pp:-pp, 0, 0, :])
-#
-#
-# def test_jacobian_product_toy_example_2d_2():
-#
-#     def field_vector_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return x[0]*x[1] + 2*x[0], x[1]
-#
-#     def field_vector_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[0]*x[1] + 1, x[0]**2
-#
-#     def ground_jac_product_u_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[0]*x[1]**2 + 6*x[0]*x[1], 2 * (x[0]**2)*x[1] + 4*x[0]**2
-#
-#     def ground_jac_product_v_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[0]*(x[1]**2) + x[1] + 4*x[0]*x[1] + 2 + x[0]**3, x[0]**2
-#
-#     # init:
-#     u   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#     v   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#
-#     ground_u_v = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#     ground_v_u = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-#
-#     # construction:
-#     for i in range(0, 20):
-#         for j in range(0, 20):
-#             u.field[i, j, 0, 0, :]   = field_vector_u(1, [i, j])
-#             v.field[i, j, 0, 0, :]   = field_vector_v(1, [i, j])
-#             ground_u_v.field[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
-#             ground_v_u.field[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
-#
-#     jac_prod_u_v = SVF.jacobian_product(u, v)
-#     jac_prod_v_u = SVF.jacobian_product(v, u)
-#
-#     assert isinstance(jac_prod_u_v, SVF)
-#     pp = 1
-#     assert_array_almost_equal(jac_prod_u_v.field[pp:-pp, pp:-pp, 0, 0, :], ground_u_v.field[pp:-pp, pp:-pp, 0, 0, :])
-#     assert_array_almost_equal(jac_prod_v_u.field[pp:-pp, pp:-pp, 0, 0, :], ground_v_u.field[pp:-pp, pp:-pp, 0, 0, :])
-#
-#
-# def test_jacobian_product_toy_example_3d():
-#
-#     def field_vector_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return x[0]*x[2], x[1], 2*x[0] + x[2]
-#
-#     def field_vector_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[1], x[0]*x[2], 3*x[2]
-#
-#     def ground_jac_product_u_v(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[1], x[0]*x[2]**2 +2*x[0]**2 + x[0]*x[2], 6*x[0] + 3*x[2]
-#
-#     def ground_jac_product_v_u(t, x):
-#         t = float(t); x = [float(y) for y in x]
-#         return 2*x[1]*x[2] + 3*x[0]*x[2], x[0]*x[2], 4*x[1] + 3*x[2]
-#
-#     # init:
-#     u   = SVF.from_array(np.zeros([20, 20, 20, 1, 3]))
-#     v   = SVF.from_array(np.zeros([20, 20, 20, 1, 3]))
-#
-#     ground_u_v = SVF.from_array(np.zeros([20, 20, 20, 1, 3]))
-#     ground_v_u = SVF.from_array(np.zeros([20, 20, 20, 1, 3]))
-#
-#     for i in range(0, 20):
-#         for j in range(0, 20):
-#             for k in range(0, 20):
-#                 u.field[i, j, k, 0, :]   = field_vector_u(1, [i, j, k])
-#                 v.field[i, j, k, 0, :]   = field_vector_v(1, [i, j, k])
-#                 ground_u_v.field[i, j, k, 0, :] = ground_jac_product_u_v(1, [i, j, k])
-#                 ground_v_u.field[i, j, k, 0, :] = ground_jac_product_v_u(1, [i, j, k])
-#
-#     jac_prod_u_v = SVF.jacobian_product(u, v)
-#     jac_prod_v_u = SVF.jacobian_product(v, u)
-#
-#     assert isinstance(jac_prod_u_v, SVF)
-#     pp = 1
-#     assert_array_almost_equal(jac_prod_u_v.field[pp:-pp, pp:-pp, 0, 0, :], ground_u_v.field[pp:-pp, pp:-pp, 0, 0, :])
-#     assert_array_almost_equal(jac_prod_v_u.field[pp:-pp, pp:-pp, 0, 0, :], ground_v_u.field[pp:-pp, pp:-pp, 0, 0, :])
-#
-#
-# test_jacobian_product_toy_example_2d_1()
-# test_jacobian_product_toy_example_2d_2()
-# test_jacobian_product_toy_example_3d()
-#
-#
-# ''' Test iterative jacobian product '''
-#
-#
-# def test_iterative_jacobian_product_toy_example_2d_1():
-#     pass
+# -> "Jacobian product" u*v = Jv.u for SVF tests <- #
 
 
-
-'''
-def test_iterative_jacobian_product_toy_example_2d_1():
+def test_jacobian_product_toy_example_2d_1():
 
     def field_vector_u(t, x):
-        t = float(t); x = [float(y) for y in x]
-        return x[0]**2 + 2*x[0] + x[1],   3 * x[0] + 2 * x[1]
+        t = float(t)
+        x = [float(y) for y in x]
+        return x[0]**2 + 2*x[0] + x[1], 3 * x[0] + 2 * x[1]
 
-    def ground_jac_product_u_3_times(t, x):
-        t = float(t); x = [float(y) for y in x]
+    def field_vector_v(t, x):
+        t = float(t)
+        x = [float(y) for y in x]
+        return x[1] - x[0], 2 * x[0]
+
+    def ground_jac_product_u_v(t, x):
+        t = float(t)
+        x = [float(y) for y in x]
         return - x[0]**2 + x[0] + x[1], 2 * x[0]**2 + 4 * x[0] + 2 * x[1]
 
     def ground_jac_product_v_u(t, x):
-        t = float(t); x = [float(y) for y in x]
+        t = float(t)
+        x = [float(y) for y in x]
         return 2*x[0]*x[1] - 2*x[0]**2 + 2*x[1], 3 * x[1] + x[0]
 
     # init:
-    u   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-    v   = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
+    u   = np.zeros([20, 20, 1, 1, 2])
+    v   = np.zeros([20, 20, 1, 1, 2])
 
-    ground_u_v = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
-    ground_v_u = SVF.from_array(np.zeros([20, 20, 1, 1, 2]))
+    ground_u_v = np.zeros([20, 20, 1, 1, 2])
+    ground_v_u = np.zeros([20, 20, 1, 1, 2])
 
     # construction:
     for i in range(0, 20):
         for j in range(0, 20):
-            u.field[i, j, 0, 0, :]   = field_vector_u(1, [i, j])
-            v.field[i, j, 0, 0, :]   = field_vector_v(1, [i, j])
-            ground_u_v.field[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
-            ground_v_u.field[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
+            u[i, j, 0, 0, :]   = field_vector_u(1, [i, j])
+            v[i, j, 0, 0, :]   = field_vector_v(1, [i, j])
+            ground_u_v[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
+            ground_v_u[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
 
-    jac_prod_u_v = SVF.jacobian_product(u, v)
-    jac_prod_v_u = SVF.jacobian_product(v, u)
+    jac_prod_u_v = jacobian_product(u, v)
+    jac_prod_v_u = jacobian_product(v, u)
 
-    assert isinstance(jac_prod_u_v, SVF)
     pp = 1
-    assert_array_almost_equal(jac_prod_u_v.field[pp:-pp, pp:-pp, 0, 0, :], ground_u_v.field[pp:-pp, pp:-pp, 0, 0, :])
-    assert_array_almost_equal(jac_prod_v_u.field[pp:-pp, pp:-pp, 0, 0, :], ground_v_u.field[pp:-pp, pp:-pp, 0, 0, :])
+    assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
+    assert_array_almost_equal(jac_prod_v_u[pp:-pp, pp:-pp, 0, 0, :], ground_v_u[pp:-pp, pp:-pp, 0, 0, :])
 
 
-'''
+def test_jacobian_product_toy_example_2d_2():
 
-'''
+    def field_vector_u(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return x[0]*x[1] + 2*x[0], x[1]
+
+    def field_vector_v(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[0]*x[1] + 1, x[0]**2
+
+    def ground_jac_product_u_v(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[0]*x[1]**2 + 6*x[0]*x[1], 2 * (x[0]**2)*x[1] + 4*x[0]**2
+
+    def ground_jac_product_v_u(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[0]*(x[1]**2) + x[1] + 4*x[0]*x[1] + 2 + x[0]**3, x[0]**2
+
+    # -> Init:
+    u   = np.zeros([20, 20, 1, 1, 2])
+    v   = np.zeros([20, 20, 1, 1, 2])
+
+    ground_u_v = np.zeros([20, 20, 1, 1, 2])
+    ground_v_u = np.zeros([20, 20, 1, 1, 2])
+
+    # -> Construction:
+    for i in range(0, 20):
+        for j in range(0, 20):
+            u[i, j, 0, 0, :]   = field_vector_u(1, [i, j])
+            v[i, j, 0, 0, :]   = field_vector_v(1, [i, j])
+            ground_u_v[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
+            ground_v_u[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
+
+    jac_prod_u_v = jacobian_product(u, v)
+    jac_prod_v_u = jacobian_product(v, u)
+
+    pp = 1
+    assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
+    assert_array_almost_equal(jac_prod_v_u[pp:-pp, pp:-pp, 0, 0, :], ground_v_u[pp:-pp, pp:-pp, 0, 0, :])
 
 
-def test_jacobian_toy_field_3(open_fig=open_f):
-    clear_cache()
+def test_jacobian_product_toy_example_3d():
 
+    def field_vector_u(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return x[0]*x[2], x[1], 2*x[0] + x[2]
 
+    def field_vector_v(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[1], x[0]*x[2], 3*x[2]
 
-    svf_f        = svf.generate_id_svf()
-    jac_f_ground = image.Image.initialise_jacobian_from_image(svf_f)
+    def ground_jac_product_u_v(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[1], x[0]*x[2]**2 +2*x[0]**2 + x[0]*x[2], 6*x[0] + 3*x[2]
 
-    assert svf_f.__class__.__name__ == 'SVF'
-    assert jac_f_ground.__class__.__name__ == 'Image'
+    def ground_jac_product_v_u(t, x):
+        t = float(t);
+        x = [float(y) for y in x]
+        return 2*x[1]*x[2] + 3*x[0]*x[2], x[0]*x[2], 4*x[1] + 3*x[2]
+
+    # init:
+    u   = np.zeros([20, 20, 20, 1, 3])
+    v   = np.zeros([20, 20, 20, 1, 3])
+
+    ground_u_v = np.zeros([20, 20, 20, 1, 3])
+    ground_v_u = np.zeros([20, 20, 20, 1, 3])
 
     for i in range(0, 20):
         for j in range(0, 20):
-            svf_f.field[i, j, 0, 0, :] = field_f(1, [i, j])
-            jac_f_ground.field[i, j, 0, 0, :] = jacobian_f(1, [i, j])
+            for k in range(0, 20):
+                u[i, j, k, 0, :]   = field_vector_u(1, [i, j, k])
+                v[i, j, k, 0, :]   = field_vector_v(1, [i, j, k])
+                ground_u_v[i, j, k, 0, :] = ground_jac_product_u_v(1, [i, j, k])
+                ground_v_u[i, j, k, 0, :] = ground_jac_product_v_u(1, [i, j, k])
 
-    jac_f_numeric = svf_f.compute_jacobian()
+    jac_prod_u_v = jacobian_product(u, v)
+    jac_prod_v_u = jacobian_product(v, u)
 
-    if open_fig:
-        see_2_fields(jac_f_ground.field[..., 0:2], jac_f_numeric.field[..., 0:2],
-                     title_input_0='ground truth 3', title_input_1='numeric approximation 3')
+    pp = 1
+    assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
+    assert_array_almost_equal(jac_prod_v_u[pp:-pp, pp:-pp, 0, 0, :], ground_v_u[pp:-pp, pp:-pp, 0, 0, :])
 
-        plt.ion()
-        plt.show()
-        time.sleep(seconds_fig)
-        plt.close()
-        plt.ioff()
 
-    square_size = range(1, 19)  # the behaviour on the boundary is tested later.
-    assert_array_almost_equal(jac_f_ground.field[square_size, square_size, 0, 0, :],
-                              jac_f_numeric.field[square_size,square_size, 0, 0, :])
+''' Test iterative jacobian product '''
+
+
+def test_jacobian_toy_field_3_2(open_fig=False):
+    clear_cache()
+
+    # TODO
+
+    # svf_f        = svf.generate_id_svf()
+    # jac_f_ground = image.Image.initialise_jacobian_from_image(svf_f)
+    #
+    # assert svf_f.__class__.__name__ == 'SVF'
+    # assert jac_f_ground.__class__.__name__ == 'Image'
+    #
+    # for i in range(0, 20):
+    #     for j in range(0, 20):
+    #         svf_f.field[i, j, 0, 0, :] = field_f(1, [i, j])
+    #         jac_f_ground.field[i, j, 0, 0, :] = jacobian_f(1, [i, j])
+    #
+    # jac_f_numeric = svf_f.compute_jacobian()
+    #
+    # if open_fig:
+    #     see_2_fields(jac_f_ground.field[..., 0:2], jac_f_numeric.field[..., 0:2],
+    #                  title_input_0='ground truth 3', title_input_1='numeric approximation 3')
+    #
+    #     plt.ion()
+    #     plt.show()
+    #     time.sleep(5)
+    #     plt.close()
+    #     plt.ioff()
+    #
+    # square_size = range(1, 19)  # the behaviour on the boundary is tested later.
+    # assert_array_almost_equal(jac_f_ground[square_size, square_size, 0, 0, :],
+    #                           jac_f_numeric[square_size, square_size, 0, 0, :])
+
+if __name__ == '__main__':
+    test_jacobian_toy_field_1()
+    test_jacobian_toy_field_2()
+    test_jacobian_toy_field_3()
+
+    test_jacobian_product_toy_example_2d_1()
+    test_jacobian_product_toy_example_2d_2()
+    test_jacobian_product_toy_example_3d()
+
+    test_jacobian_toy_field_3()
+
+
+
+
+
+'''
+
+
+
 
 
 def test_jacobian_toy_field_4(open_fig=open_f):

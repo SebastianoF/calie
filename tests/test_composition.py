@@ -178,8 +178,9 @@ def test_less_easy_composition_with_identity(get_figures=False):
     svf_id    = vf_identity_lagrangian(omega=omega)
 
     def function_f(t, x):
-        t = float(t); x = [float(y) for y in x]
-        return np.array([np.sin(0.01*x[1]), (3*np.cos(x[0]) )/ (x[0] + 2)])
+        t = float(t)
+        x = [float(y) for y in x]
+        return np.array([np.sin(0.01*x[1]), (3*np.cos(x[0])) / (x[0] + 2)])
 
     for x in range(20):
         for y in range(20):
@@ -219,7 +220,7 @@ def test_less_easy_composition_with_identity(get_figures=False):
 
 def test_2_random_vector_fields_svf(get_figures=False):
     """
-    Of course the composition is not the identity since we are working in the tangent space.
+    The composition is not the identity since we are working in the tangent space.
     """
     dec = 3
     passe_partout = 5
@@ -300,7 +301,15 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
     plt.show()
 
 
-#
+if __name__ == '__main__':
+    test_2_easy_vector_fields(True)
+    test_2_less_easy_vector_fields(True)
+    test_easy_composition_with_identity(True)
+    test_less_easy_composition_with_identity(True)
+    test_2_random_vector_fields_svf(True)
+    test_2_random_vector_fields_as_deformations(True)
+
+
 # def test_less_easy_composition_of_two_closed_form_vector_fields_2d_1(get_figures=True):
 #
 #     alpha = 0.1

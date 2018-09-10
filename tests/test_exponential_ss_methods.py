@@ -67,7 +67,7 @@ def test_visual_assessment_method_one_se2(show=False):
     # -- generate subsequent vector fields
 
     svf_0   = generate_from_matrix(domain, dm_0.get_matrix, structure='algebra')
-    sdisp_0 = generate_from_matrix(domain, m_0.get_matrix - np.eye(3), structure='group')
+    sdisp_0 = generate_from_matrix(domain, m_0.get_matrix, structure='group')
 
     # -- compute exponential with different available methods:
 
@@ -75,7 +75,6 @@ def test_visual_assessment_method_one_se2(show=False):
     res_time = np.zeros(len(methods_list))
 
     for num_met, met in enumerate(methods_list):
-
         start = time.time()
         sdisp_list.append(lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order, input_num_steps=10))
         res_time[num_met] = (time.time() - start)
@@ -85,7 +84,7 @@ def test_visual_assessment_method_one_se2(show=False):
     # ----
 
     print('--------------------')
-    print("Norm of the svf:")
+    print('Norm of the svf: ')
     print(vf_norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
@@ -93,7 +92,7 @@ def test_visual_assessment_method_one_se2(show=False):
     print(vf_norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
-    print("Norm of the errors:")
+    print('Norm of the errors: ')
     print('--------------------')
 
     for num_met in range(len(methods_list)):
@@ -103,11 +102,11 @@ def test_visual_assessment_method_one_se2(show=False):
         # only teset of the method. More test are visual.
         assert err < 0.5
 
-    print('--------------------')
-    print("Computational Times: ")
-    print('--------------------')
+    print('---------------------')
+    print('Computational Times: ')
+    print('---------------------')
 
-    if 1:
+    if show:
         title_input_l = ['Sfv Input', 'Ground Output'] + methods_list
         fields_list = [svf_0, sdisp_0] + sdisp_list
 
@@ -127,5 +126,7 @@ def test_visual_assessment_method_one_se2(show=False):
                              zoom_input=[0, 20, 0, 20],
                              window_title_input='matrix generated svf')
 
-    if show:
         plt.show()
+
+if __name__ == '__main__':
+    test_visual_assessment_method_one_se2(True)

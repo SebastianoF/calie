@@ -969,7 +969,6 @@ def test_se2_g_randomgen_fro_restricted_interval():
     assert a <= given_output.norm('fro') <= b
 
 
-#verify this also for each kind of norm in the random generator!
 ''' test is_a_matrix_in_se2_g '''
 
 

@@ -14,21 +14,9 @@ from VECtorsToolkit.tools.fields.queries import vf_norm
 from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
 
 
-def visual_assessment_method_one_se2(show=True):
-    """
-    :param show: to add the visualisation of a figure.
+if __name__ == '__main__':
 
-    This test is for visual assessment. Please put show to True.
-
-    Aimed to test the prototyping of the computation of the exponential map
-    with some methods.
-
-    (Nothing is saved in external folder.)
-    """
-
-    ##############
-    # controller #
-    ##############
+    # -> controller <- #
 
     domain = (21, 21)
 
@@ -44,9 +32,7 @@ def visual_assessment_method_one_se2(show=True):
 
     res_time = np.zeros(4)
 
-    #########
-    # model #
-    #########
+    # -> model <- #
 
     m_0 = se2_g.se2_g(theta, tx, ty)
     dm_0 = se2_g.se2_g_log(m_0)
@@ -74,9 +60,7 @@ def visual_assessment_method_one_se2(show=True):
     sdisp_ss_pa_m = lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
     res_time[2] = (time.time() - start)
 
-    ########
-    # view #
-    ########
+    # -> view <- #
 
     print('--------------------')
     print("Norm of the svf:")
@@ -108,37 +92,34 @@ def visual_assessment_method_one_se2(show=True):
 
     fields_list = [svf_0, sdisp_0, sdisp_ss,   sdisp_ss_pa,   sdisp_ss_pa_m]
 
-    if 1:
-        title_input_l = ['Sfv Input',
-                         'Ground Output',
-                         'Scaling and Squaring',
-                         'Generalised Scal. and Sq. exp int',
-                         'Generalised Scal. and Sq. approx exp int']
+    title_input_l = ['Sfv Input',
+                     'Ground Output',
+                     'Scaling and Squaring',
+                     'Generalised Scal. and Sq. exp int',
+                     'Generalised Scal. and Sq. approx exp int']
 
-        list_fields_of_field = [[svf_0], [sdisp_0]]
-        list_colors = ['r', 'b']
-        for third_field in fields_list[2:]:
-            list_fields_of_field += [[svf_0, sdisp_0, third_field]]
-            list_colors += ['r', 'b', 'm']
+    list_fields_of_field = [[svf_0], [sdisp_0]]
+    list_colors = ['r', 'b']
+    for third_field in fields_list[2:]:
+        list_fields_of_field += [[svf_0, sdisp_0, third_field]]
+        list_colors += ['r', 'b', 'm']
 
-        see_n_fields_special(list_fields_of_field, fig_tag=50,
-                             row_fig=2,
-                             col_fig=3,
-                             input_figsize=(10, 7),
-                             colors_input=list_colors,
-                             titles_input=title_input_l,
-                             sample=(1, 1),
-                             zoom_input=[0 + passepartout, domain[0] - passepartout,
-                                         0 + passepartout, domain[1] - passepartout],
-                             window_title_input='matrix, random generated',
-                             legend_on=False)
+    see_n_fields_special(list_fields_of_field,
+                         fig_tag=50,
+                         row_fig=2,
+                         col_fig=3,
+                         input_figsize=(10, 7),
+                         colors_input=list_colors,
+                         titles_input=title_input_l,
+                         sample=(1, 1),
+                         zoom_input=[0 + passepartout, domain[0] - passepartout,
+                                     0 + passepartout, domain[1] - passepartout],
+                         window_title_input='matrix, random generated',
+                         legend_on=False)
 
-    if show:
-        plt.show()
+    plt.show()
 
     assert error_norm_ss < 0.09
     assert error_norm_ss_ei < 0.09
     assert error_norm_ss_aei < 0.09
 
-if __name__ == '__main__':
-    visual_assessment_method_one_se2()

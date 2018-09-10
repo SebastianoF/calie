@@ -9,7 +9,7 @@ from VECtorsToolkit.tools.fields.coordinates import vf_affine_to_homogeneous, vf
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
 
 
-def generate_id_matrix(omega):
+def generate_vf_id_matrix(omega):
     """
     From a omega of dimension dim =2,3, it returns the identity field
     that at each point of the omega has the (row mayor) vectorized identity
@@ -28,7 +28,7 @@ def generate_id_matrix(omega):
 
 def generate_random(omega, t=1, parameters=(5, 2)):
     """
-    Return a random vector field v.
+    Return a random vector field v in Lagrangian coordinates.
     :param omega: domain of the vector field
     :param t: time not yet implemented.
     :param parameters: (sigma initial randomness, sigma of the gaussian filter).
@@ -209,13 +209,8 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
 
 
 def generate_from_image(input_nib_image):
-
-    # input can be a path to a nifti, a matrix or a nibabel image.
-    # In the future a simpleITK image.
-
     if isinstance(input_nib_image, str):
-        msg = 'Input path {} does not exist.'.format(input_nib_image)
-        assert os.path.exists(input_nib_image), msg
+        if not os.path.exists(input_nib_image):
+            raise IOError('Input path {} does not exist.'.format(input_nib_image))
         input_nib_image = nib.load(input_nib_image)
-
     return input_nib_image.get_array()

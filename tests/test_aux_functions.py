@@ -434,10 +434,6 @@ def test_matrix_fields_product_iterative_diag_matrix_2d():
     assert_array_almost_equal(ground_m1_pow_n, computed_m1_pow_n)
 
 
-test_matrix_fields_product_iterative_2d()
-test_matrix_fields_product_iterative_diag_matrix_2d()
-
-
 def test_id_matrix_field_2d_and_3d():
 
     domain_2d = [13, 17]
@@ -456,4 +452,34 @@ def test_id_matrix_field_2d_and_3d():
                 assert_array_equal(id_3d[x, y, z, 0, :], flat_id_3d)
 
 
-test_id_matrix_field_2d_and_3d()
+if __name__ == '__main__':
+    test_mod_pipi_plain()
+    test_mod_pipi_on_high_extreme()
+    test_mod_pipi_on_low_extreme()
+    test_mod_pipi_for_greater_pi()
+    test_mod_pipi_for_smaller_pi()
+
+    test_pure_bern()
+    test_compare_bernoulli_poly_and_bern()
+    test_compare_bernoulli_numb_via_poly_and_bern()
+
+    test_bch_right_jacobian_all_zero()
+    test_bch_right_jacobian_zero_angle()
+    test_bch_right_jacobian_zero_translation()
+    test_bch_right_jacobian_little_rotation_zero_traslation()
+    test_bch_ground_random_input_comparing_matrices_step_1()
+
+    test_split_the_time_incorrect_input_len()
+    test_split_the_time_easy_array_1()
+    test_split_the_time_easy_array_2()
+    test_split_the_time_easy_array_3()
+
+    test_matrix_vector_field_product_2d()
+    test_matrix_vector_field_product_toy_example_3d()
+
+    test_matrix_fields_product_2d_1()
+    test_matrix_fields_product_3d()
+
+    test_matrix_fields_product_iterative_2d()
+    test_matrix_fields_product_iterative_diag_matrix_2d()
+    test_id_matrix_field_2d_and_3d()
