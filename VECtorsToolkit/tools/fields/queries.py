@@ -14,28 +14,26 @@ def check_omega(omega):
 
 
 def check_is_vf(input_obj):
-
-    is_vector_field = True
-
+    """
+    Core method to check if the input object satisfy the definition of a vector field.
+    This method allow to avoid defining a class for the vf object, and to keep the code simpler.
+    :param input_obj:
+    :return: Raise error if input does not satisfy the definition of vector field.
+    """
     # check if is a numpy.ndarray
     if not isinstance(input_obj, np.ndarray):
-        is_vector_field  = False
-
+        raise IOError('Input numpy array is not a vector field.')
     # check shape compatibility with the accepted vector fields structures
     if not len(input_obj.shape) == 5:
-        is_vector_field  = False
-
-    # check if the dimension of omega (domain) is a multiple of the dimension of the codomain
+        raise IOError('Input numpy array is not a vector field, as it is not 5-dimensional')
+    # store the image domain dimension
     if input_obj.shape[2] == 1:
         d = 2
     else:
         d = 3
-
+    # Check that the last dimension is a multiple of the dimension of omega
     if not input_obj.shape[-1] % d == 0:
-        is_vector_field  = False
-
-    if not is_vector_field:
-        raise IOError('Input numpy array is not a vector field.')
+        raise IOError('Input numpy array is not a vector field')
     else:
         return d
 
@@ -109,10 +107,13 @@ def vf_norm(input_vf, passe_partout_size=1, normalized=False):
     else:
         masked_field = input_vf
 
-    if normalized:
-        # volume of the field after masking (to compute the normalization factor):
-        mask_vol = (np.array(input_vf.shape[0:d]) - np.array([2 * passe_partout_size] * d)).clip(min=1)
-
-        return np.linalg.norm(masked_field.ravel(), ord=2) / np.sqrt(np.prod(mask_vol))
+    if d == 2:
+        num = np.sum(np.sqrt(masked_field[..., 0] ** 2 + masked_field[..., 1] ** 2))
     else:
-        return np.linalg.norm(masked_field.ravel(), ord=2)
+        num = np.sum(np.sqrt(masked_field[..., 0] ** 2 + masked_field[..., 1] ** 2 + masked_field[..., 2] ** 2))
+
+    if normalized:
+        den = np.prod(masked_field.shape[:3])
+    else:
+        den = 1
+    return num / float(den)

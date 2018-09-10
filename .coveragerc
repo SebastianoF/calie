@@ -4,10 +4,11 @@ include = */VECtorsToolkit/*,
 omit = VECtorsToolkit/tools/visualisations/*
        VECtorsToolkit/agents/*
        VECtorsToolkit/z_tests/*
+       */z_/*
 
 [report]
 include = */VECtorsToolkit/*,
 omit = VECtorsToolkit/tools/visualisations/*
        VECtorsToolkit/agents/*
-       */z_tests/*
+       */z_/*
        */__init__.py
