@@ -2,8 +2,7 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_almost_equal, assert_equal, assert_raises, assert_almost_equal
 from scipy.linalg import expm
 
-from utils.projective_algebras import ProjectiveAlgebra, ProjectiveGroup
-
+from VECtorsToolkit.tools.transformations.projective_algebras import ProjectiveAlgebra, ProjectiveGroup
 
 ### TESTS projective general linear algebra and group ###
 
@@ -19,7 +18,7 @@ def test_init_pgl_a_good_input():
     dd = 2
     m1 = ProjectiveAlgebra(d=dd, m=a)
     assert_array_equal(m1.matrix, a)
-    assert_equals(dd, m1.dim)
+    assert_equal(dd, m1.dim)
     assert_array_equal(m1.shape, [3, 3])
 
 
@@ -92,7 +91,7 @@ def test_generated_psl_a():
     m1 = ProjectiveAlgebra(d=dd, m=a, special=False)
 
     assert_array_equal(m1.matrix, a)
-    assert_equals(dd, m1.dim)
+    assert_equal(dd, m1.dim)
     assert_array_equal(m1.shape, [3, 3])
     with assert_raises(IOError):
         # assert is not in the special linear algebra
@@ -107,7 +106,7 @@ def test_generated_psl_a_1():
     m1 = ProjectiveAlgebra(d=dd, m=a, special=True)
 
     # special linear algebra element must have trace = 0.
-    assert_equals(np.trace(m1.matrix), 0)
+    assert_equal(np.trace(m1.matrix), 0)
     # special linear group element should have det = 1.
     assert_almost_equal(np.linalg.det(m1.exponentiate().matrix), 1)
 

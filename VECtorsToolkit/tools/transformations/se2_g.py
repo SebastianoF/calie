@@ -1,6 +1,7 @@
 from math import sin, cos, sqrt
 from numpy.random import uniform, choice
 import numpy as np
+from scipy.linalg import logm
 
 import se2_a
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
@@ -279,14 +280,3 @@ def se2_g_log(element):
         x1 = factor * v1 + (theta / 2.0) * v2
         x2 = factor * v2 - (theta / 2.0) * v1
     return se2_a.se2_a(theta, x1, x2)
-
-
-def log_for_matrices(m):
-    """
-    log(element) \n
-    group logarithm for matrices and not for the close form
-    :param: instance of SE2 in matrix form!
-    :return: corresponding element in Lie algebra se2
-    """
-    ans = log(se2_g(mod_pipi(np.arctan2(m[1, 0], m[0, 0])), m[0, 2], m[1, 2]))
-    return ans.get_matrix

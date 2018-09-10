@@ -7,7 +7,7 @@
   "tests/test_svf.py": true, 
   "tests/test_svf_and_sdisp_operations.py": true, 
   "tests/test_svf_projective.py": true, 
-  "tests/test_theoretical_formulae.py": true, 
+  "tests/test_transformations_se2.py::test_se2_g_log_for_matrices_pade_approx_comparison_1": true, 
   "z_tests/test_generators.py": true, 
   "z_tests/test_jacobian_determinant.py": true, 
   "z_tests/test_jacobian_of_a_field.py": true, 

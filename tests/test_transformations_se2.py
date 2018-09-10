@@ -5,8 +5,8 @@ from numpy.testing import assert_array_almost_equal, assert_array_equal,  assert
 
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
-import VECtorsToolkit.tools.transformations.se2_a as se2_a
-import VECtorsToolkit.tools.transformations.se2_g as se2_g
+from VECtorsToolkit.tools.transformations import se2_a
+from VECtorsToolkit.tools.transformations import se2_g
 
 '''
 Test for the module translation
@@ -415,8 +415,8 @@ def test_se2_a_rmul_():
     tx = 5
     ty = 7
     scalar = 0.5
-    ans_expected = [scalar*angle, scalar*tx, scalar*ty]
-    scalar_prod = scalar*se2_a.se2_a(angle, tx, ty)
+    ans_expected = [scalar * angle, scalar * tx, scalar * ty]
+    scalar_prod = scalar * se2_a.se2_a(angle, tx, ty)
     ans_provided = [scalar_prod.rotation_angle, scalar_prod.tx, scalar_prod.ty]
 
     assert_array_almost_equal(ans_provided, ans_expected)
@@ -426,7 +426,7 @@ def test_se2_a_rmul_():
 
 
 def test_se2_a_scalarpr_smaller_than_pi():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
     scalar = 0.3
@@ -439,10 +439,10 @@ def test_se2_a_scalarpr_smaller_than_pi():
 
 
 def test_se2_a_scalarpr_greater_than_pi():
-    any_angle_1 = 2*np.pi + uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = 2*np.pi + uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    scalar = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    scalar = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     # obtain quotient and its list
     elem_quot = se2_a.se2_a(any_angle_1, any_tx_1, any_ty_1)
     elem_quot_get = elem_quot.get
@@ -464,7 +464,7 @@ def test_se2_a_matrix2se2_a_insane_input_eat_em_all_false():
 
 
 def test_se2_a_matrix2se2_a_sane_input():
-    theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     m = np.array([[0, -theta, tx], [theta, 0, ty], [0, 0, 0]])
@@ -492,7 +492,7 @@ def test_se2_a_list2se2_a_good_input():
 
 
 def test_se2_a_exp_pade_approx_comparison():
-    theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     element = se2_a.se2_a(theta, tx, ty)
@@ -521,7 +521,7 @@ def test_se2_a_exp_0_angle():
 
 
 def test_se2_g_log_for_matrices_pade_approx_comparison():
-    theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     element_m = se2_a.se2_a(theta, tx, ty).get_matrix
@@ -540,14 +540,14 @@ Test for the module se2_g, Lie group of rotations and translations
 
 
 def test_init_se2_g_random_input():
-    any_angle_in_pi_pi = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_in_pi_pi = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx = uniform(-10, 10)
     any_ty = uniform(-10, 10)
     assert_array_equal(se2_g.se2_g(any_angle_in_pi_pi, any_tx, any_ty).get, [any_angle_in_pi_pi, any_tx, any_ty])
 
 
 def test_se2_g_get_matrix():
-    any_angle_in_pi_pi = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_in_pi_pi = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx = uniform(-10, 10)
     any_ty = uniform(-10, 10)
     m = se2_g.se2_g(any_angle_in_pi_pi, any_tx, any_ty).get_matrix
@@ -557,7 +557,7 @@ def test_se2_g_get_matrix():
 
 
 def test_se2_g_get_matrix_det():
-    any_angle_in_pi_pi = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_in_pi_pi = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx = uniform(-10, 10)
     any_ty = uniform(-10, 10)
     m = se2_g.se2_g(any_angle_in_pi_pi, any_tx, any_ty).get_matrix
@@ -568,10 +568,10 @@ def test_se2_g_get_matrix_det():
 
 
 def test_se2_g_mul_0_translation():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx_1 = 0
     ty_1 = 0
-    any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx_2 = 0
     ty_2 = 0
     expected_output_angle = mod_pipi(any_angle_1 + any_angle_2)
@@ -598,10 +598,10 @@ def test_se2_g_mul_0_rotation():
 
 
 def test_se2_g_mul_random_input():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
     expected_output_angle = mod_pipi(any_angle_1 + any_angle_2)
@@ -613,10 +613,10 @@ def test_se2_g_mul_random_input():
 
 
 def test_se2_g_comparing_product_restricted_form_and_matrix_form():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
     get_matrix_output = \
@@ -641,7 +641,7 @@ def test_se2_g_inv_null_element():
 
 
 def test_se2_g_inv_random_element():
-    angle = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    angle = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-10, 10)
     ty = uniform(-10, 10)
     element = se2_g.se2_g(angle, tx, ty)
@@ -651,7 +651,7 @@ def test_se2_g_inv_random_element():
 
 
 def test_se2_g_inv_in_matrix_product():
-    angle = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    angle = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-10, 10)
     ty = uniform(-10, 10)
     element = se2_g.se2_g(angle, tx, ty)
@@ -726,14 +726,14 @@ def test_se2_g_norm_fro_random_input():
 
 def test_se2_g_norm_fro_random_input_comparing_matrix_numpy_norm():
     # comparing frobenius with frobenius norm matrix (random matrix
-    angle = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    angle = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = uniform(-10, 10)
     ty = uniform(-10, 10)
     element = se2_g.se2_g(angle, tx, ty)
     output_norm = element.norm('fro')
     linalg_norm = np.linalg.norm(element.get_matrix, 'fro')
     global meaningful_decimals
-    assert round(abs(output_norm-linalg_norm), meaningful_decimals) == 0.0
+    assert round(np.abs(output_norm-linalg_norm), meaningful_decimals) == 0.0
 
 
 def test_se2_g_norm_spam_input():
@@ -1038,7 +1038,7 @@ def test_se2_g_log_pade_approx_comparison():
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     element = se2_g.se2_g(theta, tx, ty)
-    ans_log = se2_g.log(element).get_matrix
+    ans_log = se2_g.se2_g_log(element).get_matrix
     ans_pade = lin.logm(element.get_matrix)
     assert_array_almost_equal(ans_log, ans_pade)
 
@@ -1048,22 +1048,8 @@ def test_se2_g_log_0_angle():
     tx = uniform(-5, 5)
     ty = uniform(-5, 5)
     element = se2_g.se2_g(theta, tx, ty)
-    ans_log = se2_g.log(element)
+    ans_log = se2_g.se2_g_log(element)
     if ans_log.rotation_angle == 0 and ans_log.tx == tx and ans_log.ty == ty:
         assert True
     else:
         assert False
-
-
-''' test log_for_matrices '''
-
-
-def test_se2_g_log_for_matrices_pade_approx_comparison_1():
-    theta = uniform(-np.pi, np.pi)
-    tx = uniform(-5, 5)
-    ty = uniform(-5, 5)
-    element_m = se2_g.se2_g(theta, tx, ty).get_matrix
-    ans_log_m = se2_g.log_for_matrices(element_m)
-    ans_pade = np.around(lin.logm(element_m), 10).real
-    assert_array_almost_equal(ans_log_m, ans_pade)
-
