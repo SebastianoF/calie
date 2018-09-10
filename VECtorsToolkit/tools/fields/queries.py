@@ -57,18 +57,6 @@ def vf_shape_from_omega_and_timepoints(omega, t=0):
     return v_shape
 
 
-def get_omega(input_vf):
-
-    if check_is_vf(input_vf):
-
-        vf_shape = input_vf.shape
-        if vf_shape[2] == 1:
-            omega = list(vf_shape[:2])
-        else:
-            omega = list(vf_shape[:3])
-        return omega
-
-
 def vf_norm(input_vf, passe_partout_size=1, normalized=False):
     """
     Returns the L2-norm of the discretised vector field.

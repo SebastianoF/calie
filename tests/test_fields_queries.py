@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_raises, assert_equal, assert_almost_equal
 
 from VECtorsToolkit.tools.fields.queries import check_omega, check_is_vf, get_omega_from_vf, \
-    vf_shape_from_omega_and_timepoints, get_omega, vf_norm
+    vf_shape_from_omega_and_timepoints, get_omega_from_vf, vf_norm
 
 
 ''' test check_omega '''
@@ -68,6 +68,7 @@ def test_get_omega_from_vf_3d():
 def test_get_omega_from_vf_2d():
     assert_array_equal(get_omega_from_vf(np.zeros([10, 10, 1, 1, 2])), [10, 10])
 
+''' test vf_shape_from_omega_and_timepoints '''
 
 def test_vf_shape_from_omega_and_timepoints():
     assert_array_equal(vf_shape_from_omega_and_timepoints([10, 10], 3), (10, 10, 1, 3, 2))
@@ -105,6 +106,10 @@ if __name__ == '__main__':
     test_get_omega_from_vf_wrong_input()
     test_get_omega_from_vf_3d()
     test_get_omega_from_vf_2d()
+
+    test_get_omega_2d()
+    test_get_omega_3d()
+
     test_vf_shape_from_omega_and_timepoints()
 
     test_vf_norm_zeros()

@@ -64,7 +64,7 @@ target/
 z_*
 
 
-## Core latex/pdflatex auxiliary files:
+# Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
 *.log
