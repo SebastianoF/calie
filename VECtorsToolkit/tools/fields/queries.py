@@ -40,6 +40,18 @@ def check_is_vf(input_obj):
         return d
 
 
+def get_omega_from_vf(input_vf):
+
+    if check_is_vf(input_vf):
+
+        vf_shape = input_vf.shape
+        if vf_shape[2] == 1:
+            omega = list(vf_shape[:2])
+        else:
+            omega = list(vf_shape[:3])
+        return omega
+
+
 def vf_shape_from_omega_and_timepoints(omega, t=0):
 
     d = check_omega(omega)

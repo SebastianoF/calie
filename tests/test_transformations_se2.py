@@ -1,8 +1,7 @@
 import numpy as np
 from random import uniform
 import scipy.linalg as lin
-from nose.tools import assert_equal, assert_raises
-from numpy.testing import assert_array_almost_equal, assert_array_equal
+from numpy.testing import assert_array_almost_equal, assert_array_equal,  assert_equal, assert_raises
 
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 

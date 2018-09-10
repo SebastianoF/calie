@@ -1,17 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-
-from nose.tools import assert_equals, assert_raises, assert_almost_equals
-from numpy.testing import assert_array_equal, assert_array_almost_equal
-
+from sympy.core.cache import clear_cache
+from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_equal, assert_raises, \
+    assert_almost_equal
 
 from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
-from sympy.core.cache import clear_cache
 
 
-# -- Jacobian tests for the class Image 2d ###
+# -- Jacobian tests for the class Image 2d
 
 
 def test_jacobian_toy_field_1():
@@ -147,17 +145,17 @@ def test_jacobian_product_toy_example_2d_2():
         return x[0]*x[1] + 2*x[0], x[1]
 
     def field_vector_v(t, x):
-        t = float(t);
+        t = float(t)
         x = [float(y) for y in x]
         return 2*x[0]*x[1] + 1, x[0]**2
 
     def ground_jac_product_u_v(t, x):
-        t = float(t);
+        t = float(t)
         x = [float(y) for y in x]
         return 2*x[0]*x[1]**2 + 6*x[0]*x[1], 2 * (x[0]**2)*x[1] + 4*x[0]**2
 
     def ground_jac_product_v_u(t, x):
-        t = float(t);
+        t = float(t)
         x = [float(y) for y in x]
         return 2*x[0]*(x[1]**2) + x[1] + 4*x[0]*x[1] + 2 + x[0]**3, x[0]**2
 
@@ -235,11 +233,11 @@ def test_jacobian_product_toy_example_3d():
 def test_jacobian_toy_field_3_2(open_fig=False):
     clear_cache()
 
-    # TODO
+    svf_f        = np.zeros((20,20,20,1,3))
+    jac_f_ground = initialise_jacobian(svf_f)
 
-    # svf_f        = svf.generate_id_svf()
-    # jac_f_ground = image.Image.initialise_jacobian_from_image(svf_f)
-    #
+    print jac_f_ground.shape
+
     # assert svf_f.__class__.__name__ == 'SVF'
     # assert jac_f_ground.__class__.__name__ == 'Image'
     #
@@ -274,6 +272,7 @@ if __name__ == '__main__':
     test_jacobian_product_toy_example_3d()
 
     test_jacobian_toy_field_3()
+    test_jacobian_toy_field_3_2()
 
 
 

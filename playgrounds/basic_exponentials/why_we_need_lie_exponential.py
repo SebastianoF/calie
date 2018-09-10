@@ -8,14 +8,13 @@ v dot (-v) and (-v) dot v does not return the approximated identity (in green).
 Afterwards we compose exp(v) and exp(-v) to see the approximated identity with the correct composition (again in green).
 
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from VECtorsToolkit.tools.fields.composition import lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
-from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field, see_2_fields
 from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
-
+from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field, see_2_fields
 
 if __name__ == '__main__':
 

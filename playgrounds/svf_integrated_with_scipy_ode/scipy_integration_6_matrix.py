@@ -1,16 +1,15 @@
 """
 Integration with scipy for one matrix-generated svf.
 """
-import numpy as np
 import matplotlib.pyplot as plt
-
-from VECtorsToolkit.tools.transformations import se2_g
-from VECtorsToolkit.tools.visualisations.fields_comparisons import see_n_fields_special
+import numpy as np
 from VECtorsToolkit.tools.visualisations.fields_and_integral_curves import see_overlay_of_n_fields_and_flow
+
 from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
 from VECtorsToolkit.tools.fields.queries import vf_norm
 from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential, lie_exponential_scipy
-
+from VECtorsToolkit.tools.transformations import se2_g
+from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
 if __name__ == '__main__':
 

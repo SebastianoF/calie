@@ -1,6 +1,5 @@
 import numpy as np
-from nose.tools import assert_equals, assert_raises, assert_almost_equals
-from numpy.testing import assert_array_equal, assert_almost_equal
+from numpy.testing import assert_array_equal, assert_almost_equal, assert_equal, assert_raises, assert_almost_equal
 from scipy.linalg import expm
 
 from utils.projective_algebras import ProjectiveAlgebra, ProjectiveGroup

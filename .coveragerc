@@ -1,0 +1,13 @@
+[run]
+source = VECtorsToolkit
+include = */VECtorsToolkit/*,
+omit = VECtorsToolkit/tools/visualisations/*
+       VECtorsToolkit/agents/*
+       VECtorsToolkit/z_tests/*
+
+[report]
+include = */VECtorsToolkit/*,
+omit = VECtorsToolkit/tools/visualisations/*
+       VECtorsToolkit/agents/*
+       */z_tests/*
+       */__init__.py

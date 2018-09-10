@@ -1,16 +1,16 @@
 """
 Parameters of the scipy integrator test and performance evaluation.
 """
-import numpy as np
-import matplotlib.pyplot as plt
 import time
 
-from VECtorsToolkit.tools.transformations.se2_a import se2_g
-from VECtorsToolkit.tools.visualisations.fields_comparisons import see_n_fields_special
-from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
-from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential_scipy
-from VECtorsToolkit.tools.fields.queries import vf_norm
+import matplotlib.pyplot as plt
+import numpy as np
 
+from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
+from VECtorsToolkit.tools.fields.queries import vf_norm
+from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential_scipy
+from VECtorsToolkit.tools.transformations.se2_a import se2_g
+from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
 if __name__ == '__main__':
 

@@ -3,15 +3,16 @@ Module to test the scaling and squaring-based methods.
 Some tests are visual test only
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
 import time
 
-from VECtorsToolkit.tools.transformations.se2_g import se2_g, se2_g_log
-from VECtorsToolkit.tools.visualisations.fields_comparisons import see_n_fields_special
+import matplotlib.pyplot as plt
+import numpy as np
+
 from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
-from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
 from VECtorsToolkit.tools.fields.queries import vf_norm
+from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
+from VECtorsToolkit.tools.transformations.se2_g import se2_g, se2_g_log
+from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
 
 def test_visual_assessment_method_one_se2(show=False):

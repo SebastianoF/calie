@@ -2,11 +2,11 @@ import numpy as np
 
 from VECtorsToolkit.tools.auxiliary.matrices import id_matrix_field, matrix_vector_field_product, \
     matrix_fields_product_iterative
-from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field
+from VECtorsToolkit.tools.fields.queries import check_is_vf
 
 
 def initialise_jacobian(input_vf):
-    d = check_is_vector_field(input_vf)
+    d = check_is_vf(input_vf)
     sh = list(input_vf.shape)
     while len(sh) < 5:
         sh.extend([1])
@@ -27,7 +27,7 @@ def compute_jacobian(input_vf, affine=np.eye(4), is_lagrangian=False):
     Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
     """
     # TODO It works only for svf (1 time point) - provisional - do with multiple time point
-    d = check_is_vector_field(input_vf)
+    d = check_is_vf(input_vf)
 
     jacobian = initialise_jacobian(input_vf)
 
@@ -59,7 +59,7 @@ def compute_jacobian_determinant(input_vf, is_lagrangian=False):
     Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
     !! It works only for 1 time point - provisional !!
     """
-    d = check_is_vector_field(input_vf)
+    d = check_is_vf(input_vf)
 
     vf_jacobian = compute_jacobian(input_vf, is_lagrangian=is_lagrangian)
 

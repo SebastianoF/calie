@@ -1,91 +1,11 @@
-"""
-Test module for the aux_functions.py module
-"""
-from numpy.testing import assert_array_almost_equal, assert_array_equal
+from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
 import scipy.linalg as lin
-from nose.tools import assert_equal, assert_raises
 import numpy as np
 from random import uniform
 
-from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
-from VECtorsToolkit.tools.auxiliary.bernoulli import bern, bernoulli_numb_via_poly, bernoulli_poly
 from VECtorsToolkit.tools.auxiliary.matrices import bch_right_jacobian, matrix_vector_field_product, \
     matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
 from VECtorsToolkit.tools.transformations.se2_a import se2_a, se2_a_exp
-
-
-''' test for mod_pipi '''
-
-
-def test_mod_pipi_plain():
-    value = 1
-    output = mod_pipi(value)
-    expected_output = value
-    assert_equal(output, expected_output)
-
-
-def test_mod_pipi_on_high_extreme():
-    inp = np.pi
-    expected_output = np.pi
-    output = mod_pipi(inp)
-    assert_equal(output, expected_output)
-
-
-def test_mod_pipi_on_low_extreme():
-    inp = - np.pi
-    expected_output = np.pi
-    output = mod_pipi(inp)
-    assert_equal(output, expected_output)
-
-
-def test_mod_pipi_for_greater_pi():
-    additive_const = 2
-    inp = np.pi + additive_const
-    expected_output = - np.pi + additive_const
-    output = mod_pipi(inp)
-    assert_equal(output, expected_output)
-
-
-def test_mod_pipi_for_smaller_pi():
-    additive_const = 2
-    inp = - (np.pi + additive_const)
-    expected_output = np.pi - additive_const
-    output = mod_pipi(inp)
-    assert_equal(output, expected_output)
-
-
-''' test bernoulli number and poly '''
-
-
-def test_pure_bern():
-    tester = []
-    flag = True
-    i = 0
-    while i < len(tester) and flag:
-        i += 1
-        if tester[i] != float(bern(i)):
-            flag = False
-    assert flag
-
-
-def test_compare_bernoulli_poly_and_bern():
-    flag = True
-    i = 0
-    while i < 50 and flag:
-        i += 1
-        if bernoulli_poly(0, i) != float(bern(i)):
-            flag = False
-    assert flag
-
-
-def test_compare_bernoulli_numb_via_poly_and_bern():
-    flag = True
-    i = 0
-    while i < 50 and flag:
-        i += 1
-        if bernoulli_numb_via_poly(i) != float(bern(i)):
-            flag = False
-    assert flag
 
 
 ''' test BCH right Jacobian '''
@@ -453,15 +373,6 @@ def test_id_matrix_field_2d_and_3d():
 
 
 if __name__ == '__main__':
-    test_mod_pipi_plain()
-    test_mod_pipi_on_high_extreme()
-    test_mod_pipi_on_low_extreme()
-    test_mod_pipi_for_greater_pi()
-    test_mod_pipi_for_smaller_pi()
-
-    test_pure_bern()
-    test_compare_bernoulli_poly_and_bern()
-    test_compare_bernoulli_numb_via_poly_and_bern()
 
     test_bch_right_jacobian_all_zero()
     test_bch_right_jacobian_zero_angle()

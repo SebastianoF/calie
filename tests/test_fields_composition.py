@@ -4,16 +4,15 @@ Test to perform the composition between vector fields.
 Here can be found some hints to compare the error of the composition provided by the resampling.
 This is actually very high, as soon as the field gets complicated.
 """
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy.testing import assert_array_almost_equal
-import matplotlib.pyplot as plt
 
+from VECtorsToolkit.tools.fields.composition import lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
-from VECtorsToolkit.tools.fields.composition import eulerian_dot_eulerian, lagrangian_dot_lagrangian, \
-    vf_eulerian_to_lagrangian, vf_lagrangian_to_eulerian
 from VECtorsToolkit.tools.fields.generate_vf import generate_random
-from VECtorsToolkit.tools.visualisations.fields_at_the_window import see_field
 from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
+from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field
 
 
 # Lagrangian dot lagrangian

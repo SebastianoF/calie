@@ -6,7 +6,7 @@ from scipy.misc import factorial as fact
 from scipy import integrate
 
 
-from VECtorsToolkit.tools.auxiliary.sanity_checks import check_is_vector_field, get_omega_from_vf
+from VECtorsToolkit.tools.fields.queries import check_is_vf, get_omega_from_vf
 from VECtorsToolkit.tools.fields.composition import one_point_interpolation, \
     lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, iterative_jacobian_product, \
@@ -53,7 +53,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
     :param : It returns a displacement, element of the class disp.
     :param pix_dims: conversion of pixel-mm for each dimension, from matrix to mm.
     """
-    d = check_is_vector_field(input_vf)
+    d = check_is_vf(input_vf)
     omega = get_omega_from_vf(input_vf)
 
     vf = copy.deepcopy(input_vf)
@@ -387,7 +387,7 @@ def lie_exponential_scipy(input_vf,
             where psi is the chosen integrator.
 
     """
-    d = check_is_vector_field(input_vf)
+    d = check_is_vf(input_vf)
     assert d == 2  # only for 2 dim images at the moment.
 
     omega = get_omega_from_vf(input_vf)
