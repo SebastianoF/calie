@@ -1,11 +1,9 @@
-from math import pi
-
 from fractions import Fraction
 from scipy.misc import factorial
 from scipy.misc import comb as binomial
 
 
-# ------------- auxiliary method for the BCH ----------------
+# ------------- auxiliary method for the BCH formula ----------------
 
 
 def fact(n):

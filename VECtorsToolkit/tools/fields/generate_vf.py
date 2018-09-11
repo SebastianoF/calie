@@ -47,7 +47,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
     if structure == 'algebra':
         pass
     elif structure == 'group':
-        input_matrix = input_matrix - np.eye(d + 1)
+        input_matrix = input_matrix - np.eye(input_matrix.shape[0])
     else:
         raise IOError
 
@@ -66,7 +66,6 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         vf = vf_homogeneous_to_affine(vf)
 
     elif d == 3:
-        # TODO after se3_a and se3_g
         # If the matrix provides a 2d rototranslation, we consider the rotation axis perpendicular to the plane z=0.
         # this must be improved for 3d rotations in the space.
         x_intervals, y_intervals, z_intervals = omega
@@ -74,7 +73,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         if np.alltrue(input_matrix.shape == (3, 3)):
 
             # Create the slice at the ground of the domain (x,y,z) , z = 0, as a 2d rotation:
-            base_slice = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega[:2]) + [1, 1, 2]))
+            base_slice = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega[:2])))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -84,14 +83,14 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
             for k in range(z_intervals):
                 vf[..., k, 0, :2] = base_slice[..., 0, 0, :2]
 
-        # If the matrix is 2d the rotation axis is perpendicular to the plane z=0.
+        # If the matrix is 3d the rotation axis is perpendicular to the plane z=0.
         elif np.alltrue(input_matrix.shape == (4, 4)):
 
-            vf = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
+            vf = vf_affine_to_homogeneous(vf_identity_eulerian(omega))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
-                    for k in range(y_intervals):
+                    for k in range(z_intervals):
                         vf[i, j, k, 0, :] = input_matrix.dot(vf[i, j, k, 0, :])
 
             vf = vf_homogeneous_to_affine(vf)
@@ -117,7 +116,7 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
     d = check_omega(omega)
     v_shape = vf_shape_from_omega_and_timepoints(omega, t)
     vf = np.zeros(v_shape)
-    idd = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
+    idd = vf_affine_to_homogeneous(vf_identity_eulerian(omega))
 
     if structure == 'algebra':
         if d == 2:

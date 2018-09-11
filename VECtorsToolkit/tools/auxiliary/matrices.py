@@ -13,7 +13,7 @@ def bch_right_jacobian(r):
     j = np.array([0.0] * 9).reshape(3, 3)
     half_theta = theta * 0.5
     tan_half_theta = np.tan(theta * 0.5)
-    prec = abs(np.spacing(theta))
+    prec = np.abs(np.spacing(theta))
 
     if abs(theta) > prec:
         factor1 = (half_theta - tan_half_theta) / (theta * tan_half_theta)
@@ -242,7 +242,6 @@ def grid_generator(x_size=101,
                 m[x, y] = 1
 
     return m
-
 
 
 '''

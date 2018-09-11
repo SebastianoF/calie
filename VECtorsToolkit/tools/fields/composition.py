@@ -16,7 +16,7 @@ def one_point_interpolation(input_vf, point, method='linear', as_float=True):
     :param as_float:
     :return:
     """
-    # TODO make nd
+    # TODO n-dim
     if not len(point) == 2:
         raise IOError("Input expected is a 2d point for a 2d field.")
 
@@ -201,11 +201,11 @@ def eulerian_dot_eulerian(vf_left_eul, vf_right_eul,
 
 
 def scalar_dot_lagrangian(sf_left, vf_right_lag,
-                        affine_left_right=None,
-                        spline_interpolation_order=2,
-                        mode='constant',
-                        cval=0.0,
-                        prefilter=True):
+                          affine_left_right=None,
+                          spline_interpolation_order=2,
+                          mode='constant',
+                          cval=0.0,
+                          prefilter=True):
 
     vf_right_eul = vf_lagrangian_to_eulerian(vf_right_lag)
 
@@ -216,36 +216,36 @@ def scalar_dot_lagrangian(sf_left, vf_right_lag,
                                cval=cval,
                                prefilter=prefilter)
 
-
-if __name__ == '__main__':
-
-    from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
-
-    def u(x, y):
-        return x, y
-
-    def v(x, y):
-        return 0.5, 0.5
-
-    def u_dot_v(x, y):
-        return 0.5, 0.5
-
-    def v_dot_u(x, y):
-        return 0.5, 0.5
-
-    omega = (6, 6)
-
-    svf_u = vf_identity_lagrangian(omega=omega)
-    svf_v = vf_identity_lagrangian(omega=omega)
-    svf_u_dot_v = vf_identity_lagrangian(omega=omega)
-    svf_v_dot_u = vf_identity_lagrangian(omega=omega)
-
-    for x in range(omega[0]):
-        for y in range(omega[1]):
-            svf_u[x, y, 0, 0, :] = u(x, y)
-            svf_v[x, y, 0, 0, :] = v(x, y)
-            svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
-            svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
-
-    svf_v_dot_u_numerical = lagrangian_dot_lagrangian(svf_v, svf_u, add_right=False)
-    svf_u_dot_v_numerical = lagrangian_dot_lagrangian(svf_u, svf_v, add_right=False)
+#
+# if __name__ == '__main__':
+#
+#     from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
+#
+#     def u(x, y):
+#         return x, y
+#
+#     def v(x, y):
+#         return 0.5, 0.5
+#
+#     def u_dot_v(x, y):
+#         return 0.5, 0.5
+#
+#     def v_dot_u(x, y):
+#         return 0.5, 0.5
+#
+#     omega = (6, 6)
+#
+#     svf_u = vf_identity_lagrangian(omega=omega)
+#     svf_v = vf_identity_lagrangian(omega=omega)
+#     svf_u_dot_v = vf_identity_lagrangian(omega=omega)
+#     svf_v_dot_u = vf_identity_lagrangian(omega=omega)
+#
+#     for x in range(omega[0]):
+#         for y in range(omega[1]):
+#             svf_u[x, y, 0, 0, :] = u(x, y)
+#             svf_v[x, y, 0, 0, :] = v(x, y)
+#             svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
+#             svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
+#
+#     svf_v_dot_u_numerical = lagrangian_dot_lagrangian(svf_v, svf_u, add_right=False)
+#     svf_u_dot_v_numerical = lagrangian_dot_lagrangian(svf_u, svf_v, add_right=False)

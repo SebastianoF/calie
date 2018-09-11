@@ -76,11 +76,12 @@ def vf_identity_eulerian_like(input_vf):
     return vf_identity_eulerian(get_omega_from_vf(input_vf), t=input_vf.shape[3])
 
 
-def vf_identity_matrices(omega, t = 1):
+def vf_identity_matrices(omega, t=1):
     """
     From a omega of dimension dim =2,3, it returns the identity field
     that at each point of the omega has the (row mayor) vectorized identity matrix.
     :param omega: a squared or cubed omega
+    :param t: timepoint
     :return: vector field with a vectorised identity matrix at each point.
     """
     d = check_omega(omega)

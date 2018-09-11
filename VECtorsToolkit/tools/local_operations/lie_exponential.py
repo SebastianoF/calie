@@ -262,7 +262,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
 
             phi += (h/2) * (lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) +
-                   lagrangian_dot_lagrangian(vf, phi_tilda, spline_interpolation_order=s_i_o, add_right=False))
+                            lagrangian_dot_lagrangian(vf, phi_tilda, spline_interpolation_order=s_i_o, add_right=False))
 
     elif algorithm == 'heun':  # Heun method
 
@@ -276,7 +276,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             psi_1 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
 
             psi_2 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) + \
-                          3 * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
+                                              3 * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_2
 
@@ -293,7 +293,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             psi_2 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
 
             psi_3 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) + \
-                          3 * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o, add_right=False)
+                                              3 * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_3
 
