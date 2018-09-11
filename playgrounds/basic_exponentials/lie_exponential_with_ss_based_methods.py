@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     # -> model <- #
 
-    m_0 = se2_g.se2_g(theta, tx, ty)
+    m_0 = se2_g.Se2G(theta, tx, ty)
     dm_0 = se2_g.se2_g_log(m_0)
 
     print(m_0.get_matrix)

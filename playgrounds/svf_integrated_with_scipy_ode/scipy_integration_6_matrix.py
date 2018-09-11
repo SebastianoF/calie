@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     tx   = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
     ty   = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c
-    m_0 = se2_g.se2_g(theta, tx, ty)
+    m_0 = se2_g.Se2G(theta, tx, ty)
     dm_0 = se2_g.se2_g_log(m_0)
 
     passepartout = 3

@@ -5,7 +5,7 @@ from random import uniform
 
 from VECtorsToolkit.tools.auxiliary.matrices import bch_right_jacobian, matrix_vector_field_product, \
     matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
-from VECtorsToolkit.tools.transformations.se2_a import se2_a, se2_a_exp
+from VECtorsToolkit.tools.transformations.se2_a import Se2A, se2_a_exp
 
 
 ''' test BCH right Jacobian '''
@@ -61,8 +61,8 @@ def test_bch_ground_random_input_comparing_matrices_step_1():
     any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
-    a = se2_a(any_angle_1, any_tx_1, any_ty_1)
-    da = se2_a(any_angle_2, any_tx_2, any_ty_2)
+    a = Se2A(any_angle_1, any_tx_1, any_ty_1)
+    da = Se2A(any_angle_2, any_tx_2, any_ty_2)
     a_matrix = a.get_matrix
     da_matrix = da.get_matrix
     exp_exp_pade = lin.expm(a_matrix).real.dot(lin.expm(da_matrix).real).real

@@ -30,11 +30,12 @@ def generate_random(omega, t=1, parameters=(5, 2)):
 
 def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
     """
-    :param omega:
-    :param input_matrix:
-    :param t:
-    :param structure: can be 'algebra' or 'group'
-    :return:
+    :param omega: domain of the vector field.
+    :param input_matrix: matrix generating the transformation of the vector field representing elements form groups
+    SE(3), SE(2) or algebras so(3) and so(2).
+    :param t: timepoints.
+    :param structure: can be 'algebra' or 'group'.
+    :return: vector field with the given input parameters.
     """
     if t > 1:  # TODO
         raise IndexError('Random generator not defined (yet) for multiple time points')
@@ -103,11 +104,11 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 def generate_from_projective_matrix(omega, input_homography, t=1, structure='algebra'):
     """
 
-    :param omega:
-    :param input_homography:
-    :param t:
-    :param structure:
-    :return:
+    :param omega: domain of the vector field.
+    :param input_homography: matrix representing an element form the homography group.
+    :param t: number of timepoints.
+    :param structure: can be 'algebra' or 'group'.
+    :return: vector field with the given input parameters.
     """
 
     if t > 1:  # TODO
@@ -146,13 +147,10 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
 
                     s = input_homography.dot(np.array([i, j, 1]))[:]
                     if abs(s[2]) > 1e-5:
-                        # subtract the id to have the result in displacement coordinates
+                        # subtract the id point-wise to have the result in displacement coordinates
                         vf[i, j, 0, 0, :] = (s[0:2] / float(s[2])) - np.array([i, j])
 
         elif d == 3:
-
-            vf = np.zeros(v_shape)
-
             x_intervals, y_intervals, z_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):

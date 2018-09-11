@@ -6,7 +6,7 @@ import se2_g
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
 
-class se2_a(object):
+class Se2A(object):
     """
     Class for algebra se2 quotient over equivalent relation given by exp.
     NOTE: se2_a is an improper name for this class!
@@ -47,7 +47,7 @@ class se2_a(object):
             modfact = mod_pipi(self.rotation_angle) / self.rotation_angle
             tx_quot = self.tx * modfact
             ty_quot = self.ty * modfact
-        return se2_a(theta_quot, tx_quot, ty_quot)
+        return Se2A(theta_quot, tx_quot, ty_quot)
 
     quot = property(__quotient_projection__)
 
@@ -83,7 +83,7 @@ class se2_a(object):
         x2 = element2.tx
         y2 = element2.ty
         alpha_sum = alpha1+alpha2
-        return se2_a(alpha_sum, x1 + x2, y1 + y2).quot
+        return Se2A(alpha_sum, x1 + x2, y1 + y2).quot
 
     def __sub__(self, element2):
         alpha1 = self.rotation_angle
@@ -93,7 +93,7 @@ class se2_a(object):
         x2 = element2.tx
         y2 = element2.ty
         alpha_subs = alpha1 - alpha2
-        return se2_a(alpha_subs, x1 - x2, y1 - y2).quot
+        return Se2A(alpha_subs, x1 - x2, y1 - y2).quot
 
     def __rmul__(self, scalar):
         """
@@ -102,7 +102,7 @@ class se2_a(object):
         tx = self.tx
         ty = self.ty
         alpha = self.rotation_angle
-        return se2_a(scalar*alpha, scalar*tx, scalar*ty).quot
+        return Se2A(scalar * alpha, scalar * tx, scalar * ty).quot
 
     def norm(self, norm_type='standard', lamb=1):
         """
@@ -149,12 +149,12 @@ def randomgen(intervals=(0, 10), norm_type='fro', lamb=1):
 
         while not norm_belongs_to_interval and num_attempts < 1000:
             num_attempts += 1
-            theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+            theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
             rho = uniform(a, b)
 
             if a <= sqrt(theta**2 + lamb * rho**2) <= b:
                 # keep theta, compute tx ty according to rho and a new eta
-                eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+                eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
                 tx = rho * cos(eta)
                 ty = rho * sin(eta)
 
@@ -165,9 +165,9 @@ def randomgen(intervals=(0, 10), norm_type='fro', lamb=1):
         # we pick rho to satisfy the condition a < se2_a(theta, tx, ty).norm(norm_type) < b
         # where norm is the the norm of the translation.
         # no Montecarlo is needed.
-        theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+        theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
         rho = uniform(a, b)
-        eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+        eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
         tx = rho * cos(eta)
         ty = rho * sin(eta)
 
@@ -175,12 +175,12 @@ def randomgen(intervals=(0, 10), norm_type='fro', lamb=1):
 
         while not norm_belongs_to_interval and num_attempts < 1000:
             num_attempts += 1
-            theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+            theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
             rho = uniform(a, b)
 
             if a <= sqrt(2*theta**2 + rho**2) <= b:
                 # keep theta, compute tx ty according to rho and a new eta
-                eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+                eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
                 tx = rho * cos(eta)
                 ty = rho * sin(eta)
 
@@ -191,7 +191,7 @@ def randomgen(intervals=(0, 10), norm_type='fro', lamb=1):
                         "montecarlo method has failed in finding an element after 1000 attempt.")
 
     else:
-        return se2_a(theta, tx, ty)
+        return Se2A(theta, tx, ty)
 
 
 def is_a_matrix_in_se2_a(m_input, relax=False):
@@ -224,7 +224,7 @@ def lie_bracket(element1, element2):
     y1 = element1.ty
     x2 = element2.tx
     y2 = element2.ty
-    return se2_a(0, alpha2 * y1 - alpha1 * y2, alpha1 * x2 - alpha2 * x1)
+    return Se2A(0, alpha2 * y1 - alpha1 * y2, alpha1 * x2 - alpha2 * x1)
 
 
 def lie_multi_bracket(l):
@@ -253,7 +253,7 @@ def scalarpr(const, element):
     alpha = element.rotation_angle
     x = element.tx
     y = element.ty
-    return se2_a(const * alpha, const * x, const * y)
+    return Se2A(const * alpha, const * x, const * y)
 
 
 def matrix2se2_a(a, eat_em_all=False):
@@ -270,13 +270,13 @@ def matrix2se2_a(a, eat_em_all=False):
         theta = a[1, 0]
         x = a[0, 2]
         y = a[1, 2]
-        return se2_a(theta, x, y)
+        return Se2A(theta, x, y)
 
 
 def list2se2_a(a):
     if not type(a) == list or not len(a) == 3:
         raise TypeError("list2se2_g in se2_g: list of dimension 3 expected")
-    return se2_a(a[0], a[1], a[2])
+    return Se2A(a[0], a[1], a[2])
 
 
 def se2_a_exp(element):
@@ -294,7 +294,7 @@ def se2_a_exp(element):
     theta = element.rotation_angle
     v1 = element.tx
     v2 = element.ty
-    esp = abs(np.spacing(0))
+    esp = np.abs(np.spacing([0]))[0]
     if abs(theta) <= 10*esp:
         factor1 = 1 - (theta**2)/6.0
         factor2 = theta/2.0
@@ -304,7 +304,7 @@ def se2_a_exp(element):
     x1 = factor1*v1 - factor2*v2
     x2 = factor2*v1 + factor1*v2
 
-    return se2_g.se2_g(theta, x1, x2)
+    return se2_g.Se2G(theta, x1, x2)
 
 
 # trim noise for matrices.
@@ -324,7 +324,7 @@ def exp_for_matrices(m, eat_em_all=True):
         raise Exception("exp_for_matrices in se2_a: the inserted element is not a matrix in se2_a  ")
 
     # first step is to quotient the input element (if the input is a sum)
-    ans = se2_a_exp(se2_a(m[1, 0], m[0, 2], m[1, 2]))
+    ans = se2_a_exp(Se2A(m[1, 0], m[0, 2], m[1, 2]))
     return ans.get_matrix
 
 

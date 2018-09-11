@@ -41,13 +41,45 @@ def test_generate_from_matrix_wrong_structure():
         generate_from_matrix((10, 11), np.eye(4), t=1, structure='spam')
 
 
-# def test_generate_from_matrix_incompatible_matrix_omega_2d():
-#     with assert_raises(IOError):
-#          pass
-#
-# def test_generate_from_matrix_incompatible_matrix_omega_2d():
-#     with assert_raises(IOError):
-#         pass
+def test_generate_from_matrix_incompatible_matrix_omega_2d():
+    with assert_raises(IOError):
+        generate_from_matrix((10, 10), np.eye(4), t=1)
+
+
+def test_generate_from_matrix_incompatible_matrix_omega_3d():
+    with assert_raises(IOError):
+        generate_from_matrix((10, 10, 12), np.eye(5), t=1)
+
+
+def test_generate_from_matrix_from_algebra_element():
+    pass
+
+
+def test_generate_from_matrix_from_group_element():
+    pass
+
+
+''' test generate_from_projective_matrix '''
+
+
+def test_generate_from_projective_matrix_wrong_timepoints():
+    pass
+
+
+def test_generate_from_projective_matrix_wrong_structure():
+    pass
+
+
+def test_generate_from_projective_matrix_from_algebra_element():
+    pass
+
+
+def test_generate_from_projective_matrix_from_group_element():
+    pass
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -58,5 +90,11 @@ if __name__ == '__main__':
 
     test_generate_from_matrix_wrong_structure()
     test_generate_from_matrix_wrong_timepoints()
-    # test_generate_from_matrix_incompatible_matrix_omega_2d()
-    # test_generate_from_matrix_incompatible_matrix_omega_2d()
+    test_generate_from_matrix_incompatible_matrix_omega_2d()
+    test_generate_from_matrix_incompatible_matrix_omega_3d()
+    test_generate_from_matrix_from_algebra_element()
+    test_generate_from_matrix_from_group_element()
+
+    test_generate_from_projective_matrix_wrong_structure()
+    test_generate_from_projective_matrix_from_algebra_element()
+    test_generate_from_projective_matrix_from_group_element()

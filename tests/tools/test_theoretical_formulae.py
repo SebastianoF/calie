@@ -13,7 +13,7 @@ def test_theory_inverse_exp_log():
     any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_g.se2_g(any_angle_1, any_tx_1, any_ty_1)
+    a = se2_g.Se2G(any_angle_1, any_tx_1, any_ty_1)
     ans = se2_a.se2_a_exp(se2_g.se2_g_log(a))
     assert_array_almost_equal(a.get, ans.get)
 
@@ -22,7 +22,7 @@ def test_theory_inverse_log_exp():
     any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_a.se2_a(any_angle_1, any_tx_1, any_ty_1)
+    a = se2_a.Se2A(any_angle_1, any_tx_1, any_ty_1)
     ans = se2_g.se2_g_log(se2_a.se2_a_exp(a))
     assert_array_almost_equal(a.get, ans.get)
 
@@ -31,7 +31,7 @@ def test_theory_inverse_log_exp_input_not_in_quotient():
     any_angle_1 = 2 * np.pi + uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_a.se2_a(any_angle_1, any_tx_1, any_ty_1)
+    a = se2_a.Se2A(any_angle_1, any_tx_1, any_ty_1)
     ans = se2_g.se2_g_log(se2_a.se2_a_exp(a))
     assert_array_almost_equal(a.get, ans.get)
 

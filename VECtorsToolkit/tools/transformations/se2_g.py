@@ -1,13 +1,12 @@
 from math import sin, cos, sqrt
 from numpy.random import uniform, choice
 import numpy as np
-from scipy.linalg import logm
 
 import se2_a
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
 
-class se2_g(object):
+class Se2G(object):
     """
     Class for group of SE(2) Lie group of rotations and translation in 2 dimensions.
     """
@@ -43,7 +42,7 @@ class se2_g(object):
         x = x1 + x2 * c1 - y2 * s1
         y = y1 + x2 * s1 + y2 * c1
 
-        return se2_g(alpha, x, y)
+        return Se2G(alpha, x, y)
 
     def inv(self):
         alpha = self.rotation_angle
@@ -51,7 +50,7 @@ class se2_g(object):
         yv = self.ty
         xn = - cos(alpha)*xv - sin(alpha)*yv
         yn = + sin(alpha)*xv - cos(alpha)*yv
-        return se2_g(-alpha, xn, yn)
+        return Se2G(-alpha, xn, yn)
 
     def norm(self, norm_type='standard', lamb=1):
         """
@@ -81,6 +80,7 @@ def randomgen_custom(interval_theta=(),
     :param interval_theta:  (interval_theta[0], interval_theta[1])
     :param interval_tx:     (interval_tx[0], interval_tx[1])
     :param interval_ty:     (interval_ty[0], interval_ty[1])
+    :param avoid_zero_rotation:
     :return:
     se2_g(uniform(interval_theta[0], interval_theta[1]),
           uniform(interval_tx[0], interval_tx[1]),
@@ -105,7 +105,7 @@ def randomgen_custom(interval_theta=(),
     else:
         ty = uniform(interval_ty[0], interval_ty[1])
 
-    return se2_g(theta, tx, ty)
+    return Se2G(theta, tx, ty)
 
 
 def randomgen_custom_center(interval_theta=(-np.pi/2, np.pi/2),
@@ -138,7 +138,7 @@ def randomgen_custom_center(interval_theta=(-np.pi/2, np.pi/2),
     tx   = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
     ty   = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c
 
-    return se2_g(theta, tx, ty)
+    return Se2G(theta, tx, ty)
 
 
 def randomgen(intervals=(), lamb=1):
@@ -166,21 +166,21 @@ def randomgen(intervals=(), lamb=1):
             a_theta_pos = a
             b_theta_pos = min(b, np.pi)
             a_theta_neg = -a
-            b_theta_neg = max(-b, -np.pi + abs(np.spacing(-np.pi)))
+            b_theta_neg = max(-b, -np.pi + np.abs(np.spacing(-np.pi)))
             theta = choice([uniform(a_theta_pos, b_theta_pos), uniform(a_theta_neg, b_theta_neg)])
             rho = uniform(0, 10)
-            eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+            eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
             tx = rho * cos(eta)
             ty = rho * sin(eta)
     else:
-        a_theta = max(-a, -np.pi + abs(np.spacing(-np.pi)))
+        a_theta = max(-a, -np.pi + np.abs(np.spacing(-np.pi)))
         b_theta = min(a, np.pi)
         theta = uniform(a_theta, b_theta)
         rho = uniform(sqrt((a**2 - theta**2)/lamb), sqrt((b**2 - theta**2)/lamb))
-        eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+        eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
         tx = rho * cos(eta)
         ty = rho * sin(eta)
-    return se2_g(theta, tx, ty)
+    return Se2G(theta, tx, ty)
 
 
 def randomgen_translation(intervals=()):
@@ -196,12 +196,12 @@ def randomgen_translation(intervals=()):
     else:
         raise Exception("randomgen_translation_norm in se2_g: "
                         "the list of intervals inserted must have dimension 2 or 0")
-    theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     rho = uniform(a, b)
-    eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = rho * cos(eta)
     ty = rho * sin(eta)
-    return se2_g(theta, tx, ty)
+    return Se2G(theta, tx, ty)
 
 
 def randomgen_fro(intervals=()):
@@ -217,12 +217,12 @@ def randomgen_fro(intervals=()):
     else:
         raise Exception("randomgen_translation_norm in se2_g: "
                         "the list of intervals inserted must have dimension 2 or 0")
-    theta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    theta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     rho = uniform(sqrt(round(a**2 - 3, 15)), sqrt(round(b**2 - 3, 15)))
-    eta = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    eta = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx = rho * cos(eta)
     ty = rho * sin(eta)
-    return se2_g(theta, tx, ty)
+    return Se2G(theta, tx, ty)
 
 
 def is_a_matrix_in_se2_g(m_input, relax=False):
@@ -231,7 +231,8 @@ def is_a_matrix_in_se2_g(m_input, relax=False):
         m = m_input.copy()
         if relax:
             m = np.around(m, 6)
-        if m.shape == (3, 3) and m[0, 0] == m[1, 1] and m[1, 0] == -m[0, 1] and m[2, 0] == m[2, 1] == 0 and m[2, 2] == 1:
+        if m.shape == (3, 3) and m[0, 0] == m[1, 1] and m[1, 0] == -m[0, 1] \
+                and m[2, 0] == m[2, 1] == 0 and m[2, 2] == 1:
             ans = True
     return ans
 
@@ -250,13 +251,13 @@ def matrix2se2_g(A, eat_em_all=False):
         theta = np.arctan2(A[1, 0], A[0, 0])
         x = A[0, 2]
         y = A[1, 2]
-        return se2_g(theta, x, y)
+        return Se2G(theta, x, y)
 
 
 def list2se2_g(a):
     if not type(a) == list or not len(a) == 3:
         raise TypeError("list2se2_g in se2_g: list of dimension 3 expected")
-    return se2_g(a[0], a[1], a[2])
+    return Se2G(a[0], a[1], a[2])
 
 
 def se2_g_log(element):
@@ -270,7 +271,7 @@ def se2_g_log(element):
     v1 = element.tx
     v2 = element.ty
     c = cos(theta)
-    prec = abs(np.spacing(0.0))
+    prec = np.abs(np.spacing([0.0]))[0]
     if abs(c - 1.0) <= 10*prec:
         x1 = v1
         x2 = v2
@@ -279,4 +280,4 @@ def se2_g_log(element):
         factor = (theta / 2.0) * sin(theta) / (1.0 - c)
         x1 = factor * v1 + (theta / 2.0) * v2
         x2 = factor * v2 - (theta / 2.0) * v1
-    return se2_a.se2_a(theta, x1, x2)
+    return se2_a.Se2A(theta, x1, x2)
