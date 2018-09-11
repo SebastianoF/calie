@@ -8,6 +8,6 @@ import se2_g
 from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 
 
-class se3_a(object):
+class Se3A(object):
     pass
     # TODO: 3d linear svf are, for the moment, created using se2_g on each axial slice.

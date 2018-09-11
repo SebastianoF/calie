@@ -52,11 +52,42 @@ def test_generate_from_matrix_incompatible_matrix_omega_3d():
 
 
 def test_generate_from_matrix_from_algebra_element():
-    pass
+    theta, tx, ty = np.pi / 8, 5, 5
+    a1 = [0, -theta, tx]
+    a2 = [theta, 0, ty]
+    a3 = [0, 0, 0]
+    m = np.array([a1, a2, a3])
+
+    vf = generate_from_matrix((10, 10), m, t=1, structure='algebra')
+
+    vf_expected = np.zeros((10, 10, 1, 1, 2))
+
+    for x in range(10):
+        for y in range(10):
+            vf_expected[x, y, 0, 0, :] = m.dot(np.array([x, y, 1]))[:2]
+
+    assert_array_equal(vf, vf_expected)
 
 
 def test_generate_from_matrix_from_group_element():
-    pass
+    theta, tx, ty = np.pi / 10, 5, 5
+    a1 = [np.cos(theta), -np.sin(theta), tx]
+    a2 = [np.sin(theta), np.cos(theta), ty]
+    a3 = [0, 0, 1]
+    m = np.array([a1, a2, a3])
+
+    vf = generate_from_matrix((10, 10), m, t=1, structure='group')
+
+    vf_expected = np.zeros((10, 10, 1, 1, 2))
+
+    # move to lagrangian coordinates to compute the ground truth:
+    m = m - np.eye(3)
+
+    for x in range(10):
+        for y in range(10):
+            vf_expected[x, y, 0, 0, :] = m.dot(np.array([x, y, 1]))[:2]
+
+    assert_array_equal(vf, vf_expected)
 
 
 ''' test generate_from_projective_matrix '''
@@ -76,9 +107,6 @@ def test_generate_from_projective_matrix_from_algebra_element():
 
 def test_generate_from_projective_matrix_from_group_element():
     pass
-
-
-
 
 
 

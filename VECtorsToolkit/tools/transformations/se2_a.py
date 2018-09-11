@@ -9,13 +9,9 @@ from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 class Se2A(object):
     """
     Class for algebra se2 quotient over equivalent relation given by exp.
-    NOTE: se2_a is an improper name for this class!
+    To respect camel case convention and avoid confusion class for se(2) is called Se2A.
     It is the quotient algebra in which exp is well defined.
-    Quotient projection is applied to each new instance by default.
-
-    sum and subtract,
-    scalar product,
-    Lie bracket
+    Quotient projection is applied to each new instance by default, to have exp map bijective.
     """
     def __init__(self, theta, tx, ty):
 
@@ -26,8 +22,8 @@ class Se2A(object):
             self.ty = ty
         else:
             modfact = self.rotation_angle / theta
-            self.tx = modfact*tx
-            self.ty = modfact*ty
+            self.tx = modfact * tx
+            self.ty = modfact * ty
 
     def __quotient_projection__(self):
         """
@@ -52,12 +48,10 @@ class Se2A(object):
     quot = property(__quotient_projection__)
 
     def __get_matrix__(self):
-        # apply the quotient before transforming the element into a matrix.
-        self_quotient = self.quot
-
-        theta = self_quotient.rotation_angle
-        tx = self_quotient.tx
-        ty = self_quotient.ty
+        # using the quotient data to create the matrix.
+        theta = self.quot.rotation_angle
+        tx = self.quot.tx
+        ty = self.quot.ty
 
         a1 = [0, -theta, tx]
         a2 = [theta, 0, ty]
@@ -67,10 +61,10 @@ class Se2A(object):
     get_matrix = property(__get_matrix__)
 
     def __get_restricted__(self):
-        self_quotient = self.quot
-        theta = self_quotient.rotation_angle
-        tx = self_quotient.tx
-        ty = self_quotient.ty
+        # get rotation and translation in a list from quotient.
+        theta = self.quot.rotation_angle
+        tx = self.quot.tx
+        ty = self.quot.ty
         return [theta, tx, ty]
 
     get = property(__get_restricted__)
@@ -104,6 +98,16 @@ class Se2A(object):
         alpha = self.rotation_angle
         return Se2A(scalar * alpha, scalar * tx, scalar * ty).quot
 
+    def scalarprod(self, const):
+        """
+        :param const: scalar float value
+        :return: const*element as scalar product in the Lie algebra
+        """
+        alpha = self.rotation_angle
+        x = self.tx
+        y = self.ty
+        return Se2A(const * alpha, const * x, const * y)
+
     def norm(self, norm_type='standard', lamb=1):
         """
         norm(self, typology, lamb for the standard norm type)
@@ -128,7 +132,7 @@ class Se2A(object):
 
 def randomgen(intervals=(0, 10), norm_type='fro', lamb=1):
     """
-    Montecarlo sampling to build a random element in se2_a.
+    Montecarlo sampling to build a random element in Se2A.
     it uses 3 possible norm_type, lamb, translation, or fro
 
     :param intervals:
@@ -242,20 +246,6 @@ def lie_multi_bracket(l):
         return lie_multi_bracket(l[0:le - 2] + [lie_bracket(l[le - 2], l[le - 1])])
 
 
-def scalarpr(const, element):
-    """
-    scalarpr(const, element) \n
-    :param const: scalar float value, element of se2
-    :param element: element of the lie algebra.
-    :return: const*element as scalar product in the Lie algebra
-    """
-    # how to define the scalar product directly in the class? external product with float element...
-    alpha = element.rotation_angle
-    x = element.tx
-    y = element.ty
-    return Se2A(const * alpha, const * x, const * y)
-
-
 def matrix2se2_a(a, eat_em_all=False):
     """
     matrix2se2(a, relax = False) \n
@@ -284,12 +274,8 @@ def se2_a_exp(element):
     exp(element) \n
     algebra exponential 
     :param element: instance of se2
-    :return: corresponding element in Lie group SE2 
+    :return: corresponding element in Lie group SE2, se2_g.matrix2se2_g(lin.expm(m_element), True)
     """
-    '''
-    m_element = element.get_matrix
-    ans = se2_g.matrix2se2_g(lin.expm(m_element), True)
-    '''
     element = element.quot
     theta = element.rotation_angle
     v1 = element.tx
@@ -307,12 +293,7 @@ def se2_a_exp(element):
     return se2_g.Se2G(theta, x1, x2)
 
 
-# trim noise for matrices.
-def trimmer_to_se2_a_matrix():
-    pass
-
-
-def exp_for_matrices(m, eat_em_all=True):
+def se2_a_exp_matrices(m, eat_em_all=True):
     """
     exp_m(m) \n
     algebra exponential for matrices
@@ -328,7 +309,7 @@ def exp_for_matrices(m, eat_em_all=True):
     return ans.get_matrix
 
 
-def bracket_for_matrices(m1, m2, eat_em_all=True):
+def lie_bracket_for_matrices(m1, m2, eat_em_all=True):
     """
     Compute lie bracket for matrices
     :param m1:
@@ -352,7 +333,7 @@ def lie_multi_bracket_for_matrices(l):
     if len(l) <= 1:
         return 0
     elif len(l) == 2:
-        return bracket_for_matrices(l[0], l[1])
+        return lie_bracket_for_matrices(l[0], l[1])
     else:
         num = len(l)
         return lie_multi_bracket_for_matrices(l[0:num - 2] + [lie_bracket(l[num - 2], l[num - 1])])

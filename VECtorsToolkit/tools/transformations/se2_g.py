@@ -9,6 +9,7 @@ from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
 class Se2G(object):
     """
     Class for group of SE(2) Lie group of rotations and translation in 2 dimensions.
+    To respect camel case convention and avoid confusion class for SE(2) is called Se2G.
     """
 
     def __init__(self, theta, tx, ty):
