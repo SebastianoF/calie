@@ -1,29 +1,9 @@
-import os
-
-import nibabel as nib
 import numpy as np
 import scipy.ndimage.filters as fil
 
 from VECtorsToolkit.tools.fields.queries import check_omega, vf_shape_from_omega_and_timepoints
 from VECtorsToolkit.tools.fields.coordinates import vf_affine_to_homogeneous, vf_homogeneous_to_affine
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
-
-
-def generate_vf_id_matrix(omega):
-    """
-    From a omega of dimension dim =2,3, it returns the identity field
-    that at each point of the omega has the (row mayor) vectorized identity
-    matrix. Utilised in the matrix_manipulation module.
-    :param omega: a squared or cubed omega
-    :return:
-    """
-    dim = len(omega)
-    if dim not in [2, 3]:
-        assert IOError
-
-    shape = list(omega) + [1] * (4 - dim) + [dim**2]
-    flat_id = np.eye(dim).reshape(1, dim**2)
-    return np.repeat(flat_id, np.prod(omega)).reshape(shape, order='F')
 
 
 def generate_random(omega, t=1, parameters=(5, 2)):
@@ -34,56 +14,63 @@ def generate_random(omega, t=1, parameters=(5, 2)):
     :param parameters: (sigma initial randomness, sigma of the gaussian filter).
     :return:
     """
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
-
-    if t > 1:
+    if t > 1:  # TODO upgrade. correct tests afterwards.
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
+    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+
     sigma_init, sigma_gaussian_filter = parameters
-    v = np.random.normal(0, sigma_init, v_shape)
+    vf = np.random.normal(0, sigma_init, v_shape)
 
     for i in range(v_shape[-1]):
-        v[..., 0, i] = fil.gaussian_filter(v[..., 0, i], sigma_gaussian_filter)
+        vf[..., 0, i] = fil.gaussian_filter(vf[..., 0, i], sigma_gaussian_filter)
 
-    return v
+    return vf
 
 
 def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
+    """
+    :param omega:
+    :param input_matrix:
+    :param t:
+    :param structure: can be 'algebra' or 'group'
+    :return:
+    """
+    if t > 1:  # TODO
+        raise IndexError('Random generator not defined (yet) for multiple time points')
 
-    d = len(omega)
+    d = check_omega(omega)
     v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+    vf = np.zeros(v_shape)
 
     if structure == 'algebra':
-
         pass
     elif structure == 'group':
         input_matrix = input_matrix - np.eye(d + 1)
-        pass
     else:
         raise IOError
 
-    if t > 1:
-        raise IndexError('Random generator not defined (yet) for multiple time points')
-
     if d == 2:
 
-        v = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega)))
+        if not np.alltrue(input_matrix.shape == (3, 3)):
+            raise IOError('Omega dimension not compatible with the matrix dimension')
+
+        vf = vf_affine_to_homogeneous(vf_identity_eulerian(omega))
 
         x_intervals, y_intervals = omega
         for i in range(x_intervals):
             for j in range(y_intervals):
-                v[i, j, 0, 0, :] = input_matrix.dot(v[i, j, 0, 0, :])
+                vf[i, j, 0, 0, :] = input_matrix.dot(vf[i, j, 0, 0, :])
 
-        v = vf_homogeneous_to_affine(v)
+        vf = vf_homogeneous_to_affine(vf)
 
     elif d == 3:
-
+        # TODO after se3_a and se3_g
+        # If the matrix provides a 2d rototranslation, we consider the rotation axis perpendicular to the plane z=0.
+        # this must be improved for 3d rotations in the space.
         x_intervals, y_intervals, z_intervals = omega
 
-        # If the matrix provides a 2d rototranslation, we consider the rotation axis perpendicular to the plane z=0.
         if np.alltrue(input_matrix.shape == (3, 3)):
-
-            v = np.zeros(v_shape)
 
             # Create the slice at the ground of the domain (x,y,z) , z = 0, as a 2d rotation:
             base_slice = vf_affine_to_homogeneous(vf_identity_eulerian(list(omega[:2]) + [1, 1, 2]))
@@ -94,48 +81,45 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
 
             # Copy the slice at the ground on all the others:
             for k in range(z_intervals):
-                v[..., k, 0, :2] = base_slice[..., 0, 0, :2]
+                vf[..., k, 0, :2] = base_slice[..., 0, 0, :2]
 
         # If the matrix is 2d the rotation axis is perpendicular to the plane z=0.
         elif np.alltrue(input_matrix.shape == (4, 4)):
 
-            v = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
+            vf = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
                     for k in range(y_intervals):
-                        v[i, j, k, 0, :] = input_matrix.dot(v[i, j, k, 0, :])
+                        vf[i, j, k, 0, :] = input_matrix.dot(vf[i, j, k, 0, :])
 
-            v = vf_homogeneous_to_affine(v)
+            vf = vf_homogeneous_to_affine(vf)
         else:
-            raise IOError('Wrong input parameter.')
+            raise IOError('Wrong input matrix shape. Must be 3x3 or 4x4.')
 
-    else:
-        raise IOError("Dimensions allowed: 2 or 3")
-
-    return v
+    return vf
 
 
-def generate_from_projective_matrix(omega, input_homography, structure='algebra'):
+def generate_from_projective_matrix(omega, input_homography, t=1, structure='algebra'):
+    """
 
-    t = 1  # TODO t depends on the value of the matrix, if it is a stack of matrices (one for each time point)
-    # or if it is a single matrix.
+    :param omega:
+    :param input_homography:
+    :param t:
+    :param structure:
+    :return:
+    """
+
+    if t > 1:  # TODO
+        raise IndexError('Random generator not defined (yet) for multiple time points')
+
+    d = check_omega(omega)
+    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+    vf = np.zeros(v_shape)
+    idd = vf_affine_to_homogeneous(vf_identity_eulerian(v_shape))
 
     if structure == 'algebra':
-
-        d = check_omega(omega)
-        v_shape = vf_shape_from_omega_and_timepoints(omega, t)
-
-        if t > 1:
-            raise IndexError('Random generator not defined (yet) for multiple time points')
-
         if d == 2:
-
-            idd = vf_identity_eulerian(v_shape)
-            vf = np.zeros(v_shape)
-
-            idd = vf_affine_to_homogeneous(idd)
-
             x_intervals, y_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -143,14 +127,7 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
                                         i * input_homography[2, :].dot(idd[i, j, 0, 0, :])
                     vf[i, j, 0, 0, 1] = input_homography[1, :].dot(idd[i, j, 0, 0, :]) - \
                                         j * input_homography[2, :].dot(idd[i, j, 0, 0, :])
-
         elif d == 3:
-
-            idd = vf_identity_eulerian(v_shape)
-            vf = np.zeros(v_shape)
-
-            idd = vf_affine_to_homogeneous(idd)
-
             x_intervals, y_intervals, z_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -161,23 +138,8 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
                                             j * input_homography[3, :].dot(idd[i, j, k, 0, :])
                         vf[i, j, k, 0, 2] = input_homography[2, :].dot(idd[i, j, k, 0, :]) - \
                                             k * input_homography[3, :].dot(idd[i, j, k, 0, :])
-
-        else:
-            raise IOError("Dimensions allowed: 2 or 3")
-
-        return vf
-
     elif structure == 'group':
-
-        d = check_omega(omega)
-        v_shape = vf_shape_from_omega_and_timepoints(omega)
-
-        # TODO Debug carefully!!
-
         if d == 2:
-
-            vf = np.zeros(v_shape)
-
             x_intervals, y_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -200,17 +162,7 @@ def generate_from_projective_matrix(omega, input_homography, structure='algebra'
                         if abs(s[3]) > 1e-5:
                             vf[i, j, k, 0, :] = (s[0:3] / float(s[3])) - np.array([i, j, k])
 
-            # TODO
-        else:
-            raise IOError("Dimensions allowed: 2 or 3")
-        return vf
     else:
-        raise IOError
+        raise IOError("structure can be only 'algebra' or 'group' corresponding to the algebraic structure.")
 
-
-def generate_from_image(input_nib_image):
-    if isinstance(input_nib_image, str):
-        if not os.path.exists(input_nib_image):
-            raise IOError('Input path {} does not exist.'.format(input_nib_image))
-        input_nib_image = nib.load(input_nib_image)
-    return input_nib_image.get_array()
+    return vf
