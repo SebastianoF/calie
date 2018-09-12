@@ -181,16 +181,16 @@ def test_generate_from_projective_matrix_wrong_timepoints():
 
 
 def test_generate_from_projective_matrix_wrong_structure():
+    with assert_raises(IOError):
+        generate_from_projective_matrix((10, 11), np.eye(4), t=1, structure='spam')
+
+
+def test_generate_from_projective_matrix_with_algebra_element():
     pass
 
 
-def test_generate_from_projective_matrix_from_algebra_element():
+def test_generate_from_projective_matrix_with_group_element():
     pass
-
-
-def test_generate_from_projective_matrix_from_group_element():
-    pass
-
 
 
 if __name__ == '__main__':
@@ -210,6 +210,7 @@ if __name__ == '__main__':
     test_generate_from_matrix_from_algebra_element_3d_3d_matrix()
     test_generate_from_matrix_from_group_element_3d_3d_matrix()
 
+    test_generate_from_projective_matrix_wrong_timepoints()
     test_generate_from_projective_matrix_wrong_structure()
-    test_generate_from_projective_matrix_from_algebra_element()
-    test_generate_from_projective_matrix_from_group_element()
+    test_generate_from_projective_matrix_with_algebra_element()
+    test_generate_from_projective_matrix_with_group_element()

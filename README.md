@@ -1,14 +1,14 @@
 # VECtorsToolkit
 
-Python 2.7.1.
-Debugging in progress... Do not use this brain!
+Python 3.7 back compatible with 2.7.
 
 ## Introduction
 
-Small framework to manipulate, integrate, derivate and visualize vector fields.
+Small in-progress code to manipulate, integrate, derivate and visualize vector fields.
 In includes local operations from Lie group theory as Lie logarithm, exponential, log-composition, exp-sum and 
-exp-multiplication by a scalar (see docs - in progress -  for definitions).
-It is a light refactoring of the less flexible but more specific software proposed in the repository lie_exponential.
+exp-multiplication by a scalar.
+It is a light refactoring of the less flexible but more specific software proposed in the repository lie_exponential
+version 1.0.0.
 
 The main aim other than provide prototyping playground where to test algorithms for the manipulations of vector fields, 
 as well as to compute statistics, and test new methods on computing statistics on transformations.

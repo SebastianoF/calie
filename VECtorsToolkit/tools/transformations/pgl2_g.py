@@ -130,3 +130,66 @@ def randomgen_special(d=2, center=None, scale_factor=None, sigma=1.0, special=Fa
         return h_g.matrix, h_a.matrix
     else:
         return h_g, h_a
+
+'''
+
+# methods to get above elements as matrices: it masks the classes!
+def get_random_hom_g(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
+    """
+    :param d: dimension of the homography in pgl by default or in psl
+    :param center: center of the homography, if any
+    :param scale_factor: scale factor of the homography
+    :param sigma: sigma for the random values of the initial matrix.
+    :param special: if the homography is in psl (True) or in pgl (False, default)
+    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
+    """
+    if special:
+        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_a = h_g.logaritmicate()
+
+    else:
+        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_a = h_g.logaritmicate()
+
+    return h_g, h_a
+
+
+def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False):
+    """
+    :param d: dimension of the homography in pgl by default or in psl
+    :param center: center of the homography, if any
+    :param scale_factor: scale factor of the homography
+    :param sigma: sigma for the random values of the initial matrix.
+    :param special: if the homography is in psl (True) or in pgl (False, default)
+    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
+    """
+
+    h_a = ProjectiveAlgebra.randomgen(d=d, scale_factor=scale_factor, sigma=sigma, special=special)
+    h_g = h_a.exponentiate()
+
+    return h_a.matrix, h_g.matrix
+
+
+
+def get_random_hom_matrices(d=2, center=None, random_kind='diag', scale_factor=None, sigma=1.0, special=False):
+    """
+    :param d: dimension of the homography in pgl by default or in psl
+    :param center: center of the homography, if any
+    :param random_kind
+    :param scale_factor: scale factor of the homography
+    :param sigma: sigma for the random values of the initial matrix.
+    :param special: if the homography is in psl (True) or in pgl (False, default)
+    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
+    AS MATRICES!
+    """
+    if special:
+        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_a = h_g.logaritmicate()
+
+    else:
+        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_a = h_g.logaritmicate()
+
+    return h_g.matrix, h_a.matrix
+
+'''

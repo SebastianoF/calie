@@ -14,7 +14,7 @@ def generate_random(omega, t=1, parameters=(5, 2)):
     :param parameters: (sigma initial randomness, sigma of the gaussian filter).
     :return:
     """
-    if t > 1:  # TODO upgrade. correct tests afterwards.
+    if t > 1:  # TODO upgrade for more than one timepoint. correct tests afterwards.
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
     v_shape = vf_shape_from_omega_and_timepoints(omega, t)
@@ -146,7 +146,7 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
 
                     s = input_homography.dot(np.array([i, j, 1]))[:]
                     if abs(s[2]) > 1e-5:
-                        # subtract the id point-wise to have the result in displacement coordinates
+                        # subtract the id point-wise to have the result in Lagrangian coordinates
                         vf[i, j, 0, 0, :] = (s[0:2] / float(s[2])) - np.array([i, j])
 
         elif d == 3:
