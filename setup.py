@@ -11,5 +11,4 @@ setup(name='VECtorsToolkit',
       author_email='sebastiano.ferraris@gmail.com',
       license='MIT',
       url='https://github.com/SebastianoF/VECtorsToolkit',
-      packages=find_packages(),
-     )
+      packages=find_packages())

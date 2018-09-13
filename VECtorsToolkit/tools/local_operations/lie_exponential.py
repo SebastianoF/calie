@@ -99,7 +99,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_ei':  # Scaling and squaring exponential integrators
 
@@ -143,7 +143,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_ei_mod':  # Affine scaling and squaring exponential integrators modified
 
@@ -177,7 +177,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_aei':  # scaling and squaring approximated exponential integrators
 
@@ -197,7 +197,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'midpoint':
 
@@ -207,8 +207,8 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
 
         for _ in range(num_steps):
-            phi_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
-            phi += h * lagrangian_dot_lagrangian(vf, phi_tilda, spline_interpolation_order=s_i_o, add_right=False)
+            phi_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi += h * lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False)
 
     elif algorithm == 'series':  # Series method
 
@@ -235,7 +235,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
 
         for _ in range(num_steps):
-            phi += h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            phi += h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
     elif algorithm == 'euler_aei':  # Euler approximated exponential integrator
 
@@ -248,7 +248,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         vf += 0.5 * jv_prod_v
 
         for _ in range(num_steps):
-            phi = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o)
+            phi = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o)
 
     elif algorithm == 'euler_mod':  # Euler modified
 
@@ -259,10 +259,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(num_steps):
 
-            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            phi += (h/2) * (lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) +
-                            lagrangian_dot_lagrangian(vf, phi_tilda, spline_interpolation_order=s_i_o, add_right=False))
+            phi += (h/2) * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                            lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
 
     elif algorithm == 'heun':  # Heun method
 
@@ -273,10 +273,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(num_steps):
 
-            psi_1 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            psi_1 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            psi_2 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) + \
-                                              3 * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
+            psi_2 = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
+                                              3 * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_2
 
@@ -288,12 +288,12 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
         for i in range(num_steps):
 
-            psi_1 = phi + (h / 3) * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            psi_1 = phi + (h / 3) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            psi_2 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
+            psi_2 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
-            psi_3 = lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False) + \
-                                              3 * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o, add_right=False)
+            psi_3 = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
+                                              3 * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_3
 
@@ -306,16 +306,16 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(num_steps):
 
-            r_1 = h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            r_1 = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
             psi_1 = phi + .5 * r_1
 
-            r_2 = h  * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
+            r_2 = h  * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             psi_2 = phi + .5 * r_2
-            r_3 = h * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o, add_right=False)
+            r_3 = h * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             psi_3 = phi + r_3
-            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, spline_interpolation_order=s_i_o, add_right=False)
+            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
@@ -340,22 +340,22 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(num_steps):
 
-            r_1   = h * lagrangian_dot_lagrangian(vf, phi, spline_interpolation_order=s_i_o, add_right=False)
+            r_1   = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
             psi_1 = phi + .5 * r_1
-            r_2   = h  * lagrangian_dot_lagrangian(vf, psi_1, spline_interpolation_order=s_i_o, add_right=False)
+            r_2   = h  * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             psi_2 = phi + .5 * r_2
-            r_3   = h  * lagrangian_dot_lagrangian(vf, psi_2, spline_interpolation_order=s_i_o, add_right=False)
+            r_3   = h  * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             psi_3 = phi + r_3
-            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, spline_interpolation_order=s_i_o, add_right=False)
+            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
         # (2)
         for _ in range(num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, spline_interpolation_order=s_i_o, add_right=True)
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
 
     else:
         raise TypeError('Error: wrong algorithm name. You inserted {}'.format(algorithm))
