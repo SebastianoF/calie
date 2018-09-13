@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_almost_equal, assert_equal, assert_raises, assert_almost_equal
 from scipy.linalg import expm
 
-from VECtorsToolkit.tools.transformations.z_projective_algebras import Pgl2A, Pgl2G
+from VECtorsToolkit.tools.transformations.pgl2 import Pgl2A, Pgl2G, randomgen_Pgl2A, Pgl2A_exp
 
 ### TESTS projective general linear algebra and group ###
 
@@ -23,8 +23,8 @@ def test_init_pgl_a_good_input():
 
 
 def test_randomgen_pgl_a():
-    m2 = Pgl2A.randomgen()
-    m4 = Pgl2A.randomgen(d=4)
+    m2 = randomgen_Pgl2A()
+    m4 = randomgen_Pgl2A(d=4)
     assert isinstance(m2, Pgl2A)
     assert isinstance(m4, Pgl2A)
     assert_array_equal(m2.shape, [3, 3])
@@ -32,10 +32,10 @@ def test_randomgen_pgl_a():
 
 
 def test_exponentiate_pgl_a_1():
-    m4_a = Pgl2A.randomgen(d=4)
+    m4_a = randomgen_Pgl2A(d=4)
     m4_m = m4_a.matrix
 
-    exp_of_m4_a = m4_a.exponentiate()
+    exp_of_m4_a = Pgl2A_exp(m4_a)
     exp_of_m4_m = expm(m4_m)
 
     # check class
@@ -46,10 +46,10 @@ def test_exponentiate_pgl_a_1():
 
 
 def test_exponentiate_pgl_a_2():
-    m6_a = Pgl2A.randomgen(d=6)
+    m6_a = randomgen_Pgl2A(d=6)
     m6_m = m6_a.matrix
 
-    exp_of_m6_a = m6_a.exponentiate()
+    exp_of_m6_a = Pgl2A_exp(m6_a)
     exp_of_m6_m = expm(m6_m)
 
     # check class and dim
@@ -62,7 +62,7 @@ def test_exponentiate_pgl_a_2():
 
 
 def test_ode_solution_pgl_a_1():
-    m_a = Pgl2A.randomgen()
+    m_a = randomgen_Pgl2A()
     m_m = m_a.matrix
 
     exp_of_m_m = expm(m_m)
@@ -74,7 +74,7 @@ def test_ode_solution_pgl_a_1():
 
 
 def test_ode_solution_pgl_a_2():
-    m_a = Pgl2A.randomgen(d=3)
+    m_a = randomgen_Pgl2A(d=3)
     m_m = m_a.matrix
 
     exp_of_m_m = expm(m_m)
@@ -108,14 +108,14 @@ def test_generated_psl_a_1():
     # special linear algebra element must have trace = 0.
     assert_equal(np.trace(m1.matrix), 0)
     # special linear group element should have det = 1.
-    assert_almost_equal(np.linalg.det(m1.exponentiate().matrix), 1)
+    assert_almost_equal(np.linalg.det(Pgl2A_exp(m1).matrix), 1)
 
 
 def test_randomgen_psl_a_2():
     dd = 2
-    m1 = Pgl2A.randomgen(d=dd, special=True)
+    m1 = randomgen_Pgl2A(d=dd, special=True)
 
     # special linear algebra element must have trace = 0.
     assert_almost_equal(np.trace(m1.matrix), 0)
     # special linear group element should have det = 1.
-    assert_almost_equal(np.linalg.det(m1.exponentiate().matrix), 1)
+    assert_almost_equal(np.linalg.det(Pgl2A_exp(m1).matrix), 1)

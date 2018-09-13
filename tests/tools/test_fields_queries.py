@@ -107,9 +107,6 @@ if __name__ == '__main__':
     test_get_omega_from_vf_3d()
     test_get_omega_from_vf_2d()
 
-    test_get_omega_2d()
-    test_get_omega_3d()
-
     test_vf_shape_from_omega_and_timepoints()
 
     test_vf_norm_zeros()

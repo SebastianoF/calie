@@ -5,7 +5,7 @@ from random import uniform
 
 from VECtorsToolkit.tools.auxiliary.matrices import bch_right_jacobian, matrix_vector_field_product, \
     matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
-from VECtorsToolkit.tools.transformations.se2_a import Se2A, se2_a_exp
+from VECtorsToolkit.tools.transformations.se2 import Se2A, se2a_exp
 
 
 ''' test BCH right Jacobian '''
@@ -66,7 +66,7 @@ def test_bch_ground_random_input_comparing_matrices_step_1():
     a_matrix = a.get_matrix
     da_matrix = da.get_matrix
     exp_exp_pade = lin.expm(a_matrix).real.dot(lin.expm(da_matrix).real).real
-    exp_exp_my = se2_a_exp(a) * se2_a_exp(da)
+    exp_exp_my = se2a_exp(a) * se2a_exp(da)
     assert_array_almost_equal(exp_exp_pade, exp_exp_my.get_matrix)
 
 

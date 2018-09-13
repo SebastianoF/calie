@@ -1,13 +1,42 @@
-"""
-Classes for projective real Lie group, general and special, of dimension d.
-Default value d=2.
-
-https://en.wikipedia.org/wiki/Projective_linear_group
-"""
 import numpy as np
 from scipy.linalg import expm, logm
 
-from VECtorsToolkit.tools.transformations.pgl2_a import Pgl2A
+
+class Pgl2A(object):
+    """
+    Classes for projective real Lie algebra, general and special, of dimension d.
+    Default value d=2.
+
+    https://en.wikipedia.org/wiki/Projective_linear_group
+
+    Real projective general/special linear Lie algebra of dimension d.
+    Each element is a (d+1)x(d+1) real matrix defined up to a constant.
+    Its exponential is given through the numerical approximation expm.
+    If special trace must be zero.
+    """
+    def __init__(self, d=2, m=np.zeros([3, 3]), special=False):
+        """
+        """
+        if np.array_equal(m.shape, [d + 1] * 2):
+            self.matrix = m  # - np.min(m)*np.ones([d+1, d+1])
+            self.dim = d
+            self.special = special
+        else:
+            raise IOError
+        if special is True and not np.abs(np.trace(m)) < 1e-4:
+            raise IOError('input matrix is not in the special projective group')
+
+    def shape(self):
+        return self.matrix.shape
+
+    shape = property(shape)
+
+    def ode_solution(self, init_cond=np.array([0, 0, 1]), affine_coordinates=True):
+        s = expm(self.matrix).dot(init_cond)
+        if affine_coordinates:
+            return s[0:self.dim]/s[self.dim]  # the projective coordinate is the last one
+        else:
+            return s
 
 
 class Pgl2G(object):
@@ -73,7 +102,31 @@ class Pgl2G(object):
         self.matrix = self.centered_matrix(c)
 
 
-def randomgen(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
+def randomgen_Pgl2A(d=2, scale_factor=None, sigma=1.0, special=False):
+    """
+    Generate a random element in the projective linear algebra
+    :param d:
+    :param scale_factor:
+    :param sigma:
+    :param special:
+    :return:
+    """
+    random_h = sigma*np.random.randn(d+1,  d+1)
+
+    if scale_factor is not None:
+        random_h = scale_factor * random_h
+
+    if special:
+        random_h[0, 0] = -1 * np.sum(np.diagonal(random_h)[1:])
+
+    return Pgl2A(d=d, m=random_h, special=special)
+
+
+def Pgl2A_exp(pgl2a):
+    return Pgl2G(pgl2a.dim, expm(pgl2a.matrix), special=pgl2a.special)
+
+
+def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
     """
     H = [A, T; B, 1]
     :param d:
@@ -103,12 +156,12 @@ def randomgen(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
     return Pgl2G(d=d, m=random_h, special=special)
 
 
-def pgl2a_log(pgl2a):
-    return Pgl2A(pgl2a.dim, logm(pgl2a.matrix)[:], special=pgl2a.special)
+def pgl2a_log(pgl2g):
+    return Pgl2A(pgl2g.dim, logm(pgl2g.matrix)[:], special=pgl2g.special)
 
 
-def randomgen_special(d=2, center=None, scale_factor=None, sigma=1.0, special=False,
-                      get_as_matrix=False):
+def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special=False,
+                         get_as_matrix=False):
     """
     :param d: dimension of the homography in pgl by default or in psl
     :param center: center of the homography, if any
@@ -119,17 +172,18 @@ def randomgen_special(d=2, center=None, scale_factor=None, sigma=1.0, special=Fa
     :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
     """
     if special:
-        h_g = randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
         h_a = pgl2a_log(h_g)
 
     else:
-        h_g = randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
+        h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
         h_a = pgl2a_log(h_g)
 
     if get_as_matrix:
         return h_g.matrix, h_a.matrix
     else:
         return h_g, h_a
+
 
 '''
 

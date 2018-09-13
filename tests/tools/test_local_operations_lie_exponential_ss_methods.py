@@ -11,7 +11,7 @@ import numpy as np
 from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
 from VECtorsToolkit.tools.fields.queries import vf_norm
 from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
-from VECtorsToolkit.tools.transformations.se2_g import Se2G, se2_g_log
+from VECtorsToolkit.tools.transformations.se2 import Se2G, se2g_log
 from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
 
@@ -63,7 +63,7 @@ def test_visual_assessment_method_one_se2(show=False):
     # -----
 
     m_0 = Se2G(theta, tx, ty)
-    dm_0 = se2_g_log(m_0)
+    dm_0 = se2g_log(m_0)
 
     # -- generate subsequent vector fields
 

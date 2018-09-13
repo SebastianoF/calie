@@ -3,36 +3,35 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 
 
-from VECtorsToolkit.tools.transformations import se2_g
-from VECtorsToolkit.tools.transformations import se2_a
+from VECtorsToolkit.tools.transformations import se2
 
 ### confirm that exp and log are ones other inverse for matrices ###
 
 
 def test_theory_inverse_exp_log():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_g.Se2G(any_angle_1, any_tx_1, any_ty_1)
-    ans = se2_a.se2_a_exp(se2_g.se2_g_log(a))
+    a = se2.Se2G(any_angle_1, any_tx_1, any_ty_1)
+    ans = se2.se2a_exp(se2.se2g_log(a))
     assert_array_almost_equal(a.get, ans.get)
 
 
 def test_theory_inverse_log_exp():
-    any_angle_1 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_a.Se2A(any_angle_1, any_tx_1, any_ty_1)
-    ans = se2_g.se2_g_log(se2_a.se2_a_exp(a))
+    a = se2.Se2A(any_angle_1, any_tx_1, any_ty_1)
+    ans = se2.se2g_log(se2.se2a_exp(a))
     assert_array_almost_equal(a.get, ans.get)
 
 
 def test_theory_inverse_log_exp_input_not_in_quotient():
-    any_angle_1 = 2 * np.pi + uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
+    any_angle_1 = 2 * np.pi + uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_1 = uniform(-10, 10)
     any_ty_1 = uniform(-10, 10)
-    a = se2_a.Se2A(any_angle_1, any_tx_1, any_ty_1)
-    ans = se2_g.se2_g_log(se2_a.se2_a_exp(a))
+    a = se2.Se2A(any_angle_1, any_tx_1, any_ty_1)
+    ans = se2.se2g_log(se2.se2a_exp(a))
     assert_array_almost_equal(a.get, ans.get)
 
 
