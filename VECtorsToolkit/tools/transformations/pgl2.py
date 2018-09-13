@@ -136,7 +136,7 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
     :param special:
     :return:
     """
-    random_h = sigma*np.random.randn(d+1,  d+1)
+    random_h = sigma * np.random.randn(d+1,  d+1)
     # select one equivalence class.
     random_h[-1, -1] = 1
     # Ensure its matrix logarithm will have real entries.
@@ -157,93 +157,70 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
 
 
 def pgl2a_log(pgl2g):
-    return Pgl2A(pgl2g.dim, logm(pgl2g.matrix)[:], special=pgl2g.special)
+    return Pgl2A(pgl2g.dim, np.copy(logm(pgl2g.matrix)), special=pgl2g.special)
 
 
-def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special=False,
-                         get_as_matrix=False):
+def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special=False, get_as_matrix=False,
+                         random_kind='diag'):
     """
-    :param d: dimension of the homography in pgl by default or in psl
-    :param center: center of the homography, if any
-    :param scale_factor: scale factor of the homography
-    :param sigma: sigma for the random values of the initial matrix.
-    :param special: if the homography is in psl (True) or in pgl (False, default)
-    :param get_as_matrix: if true output is a matrix.
-    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
-    """
-    if special:
-        h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = pgl2a_log(h_g)
 
+    :param d:
+    :param center:
+    :param scale_factor:
+    :param sigma:
+    :param special:
+    :param get_as_matrix:
+    :param random_kind:
+    :return:
+    """
+    h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma, special=special)
+    h_g_matrix = h_g.matrix
+
+    x_c, y_c, z_c = center
+
+    if random_kind == 'diag':
+        h_g_matrix[0, 0] = 1 - (h_g_matrix[0, 1] * y_c + h_g_matrix[0, 2] * z_c) / float(x_c)
+        h_g_matrix[1, 1] = 1 - (h_g_matrix[1, 0] * x_c + h_g_matrix[1, 2] * z_c) / float(y_c)
+        h_g_matrix[2, 2] = 1 - (h_g_matrix[2, 0] * x_c + h_g_matrix[2, 1] * y_c) / float(z_c)
+
+    elif random_kind == 'skew':
+        h_g_matrix[0, 2] = ((1 - h_g_matrix[0, 0]) * x_c - h_g_matrix[0, 1] * y_c) / float(z_c)
+        h_g_matrix[1, 0] = ((1 - h_g_matrix[1, 1]) * y_c - h_g_matrix[1, 2] * z_c) / float(x_c)
+        h_g_matrix[2, 1] = ((1 - h_g_matrix[2, 2]) * z_c - h_g_matrix[2, 0] * x_c) / float(y_c)
+
+    elif random_kind == 'transl':
+        h_g_matrix[0, 2] = (1 - h_g_matrix[0, 0]) * x_c - h_g_matrix[0, 1] * y_c
+        h_g_matrix[1, 2] = - h_g_matrix[1, 0] * x_c + (1 - h_g_matrix[1, 1]) * y_c
+        h_g_matrix[2, 2] = 1  # - random_h[2, 0] * x_c - random_h[2, 1] * y_c + 1
+
+    elif random_kind == 'shift':
+        two_minus_Bc = 2 - h_g_matrix[2, :-1].dot(np.array([x_c, y_c]).T)
+        T_plus_c_minus_Ac = h_g_matrix[:-1, 2] + np.array([x_c, y_c]).T - h_g_matrix[-1, :-1].dot(np.array([x_c, y_c]).T)
+        # A prime
+        h_g_matrix[:-1, :-1] = h_g_matrix[:-1, :-1] / float(two_minus_Bc)
+        # B prime
+        h_g_matrix[2, :-1] = h_g_matrix[2, :-1] / float(two_minus_Bc)
+        # T prime
+        h_g_matrix[:-1, 2] = T_plus_c_minus_Ac
+        h_g_matrix[2, 2] = 1
+
+    elif random_kind == 's':
+        two_minus_Bc = 2 - h_g_matrix[2, :-1].dot(np.array([x_c, y_c]).T)
+        T_plus_c_minus_Ac = h_g_matrix[:-1, 2] + np.array([x_c, y_c]).T - h_g_matrix[-1, :-1].dot(np.array([x_c, y_c]).T)
+        # A prime
+        h_g_matrix[:-1, :-1] = h_g_matrix[:-1, :-1] / float(two_minus_Bc)
+        # B prime
+        h_g_matrix[2, :-1] = h_g_matrix[2, :-1] / float(two_minus_Bc)
+        # T prime
+        h_g_matrix[:-1, 2] = T_plus_c_minus_Ac
+
+        h_g_matrix[2, 2] = 1
     else:
-        h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = pgl2a_log(h_g)
+        pass
+
+    h_a = pgl2a_log(h_g)
 
     if get_as_matrix:
         return h_g.matrix, h_a.matrix
     else:
         return h_g, h_a
-
-
-'''
-
-# methods to get above elements as matrices: it masks the classes!
-def get_random_hom_g(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
-    """
-    :param d: dimension of the homography in pgl by default or in psl
-    :param center: center of the homography, if any
-    :param scale_factor: scale factor of the homography
-    :param sigma: sigma for the random values of the initial matrix.
-    :param special: if the homography is in psl (True) or in pgl (False, default)
-    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
-    """
-    if special:
-        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = h_g.logaritmicate()
-
-    else:
-        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = h_g.logaritmicate()
-
-    return h_g, h_a
-
-
-def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False):
-    """
-    :param d: dimension of the homography in pgl by default or in psl
-    :param center: center of the homography, if any
-    :param scale_factor: scale factor of the homography
-    :param sigma: sigma for the random values of the initial matrix.
-    :param special: if the homography is in psl (True) or in pgl (False, default)
-    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
-    """
-
-    h_a = ProjectiveAlgebra.randomgen(d=d, scale_factor=scale_factor, sigma=sigma, special=special)
-    h_g = h_a.exponentiate()
-
-    return h_a.matrix, h_g.matrix
-
-
-
-def get_random_hom_matrices(d=2, center=None, random_kind='diag', scale_factor=None, sigma=1.0, special=False):
-    """
-    :param d: dimension of the homography in pgl by default or in psl
-    :param center: center of the homography, if any
-    :param random_kind
-    :param scale_factor: scale factor of the homography
-    :param sigma: sigma for the random values of the initial matrix.
-    :param special: if the homography is in psl (True) or in pgl (False, default)
-    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
-    AS MATRICES!
-    """
-    if special:
-        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = h_g.logaritmicate()
-
-    else:
-        h_g = ProjectiveGroup.randomgen(d=d, center=center, scale_factor=scale_factor, sigma=sigma)
-        h_a = h_g.logaritmicate()
-
-    return h_g.matrix, h_a.matrix
-
-'''

@@ -441,7 +441,7 @@ def se2g_randomgen_custom(interval_theta=(), interval_tx=(), interval_ty=(), avo
     return Se2G(theta, tx, ty)
 
 
-def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2), omega=(1, 6), avoid_zero_rotation=True,
+def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2), interval_center=(1, 6, 1, 6), avoid_zero_rotation=True,
                                  epsilon_zero_avoidance=0.001):
     """
     An element of SE(2) defines a rotation (from SO(2)) away from the origin.
@@ -450,7 +450,7 @@ def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2), omega=(
     in the interval interval_theta, and with center of rotation in the squared subset of the cartesian plane
     (x0,x1)x(y0,y1)
     :param interval_theta:
-    :param omega:
+    :param interval_center:
     :param avoid_zero_rotation:
     :param epsilon_zero_avoidance:
     :return:
@@ -463,8 +463,11 @@ def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2), omega=(
             epsilon = epsilon_zero_avoidance  # np.spacing(0)
             theta = np.random.choice([uniform(interval_theta[0], 0 - epsilon), uniform(0 + epsilon, interval_theta[1])])
 
-    x_c  = uniform(omega[0], omega[1])
-    y_c  = uniform(omega[0], omega[1])
+    x_c  = uniform(interval_center[0], interval_center[1])
+    if len(interval_center) == 4:
+        y_c  = uniform(interval_center[2], interval_center[3])
+    else:
+        y_c = uniform(interval_center[0], interval_center[1])
 
     tx   = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
     ty   = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c
