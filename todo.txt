@@ -1,0 +1,21 @@
+Todo list:
+
+Code development
+- test 100% generate_vf
+- test 100% fields.composition
+- test 100% fields.composition
+- test 100% fields.matrices and auxiliaries
+- test 100% fields.matrices and auxiliaries
+- test Jacobians
+- test Lie brackets
+
+New features
+- add log-composition
+- add Bossa Algorithm for the log function
+- add agents and facade for the design pattern
+- add well behaved homographies, with reasoned input and test
+- add 3d homographies and special euclidean group (see rodriguez formula)
+- add latex documentation with guided formulas and examples (jupyter notebook?)
+- time varying velocity fields (add 4d vector fields and related solver)
+- First release here (after 100% test).
+- Further benchmarking with SVF generated out of DummyForMRI (?)
