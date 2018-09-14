@@ -338,6 +338,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         init = 1 << num_steps
         vf = vf / init
 
+        # (1.5)
         for _ in range(num_steps):
 
             r_1   = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
@@ -355,6 +356,79 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(num_steps):
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
+
+    elif algorithm == 'trapezoid_euler':
+
+        if num_steps == 0:
+            h = 1.0
+        else:
+            h = 1.0 / num_steps
+
+        for _ in range(0, num_steps):
+            # euler
+            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+
+            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+
+    elif algorithm == 'trapezoid_midpoint':
+
+        if num_steps == 0:
+            h = 1.0
+        else:
+            h = 1.0 / num_steps
+
+        for _ in range(0, num_steps):
+            # midpoint
+            phi_tilda_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
+
+            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+
+    elif algorithm == 'gss_trapezoid_euler':
+
+        if num_steps == 0:
+            h = 1.0
+        else:
+            h = 1.0 / num_steps
+
+        # (1)
+        init = 1 << num_steps
+        vf = vf / init
+
+        # (1.5)
+        for _ in range(0, num_steps):
+            tilda_phi = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             lagrangian_dot_lagrangian(vf, tilda_phi, s_i_o=s_i_o, add_right=False))
+
+        # (2)
+        for _ in range(0, num_steps):
+            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
+
+    elif algorithm == 'gss_trapezoid_midpoint':
+
+        if num_steps == 0:
+            h = 1.0
+        else:
+            h = 1.0 / num_steps
+
+        # (1)
+        init = 1 << num_steps
+        vf = vf / init
+
+        # (1.5)
+        for _ in range(0, num_steps):
+            phi_tilda_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
+
+            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+
+        # (2)
+        for _ in range(0, num_steps):
             phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
 
     else:

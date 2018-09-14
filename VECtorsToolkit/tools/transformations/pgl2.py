@@ -175,7 +175,8 @@ def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special
     """
     h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma, special=special)
     h_g_matrix = h_g.matrix
-
+    if len(center) == 2:
+        center = center + [1]
     x_c, y_c, z_c = center
 
     if random_kind == 'diag':
