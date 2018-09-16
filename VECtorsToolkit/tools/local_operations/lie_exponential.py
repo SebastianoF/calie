@@ -307,8 +307,8 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         for _ in range(num_steps):
 
             r_1 = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
-            psi_1 = phi + .5 * r_1
 
+            psi_1 = phi + .5 * r_1
             r_2 = h  * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             psi_2 = phi + .5 * r_2
