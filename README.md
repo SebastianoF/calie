@@ -3,7 +3,7 @@
 Python 3.7 back compatible with 2.7.
 
 Research code for testing and comparing numerical integrations of vector fields in 
-![img](http://latex.codecogs.com/svg.latex?\vec{x}^{\iota}).
+![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
 
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
