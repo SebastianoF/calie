@@ -2,7 +2,9 @@
 
 Python 3.7 back compatible with 2.7.
 
-Research code for the numerical integration of vector fields in $$\mathbb{R}^2$$ or $$\mathbb{R}^3$$.
+Research code for the numerical integration of vector fields in 
+<!-- ```math --> <!-- \mathbb{R}^D --> <!-- ``` -->.
+
 The main aim of this code is to test and compare a range of algorithms for the integration of vector fields.
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
