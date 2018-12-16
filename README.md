@@ -2,9 +2,10 @@
 
 Python 3.7 back compatible with 2.7.
 
-<!--Research code for the numerical integration of vector fields in $`\mathbb{R}^D`$-->
+<!--Research code for testing and comparing numerical integrations of vector fields in $`\mathbb{R}^D`$-->
 
-The main aim of this code is to test and compare a range of algorithms for the integration of vector fields.
+<!--to obtain the (vectorized) high-resolution 3D MRI volume $`\vec{x}\in\mathbb{R}^N`$ from multiple, possibly motion corrupted, low-resolution stacks of (vectorized) 2D MR slices $`\vec{y}_k \in\mathbb{R}^{N_k}`$ with $`N_k\ll N`$ for $`k=1,...,\,K`$-->
+
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
