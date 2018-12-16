@@ -7,10 +7,11 @@ Lagrangian -> displacement
 Eulerian   -> deformation
 """
 import os
-import numpy as np
-import nibabel as nib
 
-from VECtorsToolkit.tools.fields.queries import get_omega_from_vf, check_is_vf, check_omega, \
+import nibabel as nib
+import numpy as np
+
+from VECtorsToolkit.fields import get_omega_from_vf, check_is_vf, check_omega, \
     vf_shape_from_omega_and_timepoints
 
 

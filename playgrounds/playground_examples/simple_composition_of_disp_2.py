@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
-from VECtorsToolkit.tools.fields.composition import lagrangian_dot_lagrangian
 from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field
+
+from VECtorsToolkit.fields import lagrangian_dot_lagrangian
 
 if __name__ == '__main__':
     shape = (6, 6, 1, 1, 2)

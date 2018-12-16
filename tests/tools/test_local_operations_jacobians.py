@@ -1,12 +1,9 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import time
+from VECtorsToolkit.tools.operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
+from numpy.testing import assert_array_almost_equal
 from sympy.core.cache import clear_cache
-from numpy.testing import assert_array_equal, assert_array_almost_equal, assert_equal, assert_raises, \
-    assert_almost_equal
 
-from VECtorsToolkit.tools.local_operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
+from VECtorsToolkit.fields import vf_identity_lagrangian
 
 
 # -- Jacobian tests for the class Image 2d

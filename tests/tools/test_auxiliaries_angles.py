@@ -1,11 +1,10 @@
 """
 Test module for the aux_functions.py module
 """
-from numpy.testing import assert_equal
 import numpy as np
+from numpy.testing import assert_equal
 
-from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
-
+from VECtorsToolkit.aux import mod_pipi
 
 ''' test for mod_pipi '''
 

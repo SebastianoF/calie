@@ -10,11 +10,11 @@ Afterwards we compose exp(v) and exp(-v) to see the approximated identity with t
 """
 import matplotlib.pyplot as plt
 import numpy as np
-
-from VECtorsToolkit.tools.fields.composition import lagrangian_dot_lagrangian
-from VECtorsToolkit.tools.fields.generate_vf import generate_random
-from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
+from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential
 from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field, see_2_fields
+
+from VECtorsToolkit.fields import generate_random
+from VECtorsToolkit.fields import lagrangian_dot_lagrangian
 
 if __name__ == '__main__':
 

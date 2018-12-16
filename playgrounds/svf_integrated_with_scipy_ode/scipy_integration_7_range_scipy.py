@@ -5,12 +5,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-from VECtorsToolkit.tools.fields.generate_vf import generate_from_matrix
-from VECtorsToolkit.tools.fields.queries import vf_norm
-from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential_scipy
+from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential_scipy
 from VECtorsToolkit.tools.transformations.se2_a import se2_g
 from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
+
+from VECtorsToolkit.fields import generate_from_matrix
+from VECtorsToolkit.fields import vf_norm
 
 if __name__ == '__main__':
 

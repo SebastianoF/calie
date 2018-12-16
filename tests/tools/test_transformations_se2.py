@@ -1,12 +1,11 @@
-import numpy as np
 from random import uniform
+
+import numpy as np
 import scipy.linalg as lin
-from numpy.testing import assert_array_almost_equal, assert_array_equal,  assert_equal, assert_raises
+from VECtorsToolkit.tools.transformations import se2
+from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_equal, assert_raises
 
-from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
-
-from VECtorsToolkit.tools.transformations import se2 
-
+from VECtorsToolkit.aux import mod_pipi
 
 '''
 Test for the module translation

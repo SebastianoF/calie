@@ -1,8 +1,9 @@
 from math import sin, cos, sqrt
 from random import uniform
+
 import numpy as np
 
-from VECtorsToolkit.tools.auxiliary.angles import mod_pipi
+from VECtorsToolkit.aux import mod_pipi
 
 
 class Se2A(object):

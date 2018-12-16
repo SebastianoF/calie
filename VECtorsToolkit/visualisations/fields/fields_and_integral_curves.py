@@ -4,10 +4,11 @@ integrator method exponential_scipy with return_integral_curves=True
 is provided.
 """
 import copy
+
 import matplotlib.pyplot as plt
 
-from VECtorsToolkit.tools.fields.queries import check_is_vf
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
+from VECtorsToolkit.fields import check_is_vf
+from VECtorsToolkit.fields import vf_identity_eulerian_like
 
 
 def see_overlay_of_n_fields_and_flow(list_of_obj,

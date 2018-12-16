@@ -1,8 +1,8 @@
 import numpy as np
-from numpy.testing import assert_array_equal, assert_almost_equal, assert_equal, assert_raises, assert_almost_equal
+from numpy.testing import assert_array_equal, assert_equal, assert_raises, assert_almost_equal
 from scipy.linalg import expm
 
-from VECtorsToolkit.tools.transformations.pgl2 import Pgl2A, Pgl2G, randomgen_Pgl2A, Pgl2A_exp
+from VECtorsToolkit.transformations import Pgl2A, Pgl2G, randomgen_Pgl2A, Pgl2A_exp
 
 
 # TESTS projective general linear algebra and group #

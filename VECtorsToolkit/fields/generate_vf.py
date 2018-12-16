@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.ndimage.filters as fil
 
-from VECtorsToolkit.tools.fields.queries import check_omega, vf_shape_from_omega_and_timepoints
-from VECtorsToolkit.tools.fields.coordinates import vf_affine_to_homogeneous, vf_homogeneous_to_affine
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian
+from VECtorsToolkit.fields import check_omega, vf_shape_from_omega_and_timepoints
+from VECtorsToolkit.fields import vf_affine_to_homogeneous, vf_homogeneous_to_affine
+from VECtorsToolkit.fields import vf_identity_eulerian
 
 
 def generate_random(omega, t=1, parameters=(5, 2)):

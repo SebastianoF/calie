@@ -3,15 +3,15 @@ Integral vector field from integral curves.
 Emphasis on the initial and on the final point of the integral curve in transparency.
 Initial and final points of each integral curve at each point of the grid is called bi-point.
 """
-import numpy as np
-import matplotlib.pyplot as plt
 import copy
 
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.integrate import ode
 
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
-from VECtorsToolkit.tools.fields.generate_vf import generate_random
-from VECtorsToolkit.tools.fields.composition import one_point_interpolation
+from VECtorsToolkit.fields import generate_random
+from VECtorsToolkit.fields import one_point_interpolation
+from VECtorsToolkit.fields import vf_identity_eulerian_like
 
 
 # Auxiliary vector field function:

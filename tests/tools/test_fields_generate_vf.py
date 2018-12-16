@@ -1,9 +1,8 @@
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises
 
-from VECtorsToolkit.tools.fields.generate_vf import generate_random, generate_from_matrix, \
+from VECtorsToolkit.fields import generate_random, generate_from_matrix, \
     generate_from_projective_matrix
-
 
 ''' test generate_random '''
 

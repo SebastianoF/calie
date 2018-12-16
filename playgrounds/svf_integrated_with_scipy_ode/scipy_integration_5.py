@@ -6,13 +6,13 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential
+from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_2_fields_separate_and_overlay
 from scipy.integrate import ode
 
-from VECtorsToolkit.tools.fields.composition import one_point_interpolation
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
-from VECtorsToolkit.tools.fields.generate_vf import generate_random
-from VECtorsToolkit.tools.local_operations.lie_exponential import lie_exponential
-from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_2_fields_separate_and_overlay
+from VECtorsToolkit.fields import generate_random
+from VECtorsToolkit.fields import one_point_interpolation
+from VECtorsToolkit.fields import vf_identity_eulerian_like
 
 
 # Auxiliary vector fields function

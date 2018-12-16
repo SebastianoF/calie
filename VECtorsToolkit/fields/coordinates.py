@@ -1,6 +1,6 @@
 import numpy as np
 
-from VECtorsToolkit.tools.fields.generate_identities import vf_identity_eulerian_like
+from VECtorsToolkit.fields import vf_identity_eulerian_like
 
 
 def vf_affine_to_homogeneous(input_vf):

@@ -1,13 +1,3 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-
-from numpy.testing import assert_array_equal, assert_array_almost_equal
-from sympy.core.cache import clear_cache
-
-from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field, see_2_fields
-
-
 # # set to true if you want to see the figures to compare the fields!
 # open_f = True
 # seconds_fig = 2
