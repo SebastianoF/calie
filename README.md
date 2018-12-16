@@ -22,7 +22,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-+ Install [NiftyReg](https://github.com/KCL-BMEIS/niftyreg) (not fundamental, only to reproduce some part of the benchmarking)
++ Install [NiftyReg](https://github.com/KCL-BMEIS/niftyreg) (to reproduce advanced benchmarking)
 
 
 ## Testing
