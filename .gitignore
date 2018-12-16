@@ -79,6 +79,7 @@ z_*
 .*.lb
 *.jpg
 *.png
+*.synctex.gz
 
 
 # Created by .ignore support plugin (hsz.mobi)
