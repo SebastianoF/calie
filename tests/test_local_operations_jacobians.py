@@ -1,9 +1,9 @@
 import numpy as np
-from VECtorsToolkit.tools.operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
 from numpy.testing import assert_array_almost_equal
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.fields import vf_identity_lagrangian
+from VECtorsToolkit.operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
+from VECtorsToolkit.fields.generate_identities import vf_identity_lagrangian
 
 
 # -- Jacobian tests for the class Image 2d

@@ -1,14 +1,12 @@
 [run]
 source = VECtorsToolkit
 include = */VECtorsToolkit/*,
-omit = VECtorsToolkit/tools/visualisations/*
-       VECtorsToolkit/agents/*
+omit = VECtorsToolkit/visualisations/*
        VECtorsToolkit/z_tests/*
-       */z_/*
+       */z_*
 
 [report]
 include = */VECtorsToolkit/*,
-omit = VECtorsToolkit/tools/visualisations/*
-       VECtorsToolkit/agents/*
-       */z_/*
+omit = VECtorsToolkit/visualisations/*
+       */z_*
        */__init__.py

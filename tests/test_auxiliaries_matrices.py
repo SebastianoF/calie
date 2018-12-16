@@ -2,10 +2,10 @@ from random import uniform
 
 import numpy as np
 import scipy.linalg as lin
-from VECtorsToolkit.tools.transformations.se2 import Se2A, se2a_exp
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
 
-from VECtorsToolkit.aux import bch_right_jacobian, matrix_vector_field_product, \
+from VECtorsToolkit.transformations.se2 import Se2A, se2a_exp
+from VECtorsToolkit.aux.matrices import bch_right_jacobian, matrix_vector_field_product, \
     matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
 
 ''' test BCH right Jacobian '''

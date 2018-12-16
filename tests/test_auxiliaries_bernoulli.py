@@ -1,4 +1,4 @@
-from VECtorsToolkit.aux import fact, bern, bernoulli_numb_via_poly, bernoulli_poly
+from VECtorsToolkit.aux.bernoulli import fact, bern, bernoulli_numb_via_poly, bernoulli_poly
 
 
 ''' test bernoulli number and poly '''

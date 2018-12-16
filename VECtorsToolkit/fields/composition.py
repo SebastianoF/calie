@@ -1,10 +1,11 @@
 import numpy as np
-from VECtorsToolkit.tools.aux.matrices import matrix_vector_field_product
 from scipy import ndimage
 from scipy.interpolate import griddata, Rbf
 
-from VECtorsToolkit.fields import get_omega_from_vf
-from VECtorsToolkit.fields import vf_eulerian_to_lagrangian, vf_lagrangian_to_eulerian
+from VECtorsToolkit.aux.matrices import matrix_vector_field_product
+
+from VECtorsToolkit.fields.queries import get_omega_from_vf
+from VECtorsToolkit.fields.coordinates import vf_eulerian_to_lagrangian, vf_lagrangian_to_eulerian
 
 
 def one_point_interpolation(input_vf, point, method='linear', as_float=True):

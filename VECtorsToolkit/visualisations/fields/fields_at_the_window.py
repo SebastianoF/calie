@@ -3,9 +3,8 @@ import copy
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 
-from VECtorsToolkit.fields import check_is_vf
-from VECtorsToolkit.fields import vf_identity_eulerian_like
-from VECtorsToolkit.fields import vf_identity_lagrangian
+from VECtorsToolkit.fields.queries import check_is_vf
+from VECtorsToolkit.fields.generate_identities import vf_identity_eulerian_like, vf_identity_lagrangian
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):

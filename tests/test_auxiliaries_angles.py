@@ -4,7 +4,7 @@ Test module for the aux_functions.py module
 import numpy as np
 from numpy.testing import assert_equal
 
-from VECtorsToolkit.aux import mod_pipi
+from VECtorsToolkit.aux.angles import mod_pipi
 
 ''' test for mod_pipi '''
 

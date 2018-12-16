@@ -1,8 +1,8 @@
 import numpy as np
-from VECtorsToolkit.tools.aux.matrices import id_matrix_field, matrix_vector_field_product, \
+from VECtorsToolkit.aux.matrices import id_matrix_field, matrix_vector_field_product, \
     matrix_fields_product_iterative
 
-from VECtorsToolkit.fields import check_is_vf
+from VECtorsToolkit.fields.queries import check_is_vf
 
 
 def initialise_jacobian(input_vf):

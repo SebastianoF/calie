@@ -1,15 +1,16 @@
 import copy
 
 import numpy as np
-from VECtorsToolkit.tools.aux.matrices import matrix_vector_field_product
-from VECtorsToolkit.tools.operations.jacobians import compute_jacobian, iterative_jacobian_product, \
-    jacobian_product
 from scipy import integrate
 from scipy.linalg import expm
 from scipy.misc import factorial as fact
 
-from VECtorsToolkit.fields import check_is_vf, get_omega_from_vf
-from VECtorsToolkit.fields import one_point_interpolation, \
+from VECtorsToolkit.aux.matrices import matrix_vector_field_product
+from VECtorsToolkit.operations.jacobians import compute_jacobian, iterative_jacobian_product, \
+    jacobian_product
+
+from VECtorsToolkit.fields.queries import check_is_vf, get_omega_from_vf
+from VECtorsToolkit.fields.composition import one_point_interpolation, \
     lagrangian_dot_lagrangian
 
 

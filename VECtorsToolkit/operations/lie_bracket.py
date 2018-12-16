@@ -1,7 +1,7 @@
 import numpy as np
-from VECtorsToolkit.tools.operations.jacobians import compute_jacobian
 
-from VECtorsToolkit.fields import check_is_vf
+from VECtorsToolkit.operations.jacobians import compute_jacobian
+from VECtorsToolkit.fields.queries import check_is_vf
 
 
 def lie_bracket(left, right):

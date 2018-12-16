@@ -6,13 +6,14 @@ This is actually very high, as soon as the field gets complicated.
 """
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential
-from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field
 from numpy.testing import assert_array_almost_equal
 
-from VECtorsToolkit.fields import generate_random
-from VECtorsToolkit.fields import lagrangian_dot_lagrangian
-from VECtorsToolkit.fields import vf_identity_lagrangian
+from VECtorsToolkit.operations.lie_exponential import lie_exponential
+from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
+
+from VECtorsToolkit.fields.generate_vf import generate_random
+from VECtorsToolkit.fields.composition import lagrangian_dot_lagrangian
+from VECtorsToolkit.fields.generate_identities import vf_identity_lagrangian
 
 
 # Lagrangian dot lagrangian

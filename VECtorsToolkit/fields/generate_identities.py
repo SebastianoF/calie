@@ -11,7 +11,7 @@ import os
 import nibabel as nib
 import numpy as np
 
-from VECtorsToolkit.fields import get_omega_from_vf, check_is_vf, check_omega, \
+from VECtorsToolkit.fields.queries import get_omega_from_vf, check_is_vf, check_omega, \
     vf_shape_from_omega_and_timepoints
 
 

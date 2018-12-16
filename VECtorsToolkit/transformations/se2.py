@@ -3,7 +3,7 @@ from random import uniform
 
 import numpy as np
 
-from VECtorsToolkit.aux import mod_pipi
+from VECtorsToolkit.aux.angles import mod_pipi
 
 
 class Se2A(object):

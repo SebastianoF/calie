@@ -1,14 +1,17 @@
 
 
 def lie_log_composition():
+    # TODO
     pass
 
 
 def lie_exp_sum():
+    # TODO
     pass
 
 
 def lie_exp_multiplication():
+    # TODO
     pass
 
 

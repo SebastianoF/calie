@@ -6,8 +6,8 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.fields import check_is_vf
-from VECtorsToolkit.fields import vf_identity_eulerian_like
+from VECtorsToolkit.fields.queries import check_is_vf
+from VECtorsToolkit.fields.generate_identities import vf_identity_eulerian_like
 
 
 def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
