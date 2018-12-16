@@ -2,7 +2,7 @@
 
 Python 3.7 back compatible with 2.7.
 
-Research code for the numerical integration of vector fields in <!--$`\mathbb{R}^D`$-->. $`\mathbb{R}^D`$
+<!--Research code for the numerical integration of vector fields in $`\mathbb{R}^D`$-->
 
 The main aim of this code is to test and compare a range of algorithms for the integration of vector fields.
 
