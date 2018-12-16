@@ -2,12 +2,8 @@
 
 Python 3.7 back compatible with 2.7.
 
-## Introduction
-
-Research code for the numerical integration of vector fields.
+Research code for the numerical integration of vector fields in $$\mathbb{R}^2$$ or $$\mathbb{R}^3$$.
 The main aim of this code is to test and compare a range of algorithms for the integration of vector fields.
-
-## Documentation
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
@@ -15,7 +11,7 @@ The main aim of this code is to test and compare a range of algorithms for the i
 
 ## Install
 
-Install the code in development mode in a newly created virtualenv.
++ Install the code in development mode in a newly created virtualenv.
 ```
 virtualenv -p <local python 3 interpreter> --always-copy <folder with your venvs>
 source <folder with your venvs>/bin/activate
@@ -25,7 +21,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-Install [NiftyReg](https://github.com/KCL-BMEIS/niftyreg) (to reproduce some part of the benchmarking)
++ Install [NiftyReg](https://github.com/KCL-BMEIS/niftyreg) (not fundamental, only to reproduce some part of the benchmarking)
 
 
 ## Testing
