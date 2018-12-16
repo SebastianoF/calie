@@ -3,7 +3,7 @@ import numpy as np
 import nibabel as nib
 from numpy.testing import assert_array_equal, assert_raises
 
-from decorators_tools import create_and_erase_temporary_folder_with_a_dummy_nifti_image, pfo_tmp_test
+from .decorators_tools import create_and_erase_temporary_folder_with_a_dummy_nifti_image, pfo_tmp_test
 from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian, vf_identity_eulerian, \
     vf_identity_lagrangian_like, vf_identity_eulerian_like, vf_identity_matrices, from_image_to_omega, \
     vf_identity_lagrangian_like_image, vf_identity_eulerian_like_image

@@ -236,7 +236,7 @@ def test_jacobian_toy_field_3_2(open_fig=False):
     svf_f        = np.zeros((20,20,20,1,3))
     jac_f_ground = initialise_jacobian(svf_f)
 
-    print jac_f_ground.shape
+    print(jac_f_ground.shape)
 
     # assert svf_f.__class__.__name__ == 'SVF'
     # assert jac_f_ground.__class__.__name__ == 'Image'

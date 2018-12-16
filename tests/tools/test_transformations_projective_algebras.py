@@ -4,7 +4,8 @@ from scipy.linalg import expm
 
 from VECtorsToolkit.tools.transformations.pgl2 import Pgl2A, Pgl2G, randomgen_Pgl2A, Pgl2A_exp
 
-### TESTS projective general linear algebra and group ###
+
+# TESTS projective general linear algebra and group #
 
 
 def test_init_pgl_a_fake_input():
