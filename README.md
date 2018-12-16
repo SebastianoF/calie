@@ -7,7 +7,7 @@ Python 3.7 back compatible with 2.7.
 Research code for the numerical integration of vector fields.
 The main aim of this code is to test and compare a range of algorithms for the integration of vector fields.
 
-## Further documentation
+## Documentation
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
@@ -41,6 +41,10 @@ pytest --cov --cov-report html
 coverage html
 open htmlcov/index.html
 ```
+
+## Licence 
+
+The code is licenced under [BSD 3-Clause](https://github.com/SebastianoF/VECtorsToolkit/blob/master/LICENCE.txt). 
 
 ## Acknowledgements
 
