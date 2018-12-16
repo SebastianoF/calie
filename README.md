@@ -6,6 +6,7 @@ Python 3.7 back compatible with 2.7.
 
 <!--to obtain the (vectorized) high-resolution 3D MRI volume $`\vec{x}\in\mathbb{R}^N`$ from multiple, possibly motion corrupted, low-resolution stacks of (vectorized) 2D MR slices $`\vec{y}_k \in\mathbb{R}^{N_k}`$ with $`N_k\ll N`$ for $`k=1,...,\,K`$-->
 
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" title="\Large x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}" />
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
