@@ -35,7 +35,7 @@ Run the tests:
 pytest
 ```
 
-Run the test and generate the report:
+Run the test and generate the coverage report:
 ```
 pytest --cov --cov-report html
 coverage html
