@@ -12,10 +12,10 @@ import nibabel as nib
 import numpy as np
 
 from VECtorsToolkit.fields.queries import get_omega_from_vf, check_is_vf, check_omega, \
-    vf_shape_from_omega_and_timepoints
+    vf_shape_from_omega_and_timepoints, from_nib_to_omega
 
 
-def vf_identity_lagrangian(omega, t=1):
+def id_lagrangian(omega, t=1):
     """
     :param omega: discretized domain of the vector field
     :param t: number of timepoints
@@ -26,7 +26,7 @@ def vf_identity_lagrangian(omega, t=1):
     return np.zeros(vf_shape)
 
 
-def vf_identity_eulerian(omega, t=1):
+def id_eulerian(omega, t=1):
     """
     :param omega: discretized domain of the vector field
     :param t: number of timepoints
@@ -58,7 +58,7 @@ def vf_identity_eulerian(omega, t=1):
     return id_vf
 
 
-def vf_identity_lagrangian_like(input_vf):
+def id_lagrangian_like(input_vf):
     """
     :param input_vf: input vector field.
     :return: corresponding identity grid position in Eulerian coordinates
@@ -67,17 +67,17 @@ def vf_identity_lagrangian_like(input_vf):
     return np.zeros_like(input_vf)
 
 
-def vf_identity_eulerian_like(input_vf):
+def id_eulerian_like(input_vf):
     """
     :param input_vf: input vector field.
     :return: corresponding grid position, i.e. the identity vector field sampled in the input_vf grid matrix
     in Lagrangian coordinates.
     """
     check_is_vf(input_vf)
-    return vf_identity_eulerian(get_omega_from_vf(input_vf), t=input_vf.shape[3])
+    return id_eulerian(get_omega_from_vf(input_vf), t=input_vf.shape[3])
 
 
-def vf_identity_matrices(omega, t=1):
+def id_matrices(omega, t=1):
     """
     From a omega of dimension dim =2,3, it returns the identity field
     that at each point of the omega has the (row mayor) vectorized identity matrix.
@@ -93,34 +93,19 @@ def vf_identity_matrices(omega, t=1):
     return np.repeat(flat_id, np.prod(list(omega) + [t])).reshape(shape, order='F')
 
 
-def from_image_to_omega(input_nib_image):
-    """
-    :param input_nib_image: nibabel image or path to a nifti image.
-    :return: omega with the input image
-    """
-    if isinstance(input_nib_image, str):
-        if not os.path.exists(input_nib_image):
-            raise IOError('Input path {} does not exist.'.format(input_nib_image))
-        im = nib.load(input_nib_image)
-        omega = im.shape
-    else:
-        omega = input_nib_image.shape
-    return omega
-
-
-def vf_identity_lagrangian_like_image(input_nib_image, t=1):
+def id_lagrangian_like_image(input_nib_image, t=1):
     """
     :param input_nib_image: nibabel image or path to a nifti image.
     :param t: additional timepoint
     :return: identity in lagrangian coordinate with same shape of the input image
     """
-    return vf_identity_lagrangian(from_image_to_omega(input_nib_image), t=t)
+    return id_lagrangian(from_nib_to_omega(input_nib_image), t=t)
 
 
-def vf_identity_eulerian_like_image(input_nib_image, t=1):
+def id_eulerian_like_image(input_nib_image, t=1):
     """
     :param input_nib_image: nibabel image or path to a nifti image.
     :param t: additional timepoint
     :return: identity in eulerian coordinate with same shape of the input image
     """
-    return vf_identity_eulerian(from_image_to_omega(input_nib_image), t=t)
+    return id_eulerian(from_nib_to_omega(input_nib_image), t=t)

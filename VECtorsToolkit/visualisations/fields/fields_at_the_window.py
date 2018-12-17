@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 
 from VECtorsToolkit.fields.queries import check_is_vf
-from VECtorsToolkit.fields.generate_identities import vf_identity_eulerian_like, vf_identity_lagrangian
+from VECtorsToolkit.fields.generate_identities import id_eulerian_like, id_lagrangian
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):
@@ -135,7 +135,7 @@ def see_one_slice(input_vf,
     if not d == 2:
             raise TypeError('See field 2d works only for 2d to 2d fields.')
 
-    id_field = vf_identity_lagrangian(list(input_vf.shape[:d]))
+    id_field = id_lagrangian(list(input_vf.shape[:d]))
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
@@ -207,7 +207,7 @@ def see_field(input_vf,
 
     check_is_vf(input_vf)
 
-    id_field = vf_identity_eulerian_like(input_vf)
+    id_field = id_eulerian_like(input_vf)
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
@@ -299,8 +299,8 @@ def see_2_fields(input_obj_0, input_obj_1,
     check_is_vf(input_obj_0)
     check_is_vf(input_obj_1)
 
-    id_field_0 = vf_identity_eulerian_like(input_obj_0)  # other option is casting with Field()
-    id_field_1 = vf_identity_eulerian_like(input_obj_1)
+    id_field_0 = id_eulerian_like(input_obj_0)  # other option is casting with Field()
+    id_field_1 = id_eulerian_like(input_obj_1)
 
     input_field_0 = copy.deepcopy(input_obj_0)
     input_field_1 = copy.deepcopy(input_obj_1)

@@ -1,3 +1,5 @@
+import os
+import nibabel as nib
 import numpy as np
 
 
@@ -105,3 +107,27 @@ def vf_norm(input_vf, passe_partout_size=1, normalized=False):
     else:
         den = 1
     return num / float(den)
+
+
+def from_nib_to_omega(input_nib_image):
+    """
+    :param input_nib_image: nibabel image or path to a nifti image.
+    :return: omega with the input image
+    """
+    if isinstance(input_nib_image, str):
+        if not os.path.exists(input_nib_image):
+            raise IOError('Input path {} does not exist.'.format(input_nib_image))
+        im = nib.load(input_nib_image)
+        omega = im.shape
+    else:
+        omega = input_nib_image.shape
+    return omega
+
+
+def from_image_to_omega(input_image):
+    """
+
+    :param input_image:
+    :return:
+    """
+    pass

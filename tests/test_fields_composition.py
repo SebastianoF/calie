@@ -11,9 +11,9 @@ from numpy.testing import assert_array_almost_equal
 from VECtorsToolkit.operations.lie_exponential import lie_exponential
 from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
 
-from VECtorsToolkit.fields.generate_vf import generate_random
-from VECtorsToolkit.fields.composition import lagrangian_dot_lagrangian
-from VECtorsToolkit.fields.generate_identities import vf_identity_lagrangian
+from VECtorsToolkit.fields.generate import generate_random
+from VECtorsToolkit.fields.compose import lagrangian_dot_lagrangian
+from VECtorsToolkit.fields.generate_identities import id_lagrangian
 
 
 # Lagrangian dot lagrangian
@@ -25,9 +25,9 @@ def test_2_easy_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = vf_identity_lagrangian(omega)
-    svf_f     = vf_identity_lagrangian(omega)
-    svf_f_inv = vf_identity_lagrangian(omega)
+    svf_zeros = id_lagrangian(omega)
+    svf_f     = id_lagrangian(omega)
+    svf_f_inv = id_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t)
@@ -75,9 +75,9 @@ def test_2_less_easy_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = vf_identity_lagrangian(omega)
-    svf_f     = vf_identity_lagrangian(omega)
-    svf_f_inv = vf_identity_lagrangian(omega)
+    svf_zeros = id_lagrangian(omega)
+    svf_f     = id_lagrangian(omega)
+    svf_f_inv = id_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t)
@@ -125,9 +125,9 @@ def test_easy_composition_with_identity(get_figures=False):
 
     omega = (10, 10)
 
-    svf_zeros = vf_identity_lagrangian(omega)
-    svf_f     = vf_identity_lagrangian(omega)
-    svf_id    = vf_identity_lagrangian(omega)  # id in lagrangian coordinates is the zero field
+    svf_zeros = id_lagrangian(omega)
+    svf_f     = id_lagrangian(omega)
+    svf_id    = id_lagrangian(omega)  # id in lagrangian coordinates is the zero field
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -175,9 +175,9 @@ def test_less_easy_composition_with_identity(get_figures=False):
 
     omega = (20, 25)
 
-    svf_zeros = vf_identity_lagrangian(omega=omega)
-    svf_f     = vf_identity_lagrangian(omega=omega)
-    svf_id    = vf_identity_lagrangian(omega=omega)
+    svf_zeros = id_lagrangian(omega=omega)
+    svf_f     = id_lagrangian(omega=omega)
+    svf_id    = id_lagrangian(omega=omega)
 
     def function_f(t, x):
         t = float(t)
@@ -228,12 +228,12 @@ def test_2_random_vector_fields_svf(get_figures=False):
 
     omega = (10, 10)
 
-    svf_f     = vf_identity_lagrangian(omega=omega)
+    svf_f     = id_lagrangian(omega=omega)
     svf_f_inv = np.copy(-1 * svf_f)
 
     f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
     f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
-    svf_id = vf_identity_lagrangian(omega=omega)
+    svf_id = id_lagrangian(omega=omega)
 
     # # results of a composition of 2 lagrangian must be a lagrangian zero field
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
@@ -267,7 +267,7 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
 
     sigma_init = 4
     sigma_gaussian_filter = 2
-    svf_zeros = vf_identity_lagrangian(omega)
+    svf_zeros = id_lagrangian(omega)
     svf_0     = generate_random(omega, parameters=(sigma_init, sigma_gaussian_filter))
 
     sdisp_0 = lie_exponential(svf_0, algorithm='ss')
@@ -316,10 +316,10 @@ def test_controlled_composition_of_two_closed_form_vector_fields_2d_1(get_figure
     def v_dot_u(x, y):
         return 1, 1
 
-    svf_u = vf_identity_lagrangian(omega=omega)
-    svf_v = vf_identity_lagrangian(omega=omega)
-    svf_u_dot_v = vf_identity_lagrangian(omega=omega)
-    svf_v_dot_u = vf_identity_lagrangian(omega=omega)
+    svf_u = id_lagrangian(omega=omega)
+    svf_v = id_lagrangian(omega=omega)
+    svf_u_dot_v = id_lagrangian(omega=omega)
+    svf_v_dot_u = id_lagrangian(omega=omega)
 
     for x in range(omega[0]):
         for y in range(omega[1]):

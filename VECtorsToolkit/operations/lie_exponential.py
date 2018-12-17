@@ -10,7 +10,7 @@ from VECtorsToolkit.operations.jacobians import compute_jacobian, iterative_jaco
     jacobian_product
 
 from VECtorsToolkit.fields.queries import check_is_vf, get_omega_from_vf
-from VECtorsToolkit.fields.composition import one_point_interpolation, \
+from VECtorsToolkit.fields.compose import one_point_interpolation, \
     lagrangian_dot_lagrangian
 
 

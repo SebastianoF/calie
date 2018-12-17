@@ -11,7 +11,7 @@ from VECtorsToolkit.operations.lie_exponential import lie_exponential
 from VECtorsToolkit.transformations.se2 import Se2G, se2g_log
 from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
 
-from VECtorsToolkit.fields.generate_vf import generate_from_matrix
+from VECtorsToolkit.fields.generate import generate_from_matrix
 from VECtorsToolkit.fields.queries import vf_norm
 
 

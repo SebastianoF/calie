@@ -3,7 +3,7 @@ from numpy.testing import assert_array_almost_equal
 from sympy.core.cache import clear_cache
 
 from VECtorsToolkit.operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
-from VECtorsToolkit.fields.generate_identities import vf_identity_lagrangian
+from VECtorsToolkit.fields.generate_identities import id_lagrangian
 
 
 # -- Jacobian tests for the class Image 2d
@@ -19,7 +19,7 @@ def test_jacobian_toy_field_1():
     def jacobian_f(_, x):
         return 0.0, 1.0, -1.0, 0.0
 
-    svf_f        = vf_identity_lagrangian(omega=(20, 20))
+    svf_f        = id_lagrangian(omega=(20, 20))
     jac_f_ground = initialise_jacobian(svf_f)
 
     for i in range(0, 20):
@@ -45,7 +45,7 @@ def test_jacobian_toy_field_2():
         t = float(t); x = [float(y) for y in x]
         return 0.5, 0.6, 0.0, 0.8
 
-    svf_f        = vf_identity_lagrangian(omega=(20, 20))
+    svf_f        = id_lagrangian(omega=(20, 20))
     jac_f_ground = initialise_jacobian(svf_f)
 
     for i in range(0, 20):
@@ -71,7 +71,7 @@ def test_jacobian_toy_field_3():
         t = float(t); x = [float(y) for y in x]
         return 2.0 * x[0] + 2.0, 1.0, 3.0, 0.0
 
-    svf_f        = vf_identity_lagrangian(omega=(30, 30))
+    svf_f        = id_lagrangian(omega=(30, 30))
     jac_f_ground = initialise_jacobian(svf_f)
 
     for i in range(0, 30):
