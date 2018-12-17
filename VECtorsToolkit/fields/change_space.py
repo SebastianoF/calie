@@ -1,6 +1,6 @@
 import numpy as np
 
-from VECtorsToolkit.fields.generate_identities import id_eulerian_like
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 def affine_to_homogeneous(input_vf):
@@ -30,9 +30,9 @@ def homogeneous_to_affine(input_vf):
 
 
 def eulerian_to_lagrangian(input_vf_eul):
-    return input_vf_eul - id_eulerian_like(input_vf_eul)
+    return input_vf_eul - gen_id.id_eulerian_like(input_vf_eul)
 
 
 def lagrangian_to_eulerian(input_vf_lag):
-    return input_vf_lag + id_eulerian_like(input_vf_lag)
+    return input_vf_lag + gen_id.id_eulerian_like(input_vf_lag)
 

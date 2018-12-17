@@ -3,7 +3,7 @@ from random import uniform
 
 import numpy as np
 
-from VECtorsToolkit.aux.angles import mod_pipi
+from VECtorsToolkit.aux import angles
 
 
 class Se2A(object):
@@ -15,7 +15,7 @@ class Se2A(object):
     """
     def __init__(self, theta, tx, ty):
 
-        self.rotation_angle = mod_pipi(theta)
+        self.rotation_angle = angles.mod_pipi(theta)
 
         if self.rotation_angle == theta:
             self.tx = tx
@@ -35,12 +35,12 @@ class Se2A(object):
         above equivalence relation.
         :param self: element of se2_a
         """
-        theta_quot = mod_pipi(self.rotation_angle)
+        theta_quot = angles.mod_pipi(self.rotation_angle)
         if self.rotation_angle == theta_quot:
             tx_quot = self.tx
             ty_quot = self.ty
         else:
-            modfact = mod_pipi(self.rotation_angle) / self.rotation_angle
+            modfact = angles.mod_pipi(self.rotation_angle) / self.rotation_angle
             tx_quot = self.tx * modfact
             ty_quot = self.ty * modfact
         return Se2A(theta_quot, tx_quot, ty_quot)
@@ -349,7 +349,7 @@ class Se2G(object):
     """
 
     def __init__(self, theta, tx, ty):
-        self.rotation_angle = mod_pipi(theta)
+        self.rotation_angle = angles.mod_pipi(theta)
         self.tx = tx
         self.ty = ty
 
@@ -371,11 +371,11 @@ class Se2G(object):
         x2 = element2.tx
         y1 = self.ty
         y2 = element2.ty
-        theta_1 = mod_pipi(self.rotation_angle)
+        theta_1 = angles.mod_pipi(self.rotation_angle)
         c1 = cos(theta_1)
         s1 = sin(theta_1)
 
-        alpha = mod_pipi(self.rotation_angle + element2.rotation_angle)
+        alpha = angles.mod_pipi(self.rotation_angle + element2.rotation_angle)
         x = x1 + x2 * c1 - y2 * s1
         y = y1 + x2 * s1 + y2 * c1
 
@@ -442,7 +442,9 @@ def se2g_randomgen_custom(interval_theta=(), interval_tx=(), interval_ty=(), avo
     return Se2G(theta, tx, ty)
 
 
-def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2), interval_center=(1, 6, 1, 6), avoid_zero_rotation=True,
+def se2g_randomgen_custom_center(interval_theta=(-np.pi / 2, np.pi / 2),
+                                 interval_center=(1, 6, 1, 6),
+                                 avoid_zero_rotation=True,
                                  epsilon_zero_avoidance=0.001):
     """
     An element of SE(2) defines a rotation (from SO(2)) away from the origin.
@@ -602,7 +604,7 @@ def se2g_log(element):
     :param: instance of SE2
     :return: corresponding element in Lie algebra se2
     """
-    theta = mod_pipi(element.rotation_angle)
+    theta = angles.mod_pipi(element.rotation_angle)
     v1 = element.tx
     v2 = element.ty
     c = cos(theta)

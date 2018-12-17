@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.ndimage.filters as fil
 
-from VECtorsToolkit.fields.queries import check_omega, vf_shape_from_omega_and_timepoints
-from VECtorsToolkit.fields.change_space import affine_to_homogeneous, homogeneous_to_affine
-from VECtorsToolkit.fields.generate_identities import id_eulerian
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import change_space as cs
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 def generate_random(omega, t=1, parameters=(5, 2)):
@@ -17,7 +17,7 @@ def generate_random(omega, t=1, parameters=(5, 2)):
     if t > 1:  # TODO upgrade for more than one timepoint. correct tests afterwards.
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
 
     sigma_init, sigma_gaussian_filter = parameters
     vf = np.random.normal(0, sigma_init, v_shape)
@@ -40,8 +40,8 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
     if t > 1:  # TODO
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
-    d = check_omega(omega)
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+    d = qr.check_omega(omega)
+    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
     vf = np.zeros(v_shape)
 
     if structure == 'algebra':
@@ -56,14 +56,14 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         if not np.alltrue(input_matrix.shape == (3, 3)):
             raise IOError('Omega dimension not compatible with the matrix dimension')
 
-        vf = affine_to_homogeneous(id_eulerian(omega))
+        vf = cs.affine_to_homogeneous(gen_id.id_eulerian(omega))
 
         x_intervals, y_intervals = omega
         for i in range(x_intervals):
             for j in range(y_intervals):
                 vf[i, j, 0, 0, :] = input_matrix.dot(vf[i, j, 0, 0, :])
 
-        vf = homogeneous_to_affine(vf)
+        vf = cs.homogeneous_to_affine(vf)
 
     elif d == 3:
         # If the matrix provides a 2d rototranslation, we consider the rotation axis perpendicular to the plane z=0.
@@ -73,7 +73,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         if np.alltrue(input_matrix.shape == (3, 3)):
 
             # Create the slice at the ground of the domain (x,y,z) , z = 0, as a 2d rotation:
-            base_slice = affine_to_homogeneous(id_eulerian(list(omega[:2])))
+            base_slice = cs.affine_to_homogeneous(gen_id.id_eulerian(list(omega[:2])))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
@@ -86,14 +86,14 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         # If the matrix is 3d the rotation axis is perpendicular to the plane z=0.
         elif np.alltrue(input_matrix.shape == (4, 4)):
 
-            vf = affine_to_homogeneous(id_eulerian(omega))
+            vf = cs.affine_to_homogeneous(gen_id.id_eulerian(omega))
 
             for i in range(x_intervals):
                 for j in range(y_intervals):
                     for k in range(z_intervals):
                         vf[i, j, k, 0, :] = input_matrix.dot(vf[i, j, k, 0, :])
 
-            vf = homogeneous_to_affine(vf)
+            vf = cs.homogeneous_to_affine(vf)
         else:
             raise IOError('Wrong input matrix shape. Must be 3x3 or 4x4.')
 
@@ -113,10 +113,10 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
     if t > 1:  # TODO
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
-    d = check_omega(omega)
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t)
+    d = qr.check_omega(omega)
+    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
     vf = np.zeros(v_shape)
-    idd = affine_to_homogeneous(id_eulerian(omega))
+    idd = cs.affine_to_homogeneous(gen_id.id_eulerian(omega))
 
     if structure == 'algebra':
         if d == 2:

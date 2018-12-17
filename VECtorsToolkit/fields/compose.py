@@ -2,10 +2,9 @@ import numpy as np
 from scipy import ndimage
 from scipy.interpolate import griddata, Rbf
 
-from VECtorsToolkit.aux.matrices import matrix_vector_field_product
-
-from VECtorsToolkit.fields.queries import get_omega_from_vf
-from VECtorsToolkit.fields.change_space import eulerian_to_lagrangian, lagrangian_to_eulerian
+from VECtorsToolkit.aux import matrices
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import change_space as cs
 
 
 def one_point_interpolation(input_vf, point, method='linear', as_float=True):
@@ -86,12 +85,12 @@ def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                             prefilter=True,
                             add_right=True):
 
-    omega_right = get_omega_from_vf(vf_right_eul)
+    omega_right = qr.get_omega_from_vf(vf_right_eul)
     d = len(omega_right)
 
     if affine_left_right is not None:
         A_l, A_r = affine_left_right
-        vf_right_eul = matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
+        vf_right_eul = matrices.matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
 
     coord = [vf_right_eul[..., i].reshape(omega_right, order='F') for i in range(d)]
     result = np.squeeze(np.zeros_like(vf_left_lag))
@@ -106,7 +105,7 @@ def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                                 cval=cval,
                                 prefilter=prefilter)
     if add_right:  # option for the scaling and squaring.
-        return result.reshape(vf_left_lag.shape) + eulerian_to_lagrangian(vf_right_eul)
+        return result.reshape(vf_left_lag.shape) + cs.eulerian_to_lagrangian(vf_right_eul)
     else:
         return result.reshape(vf_left_lag.shape)
 
@@ -118,13 +117,13 @@ def scalar_dot_eulerian(sf_left, vf_right_eul,
                         cval=0.0,
                         prefilter=True):
 
-    omega_right = get_omega_from_vf(vf_right_eul)
+    omega_right = qr.get_omega_from_vf(vf_right_eul)
     d = len(omega_right)
 
     if affine_left_right is not None:
         A_l, A_r = affine_left_right
         # multiply each point of the vector field by the transformation matrix
-        vf_right_eul = matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
+        vf_right_eul = matrices.matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
 
     coord = [vf_right_eul[..., i].reshape(omega_right, order='F') for i in range(d)]
     result = np.zeros_like(sf_left)
@@ -151,7 +150,7 @@ def lagrangian_dot_lagrangian(vf_left_lag, vf_right_lag,
                               prefilter=True,
                               add_right=True):
 
-    vf_right_eul = lagrangian_to_eulerian(vf_right_lag)
+    vf_right_eul = cs.lagrangian_to_eulerian(vf_right_lag)
 
     return lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                                    affine_left_right=affine_left_right,
@@ -170,8 +169,8 @@ def eulerian_dot_lagrangian(vf_left_eul, vf_right_lag,
                             prefilter=True,
                             add_right=True):
 
-    vf_left_lag = eulerian_to_lagrangian(vf_left_eul)
-    vf_right_eul = lagrangian_to_eulerian(vf_right_lag)
+    vf_left_lag = cs.eulerian_to_lagrangian(vf_left_eul)
+    vf_right_eul = cs.lagrangian_to_eulerian(vf_right_lag)
 
     return lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                                    affine_left_right=affine_left_right,
@@ -190,7 +189,7 @@ def eulerian_dot_eulerian(vf_left_eul, vf_right_eul,
                           prefilter=True,
                           add_right=True):
 
-    vf_left_lag = eulerian_to_lagrangian(vf_left_eul)
+    vf_left_lag = cs.eulerian_to_lagrangian(vf_left_eul)
 
     return lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                                    affine_left_right=affine_left_right,
@@ -208,7 +207,7 @@ def scalar_dot_lagrangian(sf_left, vf_right_lag,
                           cval=0.0,
                           prefilter=True):
 
-    vf_right_eul = lagrangian_to_eulerian(vf_right_lag)
+    vf_right_eul = cs.lagrangian_to_eulerian(vf_right_lag)
 
     return scalar_dot_eulerian(sf_left, vf_right_eul,
                                affine_left_right=affine_left_right,

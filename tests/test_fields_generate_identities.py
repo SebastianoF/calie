@@ -5,9 +5,9 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_raises
 
 from VECtorsToolkit.fields.generate_identities import id_lagrangian, id_eulerian, \
-    id_lagrangian_like, id_eulerian_like, id_matrices, from_nib_to_omega, \
+    id_lagrangian_like, id_eulerian_like, id_matrices, \
     id_lagrangian_like_image, id_eulerian_like_image
-from .decorators_tools import create_and_erase_temporary_folder_with_a_dummy_nifti_image, pfo_tmp_test
+
 
 ''' test vf_identity_lagrangian '''
 
@@ -135,29 +135,6 @@ def test_vf_identity_matrices_test_values():
     assert_array_equal(vf_id[1, 1, 1, 0, :], np.eye(3).flatten())
     assert_array_equal(vf_id[0, 0, 1, 0, :], np.eye(3).flatten())
     assert_array_equal(vf_id[1, 3, 2, 1, :], np.eye(3).flatten())
-
-
-''' test from_image_to_omega'''
-
-
-def test_from_image_to_omega_by_non_existing_path():
-    with assert_raises(IOError):
-        from_nib_to_omega('z_spam_folder')
-
-
-@create_and_erase_temporary_folder_with_a_dummy_nifti_image
-def test_from_image_to_omega_by_path():
-    pfi_im = os.path.join(pfo_tmp_test, 'dummy_image.nii.gz')
-    expected_omega = (30, 29, 28)
-    obtained_omega = from_nib_to_omega(pfi_im)
-    assert_array_equal(obtained_omega, expected_omega)
-
-
-def test_from_image_to_omega_by_nifti():
-    expected_omega = (30, 29, 28)
-    nib_im = nib.Nifti1Image(np.ones(expected_omega), affine=np.eye(4))
-    obtained_omega = from_nib_to_omega(nib_im)
-    assert_array_equal(obtained_omega, expected_omega)
 
 
 ''' test vf_identity_lagrangian_like_image '''

@@ -3,16 +3,16 @@ Integral vector field is computed out of the integral curves.
 Structure of the bi-points shown in the previous module is here stored in a new vector field.
 """
 import copy
-
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential
-from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_2_fields_separate_and_overlay
 from scipy.integrate import ode
 
-from VECtorsToolkit.fields import generate_random
-from VECtorsToolkit.fields import one_point_interpolation
-from VECtorsToolkit.fields import vf_identity_eulerian_like
+from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.visualisations.fields import fields_comparisons
+
+from VECtorsToolkit.fields import generate_identities as gen_id
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import compose as cp
 
 
 # Auxiliary vector fields function
@@ -20,15 +20,15 @@ from VECtorsToolkit.fields import vf_identity_eulerian_like
 
 def vf(t, x):
     global svf_0
-    return list(one_point_interpolation(svf_0, point=x, method='cubic'))
+    return list(cp.one_point_interpolation(svf_0, point=x, method='cubic'))
 
 if __name__ == '__main__':
 
     # Initialize the random field with the function input:
-    svf_0  = generate_random(omega=(20, 20), parameters=(4, 2))
+    svf_0  = gen.generate_random(omega=(20, 20), parameters=(4, 2))
 
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_0 = vf_identity_eulerian_like(svf_0)
+    disp_0 = gen_id.id_eulerian_like(svf_0)
 
     t0, t1 = 0, 1
     steps = 10.
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     ax = fig.add_subplot(111)
 
     # Plot vector field
-    id_field = vf_identity_eulerian_like(svf_0)
+    id_field = gen_id.id_eulerian_like(svf_0)
 
     input_field_copy = copy.deepcopy(svf_0)
 
@@ -89,21 +89,21 @@ if __name__ == '__main__':
     plt.ylabel(r"$y$")
     plt.grid()
 
-    see_2_fields_separate_and_overlay(disp_0, svf_0,
-                                      fig_tag=2,
-                                      title_input_0='disp',
-                                      title_input_1='svf',
-                                      title_input_both='overlay')
+    fields_comparisons.see_2_fields_separate_and_overlay(disp_0, svf_0,
+                                                         fig_tag=2,
+                                                         title_input_0='disp',
+                                                         title_input_1='svf',
+                                                         title_input_both='overlay')
 
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_1 = lie_exponential(svf_0)
-    
-    see_2_fields_separate_and_overlay(disp_1, svf_0,
-                                      fig_tag=3,
-                                      title_input_0='disp',
-                                      title_input_1='svf',
-                                      title_input_both='overlay',
-                                      window_title_input='embedded')
+    disp_1 = lie_exponential.lie_exponential(svf_0)
+
+    fields_comparisons.see_2_fields_separate_and_overlay(disp_1, svf_0,
+                                                         fig_tag=3,
+                                                         title_input_0='disp',
+                                                         title_input_1='svf',
+                                                         title_input_both='overlay',
+                                                         window_title_input='embedded')
 
     print('Showing outcome: ...')
     plt.show()

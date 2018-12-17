@@ -7,8 +7,8 @@ import copy
 
 import matplotlib.pyplot as plt
 
-from VECtorsToolkit.fields.queries import check_is_vf
-from VECtorsToolkit.fields.generate_identities import id_eulerian_like
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 def see_overlay_of_n_fields_and_flow(list_of_obj,
@@ -42,9 +42,9 @@ def see_overlay_of_n_fields_and_flow(list_of_obj,
 
         if input_obj is not None:
 
-            assert check_is_vf(input_obj) == 2
+            assert qr.check_is_vf(input_obj) == 2
 
-            id_field = id_eulerian_like(input_obj)
+            id_field = gen_id.id_eulerian_like(input_obj)
             input_field_copy = copy.deepcopy(input_obj)
 
             if subtract_id[num_obj]:

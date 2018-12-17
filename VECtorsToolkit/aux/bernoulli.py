@@ -1,6 +1,5 @@
-from fractions import Fraction
-from scipy.misc import factorial
-from scipy.misc import comb as binomial
+import fractions as fr
+from scipy import misc
 
 
 # ------------- auxiliary method for the BCH formula ----------------
@@ -12,7 +11,7 @@ def fact(n):
     :param n:
     :return: factorial of n type float
     """
-    return float(factorial(n, True))
+    return float(misc.factorial(n, True))
 
 
 def bern(n):
@@ -23,14 +22,14 @@ def bern(n):
     (iterative algorithm, do not uses polynomials)
     """
     if n == 1:
-        ans = Fraction(1, 2)
+        ans = fr.Fraction(1, 2)
     elif n % 2 == 1:
-        ans = Fraction(0, 1)
+        ans = fr.Fraction(0, 1)
     else:
         n += 1
         a = [0] * (n + 1)
         for m in range(n + 1):
-            a[m] = Fraction(1, m + 1)
+            a[m] = fr.Fraction(1, m + 1)
             for j in range(m - 1, 0, -1):
                 a[j - 1] = j * (a[j - 1] - a[j])
         ans = a[0]
@@ -45,7 +44,7 @@ def bernoulli_poly(x, n):
     :param n: degree of the polynomial.
     :return: j-th bernoulli polynomial evaluate at x (unknown of the poly).
     """
-    return sum([binomial(n, k) * bern(n - k) * (x ** k) for k in range(n)])
+    return sum([misc.comb(n, k) * bern(n - k) * (x ** k) for k in range(n)])  # comb = binomial
 
 
 def bernoulli_numb_via_poly(n):

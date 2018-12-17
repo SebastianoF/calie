@@ -5,13 +5,10 @@ from scipy import integrate
 from scipy.linalg import expm
 from scipy.misc import factorial as fact
 
-from VECtorsToolkit.aux.matrices import matrix_vector_field_product
-from VECtorsToolkit.operations.jacobians import compute_jacobian, iterative_jacobian_product, \
-    jacobian_product
-
-from VECtorsToolkit.fields.queries import check_is_vf, get_omega_from_vf
-from VECtorsToolkit.fields.compose import one_point_interpolation, \
-    lagrangian_dot_lagrangian
+from VECtorsToolkit.aux import matrices
+from VECtorsToolkit.operations import jacobians as jac
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import compose as cp
 
 
 def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix_dims=None):
@@ -53,8 +50,8 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
     :param : It returns a displacement, element of the class disp.
     :param pix_dims: conversion of pixel-mm for each dimension, from matrix to mm.
     """
-    d = check_is_vf(input_vf)
-    omega = get_omega_from_vf(input_vf)
+    d = qr.check_is_vf(input_vf)
+    omega = qr.get_omega_from_vf(input_vf)
 
     vf = copy.deepcopy(input_vf)
     phi = np.zeros_like(vf)
@@ -99,7 +96,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_ei':  # Scaling and squaring exponential integrators
 
@@ -108,7 +105,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         phi = vf / init
 
         # (1.5)
-        jv = compute_jacobian(phi)
+        jv = jac.compute_jacobian(phi)
 
         if d == 2:
 
@@ -143,7 +140,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_ei_mod':  # Affine scaling and squaring exponential integrators modified
 
@@ -152,7 +149,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         phi = vf / init
 
         # (1.5)
-        jv = compute_jacobian(phi)
+        jv = jac.compute_jacobian(phi)
 
         if d == 2:
 
@@ -177,7 +174,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'gss_aei':  # scaling and squaring approximated exponential integrators
 
@@ -189,15 +186,15 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             phi = vf / init
 
         # (1.5)  phi = 1 + v + 0.5jac*v
-        jv = np.squeeze(compute_jacobian(phi))
+        jv = np.squeeze(jac.compute_jacobian(phi))
         v_sq = np.squeeze(phi)
-        jv_prod_v = matrix_vector_field_product(jv, v_sq).reshape(list(omega) + [1]*(4 - d) + [d])
+        jv_prod_v = matrices.matrix_vector_field_product(jv, v_sq).reshape(list(omega) + [1]*(4 - d) + [d])
 
         phi += 0.5 * jv_prod_v
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o)
 
     elif algorithm == 'midpoint':
 
@@ -207,15 +204,15 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
 
         for _ in range(num_steps):
-            phi_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
-            phi += h * lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + (h / 2) * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi += h * cp.lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False)
 
     elif algorithm == 'series':  # Series method
 
         phi = np.copy(vf)  # final output is phi.
 
         for k in range(2, num_steps):
-            jac_v = iterative_jacobian_product(vf, k)
+            jac_v = jac.iterative_jacobian_product(vf, k)
             phi = phi[...] + jac_v[...] / fact(k)
 
     elif algorithm == 'series_mod':  # Series method  -- jacobian computed in the improper way
@@ -224,7 +221,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         phi = np.copy(vf)  # final output is phi.
 
         for k in range(1, input_num_steps):
-            jac_v = jacobian_product(jac_v, vf)
+            jac_v = jac.jacobian_product(jac_v, vf)
             phi = phi[...] + jac_v[...] / fact(k)
 
     elif algorithm == 'euler':  # Euler method
@@ -235,20 +232,20 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
 
         for _ in range(num_steps):
-            phi += h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi += h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
     elif algorithm == 'euler_aei':  # Euler approximated exponential integrator
 
         vf = vf / num_steps
 
-        jv = np.squeeze(compute_jacobian(vf))
+        jv = np.squeeze(jac.compute_jacobian(vf))
         v_sq = np.squeeze(vf)
-        jv_prod_v = matrix_vector_field_product(jv, v_sq).reshape(list(omega) + [1]*(4 - d) + [d])
+        jv_prod_v = matrices.matrix_vector_field_product(jv, v_sq).reshape(list(omega) + [1]*(4 - d) + [d])
 
         vf += 0.5 * jv_prod_v
 
         for _ in range(num_steps):
-            phi = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o)
+            phi = cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o)
 
     elif algorithm == 'euler_mod':  # Euler modified
 
@@ -259,10 +256,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(num_steps):
 
-            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            phi += (h/2) * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
-                            lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+            phi += (h/2) * (cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                            cp.lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
 
     elif algorithm == 'heun':  # Heun method
 
@@ -273,10 +270,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for i in range(num_steps):
 
-            psi_1 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            psi_1 = phi + h * (2. / 3) * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            psi_2 = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
-                                              3 * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
+            psi_2 = cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
+                                              3 * cp.lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_2
 
@@ -288,12 +285,12 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
             h = 1.0 / num_steps
         for i in range(num_steps):
 
-            psi_1 = phi + (h / 3) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            psi_1 = phi + (h / 3) * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            psi_2 = phi + h * (2. / 3) * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
+            psi_2 = phi + h * (2. / 3) * cp.lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
-            psi_3 = lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
-                                              3 * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
+            psi_3 = cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) + \
+                                              3 * cp.lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             phi += (h / 4) * psi_3
 
@@ -306,16 +303,16 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(num_steps):
 
-            r_1 = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            r_1 = h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
             psi_1 = phi + .5 * r_1
-            r_2 = h  * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
+            r_2 = h  * cp.lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             psi_2 = phi + .5 * r_2
-            r_3 = h * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
+            r_3 = h * cp.lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             psi_3 = phi + r_3
-            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
+            r_4 = h  * cp.lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
@@ -341,22 +338,22 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
         # (1.5)
         for _ in range(num_steps):
 
-            r_1   = h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            r_1   = h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
             psi_1 = phi + .5 * r_1
-            r_2   = h  * lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
+            r_2   = h  * cp.lagrangian_dot_lagrangian(vf, psi_1, s_i_o=s_i_o, add_right=False)
 
             psi_2 = phi + .5 * r_2
-            r_3   = h  * lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
+            r_3   = h  * cp.lagrangian_dot_lagrangian(vf, psi_2, s_i_o=s_i_o, add_right=False)
 
             psi_3 = phi + r_3
-            r_4 = h  * lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
+            r_4 = h  * cp.lagrangian_dot_lagrangian(vf, psi_3, s_i_o=s_i_o, add_right=False)
 
             phi += (1. / 6) * (r_1 + 2 * r_2 + 2 * r_3 + r_4)
 
         # (2)
         for _ in range(num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
 
     elif algorithm == 'trapezoid_euler':
 
@@ -367,10 +364,10 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(0, num_steps):
             # euler
-            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
 
-            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
-                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+            phi += .5 * h * (cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             cp.lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
 
     elif algorithm == 'trapezoid_midpoint':
 
@@ -381,11 +378,11 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         for _ in range(0, num_steps):
             # midpoint
-            phi_tilda_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
-            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
+            phi_tilda_tilda = phi + (h / 2) * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * cp.lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
 
-            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
-                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+            phi += .5 * h * (cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             cp.lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
 
     elif algorithm == 'gss_trapezoid_euler':
 
@@ -400,13 +397,13 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (1.5)
         for _ in range(0, num_steps):
-            tilda_phi = phi + h * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
-            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
-                             lagrangian_dot_lagrangian(vf, tilda_phi, s_i_o=s_i_o, add_right=False))
+            tilda_phi = phi + h * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi += .5 * h * (cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             cp.lagrangian_dot_lagrangian(vf, tilda_phi, s_i_o=s_i_o, add_right=False))
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
 
     elif algorithm == 'gss_trapezoid_midpoint':
 
@@ -421,15 +418,15 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
 
         # (1.5)
         for _ in range(0, num_steps):
-            phi_tilda_tilda = phi + (h / 2) * lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
-            phi_tilda = phi + h * lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
+            phi_tilda_tilda = phi + (h / 2) * cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False)
+            phi_tilda = phi + h * cp.lagrangian_dot_lagrangian(vf, phi_tilda_tilda, s_i_o=s_i_o, add_right=False)
 
-            phi += .5 * h * (lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
-                             lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
+            phi += .5 * h * (cp.lagrangian_dot_lagrangian(vf, phi, s_i_o=s_i_o, add_right=False) +
+                             cp.lagrangian_dot_lagrangian(vf, phi_tilda, s_i_o=s_i_o, add_right=False))
 
         # (2)
         for _ in range(0, num_steps):
-            phi = lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
+            phi = cp.lagrangian_dot_lagrangian(phi, phi, s_i_o=s_i_o, add_right=True)
 
     else:
         raise TypeError('Error: wrong algorithm name. You inserted {}'.format(algorithm))
@@ -461,10 +458,10 @@ def lie_exponential_scipy(input_vf,
             where psi is the chosen integrator.
 
     """
-    d = check_is_vf(input_vf)
+    d = qr.check_is_vf(input_vf)
     assert d == 2  # only for 2 dim images at the moment.
 
-    omega = get_omega_from_vf(input_vf)
+    omega = qr.get_omega_from_vf(input_vf)
 
     vf = copy.deepcopy(input_vf)
     phi = np.zeros_like(vf)
@@ -473,7 +470,7 @@ def lie_exponential_scipy(input_vf,
 
     # transform v in a function suitable for ode library :
     def vf_function(t, x):
-        return list(one_point_interpolation(vf, point=x, method=interpolation_method))
+        return list(cp.one_point_interpolation(vf, point=x, method=interpolation_method))
 
     t0, t_n = 0, 1
     dt = (t_n - t0)/float(max_steps)

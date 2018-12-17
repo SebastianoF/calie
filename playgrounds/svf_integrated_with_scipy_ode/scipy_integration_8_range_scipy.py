@@ -6,12 +6,13 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential_scipy
-from VECtorsToolkit.tools.transformations.se2_a import se2_g
-from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
-from VECtorsToolkit.fields import generate_from_matrix
-from VECtorsToolkit.fields import vf_norm
+from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.transformations import se2
+from VECtorsToolkit.visualisations.fields import fields_comparisons
+
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import queries as qr
 
 if __name__ == '__main__':
 
@@ -51,16 +52,16 @@ if __name__ == '__main__':
     for i in range(N):
 
         # -> Compute random matrices of transformations:
-        m_0 = se2_g.randomgen_custom_center(interval_theta=interval_theta, omega=omega, epsilon_zero_avoidance=epsilon)
-        dm_0 = se2_g.se2_g_log(m_0)
+        m_0 = se2.se2g_randomgen_custom_center(interval_theta=interval_theta, epsilon_zero_avoidance=epsilon)
+        dm_0 = se2.se2g_log(m_0)
 
         print('Matrices to generate svf and disp ground truth created:')
         print(dm_0.get_matrix)
         print(m_0.get_matrix)
 
         # -> generate subsequent vector fields out of the matrices <- #
-        svf_0 = generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
-        sdisp_0 = generate_from_matrix(omega, m_0.get_matrix, structure='group')
+        svf_0 = gen.generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
+        sdisp_0 = gen.generate_from_matrix(omega, m_0.get_matrix, structure='group')
 
         for interp_method_i, interp_method in enumerate(interp_methods):
             for method_i, method in enumerate(methods_vode):
@@ -76,17 +77,17 @@ if __name__ == '__main__':
 
                     start = time.time()
 
-                    sdisp_scipy = lie_exponential_scipy(svf_0,
-                                                        integrator='vode',
-                                                        method=method,
-                                                        max_steps=max_step,
-                                                        interpolation_method=interp_method,
-                                                        verbose=verbose_exp,
-                                                        passepartout=passepartout,
-                                                        return_integral_curves=False)
+                    sdisp_scipy = lie_exponential.lie_exponential_scipy(svf_0,
+                                                                        integrator='vode',
+                                                                        method=method,
+                                                                        max_steps=max_step,
+                                                                        interpolation_method=interp_method,
+                                                                        verbose=verbose_exp,
+                                                                        passepartout=passepartout,
+                                                                        return_integral_curves=False)
 
                     operation_time = (time.time() - start)
-                    error = vf_norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
+                    error = qr.vf_norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
 
                     print('----------  Error  and Computational Time  ----')
                     print('|vode - disp| = {} voxel'.format(str(error)))
@@ -104,12 +105,12 @@ if __name__ == '__main__':
                     list_fields_of_field = [[svf_0], [sdisp_0], [svf_0, sdisp_0, sdisp_scipy]]
                     list_colors = ['r', 'b', 'r', 'b', 'm']
 
-                    see_n_fields_special(list_fields_of_field,
-                                         fig_tag=i,
-                                         row_fig=1, col_fig=3,
-                                         colors_input=list_colors,
-                                         zoom_input=[0, 20, 0, 20], sample=(1, 1),
-                                         window_title_input='matrix, random generated',
-                                         legend_on=False)
+                    fields_comparisons.see_n_fields_special(list_fields_of_field,
+                                                            fig_tag=i,
+                                                            row_fig=1, col_fig=3,
+                                                            colors_input=list_colors,
+                                                            zoom_input=[0, 20, 0, 20], sample=(1, 1),
+                                                            window_title_input='matrix, random generated',
+                                                            legend_on=False)
 
                     plt.show()

@@ -1,8 +1,12 @@
+import os
+import nibabel as nib
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises, assert_equal, assert_almost_equal
 
 from VECtorsToolkit.fields.queries import check_omega, check_is_vf, vf_shape_from_omega_and_timepoints, \
-    get_omega_from_vf, vf_norm
+    get_omega_from_vf, vf_norm, from_nib_to_omega
+
+from .decorators_tools import create_and_erase_temporary_folder_with_a_dummy_nifti_image, pfo_tmp_test
 
 ''' test check_omega '''
 
@@ -66,6 +70,30 @@ def test_get_omega_from_vf_3d():
 
 def test_get_omega_from_vf_2d():
     assert_array_equal(get_omega_from_vf(np.zeros([10, 10, 1, 1, 2])), [10, 10])
+
+
+''' test from_image_to_omega'''
+
+
+def test_from_image_to_omega_by_non_existing_path():
+    with assert_raises(IOError):
+        from_nib_to_omega('z_spam_folder')
+
+
+@create_and_erase_temporary_folder_with_a_dummy_nifti_image
+def test_from_image_to_omega_by_path():
+    pfi_im = os.path.join(pfo_tmp_test, 'dummy_image.nii.gz')
+    expected_omega = (30, 29, 28)
+    obtained_omega = from_nib_to_omega(pfi_im)
+    assert_array_equal(obtained_omega, expected_omega)
+
+
+def test_from_image_to_omega_by_nifti():
+    expected_omega = (30, 29, 28)
+    nib_im = nib.Nifti1Image(np.ones(expected_omega), affine=np.eye(4))
+    obtained_omega = from_nib_to_omega(nib_im)
+    assert_array_equal(obtained_omega, expected_omega)
+
 
 ''' test vf_shape_from_omega_and_timepoints '''
 

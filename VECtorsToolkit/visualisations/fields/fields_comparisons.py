@@ -6,8 +6,8 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.fields.queries import check_is_vf
-from VECtorsToolkit.fields.generate_identities import id_eulerian_like
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
@@ -23,11 +23,11 @@ def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
                                       fig_tag=1, scale_0=1, scale_1=1,
                                       subtract_id_0=True, subtract_id_1=False):
 
-    assert check_is_vf(input_vf_0) == 2
-    assert check_is_vf(input_vf_1) == 2
+    assert qr.check_is_vf(input_vf_0) == 2
+    assert qr.check_is_vf(input_vf_1) == 2
 
-    id_field_0 = id_eulerian_like(input_vf_0)  # other option is casting with Field()
-    id_field_1 = id_eulerian_like(input_vf_1)
+    id_field_0 = gen_id.id_eulerian_like(input_vf_0)  # other option is casting with Field()
+    id_field_1 = gen_id.id_eulerian_like(input_vf_1)
 
     input_field_0 = copy.deepcopy(input_vf_0)
     input_field_1 = copy.deepcopy(input_vf_1)
@@ -205,9 +205,9 @@ def see_n_fields_separate(list_of_vf,
 
         if input_vf is not None:
 
-            assert check_is_vf(input_vf) == 2
+            assert qr.check_is_vf(input_vf) == 2
 
-            id_field = id_eulerian_like(input_vf)
+            id_field = gen_id.id_eulerian_like(input_vf)
             input_field_copy = copy.deepcopy(input_vf)
 
             if subtract_id[num_vf]:
@@ -316,9 +316,9 @@ def see_n_fields_special(list_of_list_vf,
 
                 main_index = int(np.sum(num_v[:num_list_of_obj]) + num_vf)
 
-                assert check_is_vf(input_vf) == 2
+                assert qr.check_is_vf(input_vf) == 2
 
-                id_field = id_eulerian_like(input_vf)
+                id_field = gen_id.id_eulerian_like(input_vf)
                 input_field_copy = copy.deepcopy(input_vf)
 
                 if subtract_id[num_vf]:
@@ -387,10 +387,10 @@ def see_overlay_of_n_fields(list_of_vf,
 
         if input_vf is not None:
 
-            id_field = id_eulerian_like(input_vf)
+            id_field = gen_id.id_eulerian_like(input_vf)
             input_field = copy.deepcopy(input_vf)
 
-            assert check_is_vf(input_vf) == 2
+            assert qr.check_is_vf(input_vf) == 2
 
             if subtract_id is not None:
                 if subtract_id[num_vf]:

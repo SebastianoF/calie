@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import expm, logm
+from scipy import linalg
 
 
 class Pgl2A(object):
@@ -32,7 +32,7 @@ class Pgl2A(object):
     shape = property(shape)
 
     def ode_solution(self, init_cond=np.array([0, 0, 1]), affine_coordinates=True):
-        s = expm(self.matrix).dot(init_cond)
+        s = linalg.expm(self.matrix).dot(init_cond)
         if affine_coordinates:
             return s[0:self.dim]/s[self.dim]  # the projective coordinate is the last one
         else:
@@ -123,7 +123,7 @@ def randomgen_Pgl2A(d=2, scale_factor=None, sigma=1.0, special=False):
 
 
 def Pgl2A_exp(pgl2a):
-    return Pgl2G(pgl2a.dim, expm(pgl2a.matrix), special=pgl2a.special)
+    return Pgl2G(pgl2a.dim, linalg.expm(pgl2a.matrix), special=pgl2a.special)
 
 
 def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
@@ -140,7 +140,7 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
     # select one equivalence class.
     random_h[-1, -1] = 1
     # Ensure its matrix logarithm will have real entries.
-    random_h = expm(random_h)
+    random_h = linalg.expm(random_h)
 
     if scale_factor is not None:
         random_h = scale_factor * random_h
@@ -157,7 +157,7 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
 
 
 def pgl2a_log(pgl2g):
-    return Pgl2A(pgl2g.dim, np.copy(logm(pgl2g.matrix)), special=pgl2g.special)
+    return Pgl2A(pgl2g.dim, np.copy(linalg.logm(pgl2g.matrix)), special=pgl2g.special)
 
 
 def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special=False, get_as_matrix=False,

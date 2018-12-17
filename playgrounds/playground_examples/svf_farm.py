@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.visualisations.fields import see_field
+from VECtorsToolkit.visualisations.fields import fields_at_the_window
+
 
 
 def f_vcon(t, x):
@@ -52,7 +53,7 @@ if __name__ == '__main__':
             for j in range(0, shape[1]):
                 field_vcon[i, j, 0, 0, :] = f_vcon(1, [i, j])
 
-        see_field(field_vcon, scale=1, input_color='r', fig_tag=2, annotate='', annotate_position=[-4, 1])
+        fields_at_the_window.see_field(field_vcon, scale=1, input_color='r', fig_tag=2, annotate='', annotate_position=[-4, 1])
 
     if see_vector_fields['descartes_folium']:
         field_descartes = np.zeros(shape)
@@ -63,6 +64,6 @@ if __name__ == '__main__':
             for j in range(0, 20):
                 field_descartes[i, j, 0, 0, :] = vf_linear(1, [i, j], m_descartes, alpha=alpha_descartes)
 
-        see_field(field_descartes, scale=1, input_color='r', fig_tag=1, annotate='', annotate_position=[-4, 1])
+        fields_at_the_window.see_field(field_descartes, scale=1, input_color='r', fig_tag=1, annotate='', annotate_position=[-4, 1])
 
     plt.show()

@@ -8,19 +8,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import ode
 
-from VECtorsToolkit.fields import generate_random
-from VECtorsToolkit.fields import one_point_interpolation
-from VECtorsToolkit.fields import vf_identity_eulerian_like
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import generate_identities as gen_id
+from VECtorsToolkit.fields import compose as cp
 
 
 def vf(t, x):
     global field_0
-    return list(one_point_interpolation(field_0, point=x, method='cubic'))
+    return list(cp.one_point_interpolation(field_0, point=x, method='cubic'))
 
 
 if __name__ == '__main__':
 
-    field_0 = generate_random(omega=(20, 20), parameters=(7, 2))
+    field_0 = gen.generate_random(omega=(20, 20), parameters=(7, 2))
 
     t0, tEnd, dt = 0, 1, 0.1
     ic = [[i, j] for i in range(8, 15) for j in range(8, 15)]
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     ax = fig.add_subplot(111)
 
     # Plot vector field
-    id_field = vf_identity_eulerian_like(field_0)
+    id_field = gen_id.id_eulerian_like(field_0)
 
     input_field_copy = copy.deepcopy(field_0)
 

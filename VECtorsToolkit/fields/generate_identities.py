@@ -6,13 +6,9 @@ A confusing nomenclature sometimes used in medical imaging is:
 Lagrangian -> displacement
 Eulerian   -> deformation
 """
-import os
-
-import nibabel as nib
 import numpy as np
 
-from VECtorsToolkit.fields.queries import get_omega_from_vf, check_is_vf, check_omega, \
-    vf_shape_from_omega_and_timepoints, from_nib_to_omega
+from VECtorsToolkit.fields import queries as qr
 
 
 def id_lagrangian(omega, t=1):
@@ -21,7 +17,7 @@ def id_lagrangian(omega, t=1):
     :param t: number of timepoints
     :return: identity vector field of given domain and timepoints, in Lagrangian coordinates.
     """
-    d = check_omega(omega)
+    d = qr.check_omega(omega)
     vf_shape = list(omega) + [1] * (3 - d) + [t, d]
     return np.zeros(vf_shape)
 
@@ -32,9 +28,9 @@ def id_eulerian(omega, t=1):
     :param t: number of timepoints
     :return: identity vector field of given domain and timepoints, in Eulerian coordinates.
     """
-    d = check_omega(omega)
+    d = qr.check_omega(omega)
     omega = list(omega)
-    v_shape = vf_shape_from_omega_and_timepoints(omega, t=t)
+    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t=t)
     id_vf = np.zeros(v_shape)
 
     if d == 2:
@@ -63,7 +59,7 @@ def id_lagrangian_like(input_vf):
     :param input_vf: input vector field.
     :return: corresponding identity grid position in Eulerian coordinates
     """
-    check_is_vf(input_vf)
+    qr.check_is_vf(input_vf)
     return np.zeros_like(input_vf)
 
 
@@ -73,8 +69,8 @@ def id_eulerian_like(input_vf):
     :return: corresponding grid position, i.e. the identity vector field sampled in the input_vf grid matrix
     in Lagrangian coordinates.
     """
-    check_is_vf(input_vf)
-    return id_eulerian(get_omega_from_vf(input_vf), t=input_vf.shape[3])
+    qr.check_is_vf(input_vf)
+    return id_eulerian(qr.get_omega_from_vf(input_vf), t=input_vf.shape[3])
 
 
 def id_matrices(omega, t=1):
@@ -85,7 +81,7 @@ def id_matrices(omega, t=1):
     :param t: timepoint
     :return: vector field with a vectorised identity matrix at each point.
     """
-    d = check_omega(omega)
+    d = qr.check_omega(omega)
 
     shape = list(omega) + [1] * (4 - d) + [d**2]
     shape[3] = t
@@ -99,7 +95,7 @@ def id_lagrangian_like_image(input_nib_image, t=1):
     :param t: additional timepoint
     :return: identity in lagrangian coordinate with same shape of the input image
     """
-    return id_lagrangian(from_nib_to_omega(input_nib_image), t=t)
+    return id_lagrangian(qr.from_nib_to_omega(input_nib_image), t=t)
 
 
 def id_eulerian_like_image(input_nib_image, t=1):
@@ -108,4 +104,4 @@ def id_eulerian_like_image(input_nib_image, t=1):
     :param t: additional timepoint
     :return: identity in eulerian coordinate with same shape of the input image
     """
-    return id_eulerian(from_nib_to_omega(input_nib_image), t=t)
+    return id_eulerian(qr.from_nib_to_omega(input_nib_image), t=t)

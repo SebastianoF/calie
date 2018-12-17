@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import ode
 
-from VECtorsToolkit.fields import one_point_interpolation
-from VECtorsToolkit.fields import vf_identity_eulerian_like
+from VECtorsToolkit.fields import compose as cp
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 # Function input:
@@ -41,15 +41,18 @@ if __name__ == '__main__':
     y1 = 1.2
 
     print('ground truth =  ' + str(function_1(1, [x1, y1])))
-    print('values interpolated nearest = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='nearest')))
-    print('values interpolated linear  = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='linear')))
-    print('values interpolated cubic   = ' + str(one_point_interpolation(field_0, point=(x1, y1), method='cubic')))
+    print('values interpolated nearest = ' + str(cp.one_point_interpolation(
+        field_0, point=(x1, y1), method='nearest')))
+    print('values interpolated linear  = ' + str(cp.one_point_interpolation(
+        field_0, point=(x1, y1), method='linear')))
+    print('values interpolated cubic   = ' + str(cp.one_point_interpolation(
+        field_0, point=(x1, y1), method='cubic')))
 
     # Vector field function:
 
     def vf(t, x):
         global field_0
-        return list(one_point_interpolation(field_0, point=x, method='cubic'))
+        return list(cp.one_point_interpolation(field_0, point=x, method='cubic'))
 
     t0, tEnd, dt = 0, 50, 0.5
     ic = [[5, 7], [6, 8], [8, 8]]
@@ -74,7 +77,7 @@ if __name__ == '__main__':
 
     # Plot vector field
 
-    id_field = vf_identity_eulerian_like(field_0)
+    id_field = gen_id.id_eulerian_like(field_0)
 
     input_field_copy = copy.deepcopy(field_0)
 

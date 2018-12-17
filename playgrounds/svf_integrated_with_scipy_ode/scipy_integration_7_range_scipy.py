@@ -2,15 +2,16 @@
 Parameters of the scipy integrator test and performance evaluation.
 """
 import time
-
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential_scipy
-from VECtorsToolkit.tools.transformations.se2_a import se2_g
-from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
-from VECtorsToolkit.fields import generate_from_matrix
-from VECtorsToolkit.fields import vf_norm
+from VECtorsToolkit.operations.lie_exponential import lie_exponential_scipy
+from VECtorsToolkit.transformations import se2
+from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
+
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import queries as qr
+
 
 if __name__ == '__main__':
 
@@ -45,15 +46,15 @@ if __name__ == '__main__':
     for i in range(N):
 
         # -> Compute random matrices of transformations
-        m_0 = se2_g.randomgen_custom_center(interval_theta=interval_theta, omega=omega, epsilon_zero_avoidance=epsilon)
-        dm_0 = se2_g.se2_g_log(m_0)
+        m_0 = se2.se2g_randomgen_custom_center(interval_theta=interval_theta, epsilon_zero_avoidance=epsilon)
+        dm_0 = se2.se2g_log(m_0)
 
         print('Matrices to generate svf and disp ground truth created:')
         print(dm_0.get_matrix)
         print(m_0.get_matrix)
 
-        svf_0   = generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
-        sdisp_0 = generate_from_matrix(omega, m_0.get_matrix, structure='group')
+        svf_0   = gen.generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
+        sdisp_0 = gen.generate_from_matrix(omega, m_0.get_matrix, structure='group')
 
         print('Svf and disp ground truth created:')
         print(type(svf_0))
@@ -82,7 +83,7 @@ if __name__ == '__main__':
                                                         return_integral_curves=False)
 
                     operation_time = (time.time() - start)
-                    error = vf_norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
+                    error = qr.vf_norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
 
                     print('----------  Error  ----------------------------')
                     print('|vode - disp| = {}'.format(str(error)))

@@ -3,8 +3,8 @@ import copy
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 
-from VECtorsToolkit.fields.queries import check_is_vf
-from VECtorsToolkit.fields.generate_identities import id_eulerian_like, id_lagrangian
+from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):
@@ -121,21 +121,23 @@ def see_array(in_array, extra_image=None, scale=None, num_fig=1):
 
 
 def see_one_slice(input_vf,
-              anatomical_plane='axial',
-              h_slice=0, sample=(1, 1),
-              window_title_input='quiver',
-              title_input= '2d vector field',
-              long_title=False,
-              fig_tag=1, scale=1,
-              subtract_id=False,
-              input_color='b',
-              annotate=None, annotate_position=(1, 1)):
-    check_is_vf(input_vf)
+                  anatomical_plane='axial',
+                  h_slice=0,
+                  sample=(1, 1),
+                  window_title_input='quiver',
+                  title_input='2d vector field',
+                  long_title=False,
+                  fig_tag=1, scale=1,
+                  subtract_id=False,
+                  input_color='b',
+                  annotate=None,
+                  annotate_position=(1, 1)):
+    qr.check_is_vf(input_vf)
     d = input_vf.shape[-1]
     if not d == 2:
             raise TypeError('See field 2d works only for 2d to 2d fields.')
 
-    id_field = id_lagrangian(list(input_vf.shape[:d]))
+    id_field = gen_id.id_lagrangian(list(input_vf.shape[:d]))
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
@@ -205,9 +207,9 @@ def see_field(input_vf,
               input_color='b',
               annotate=None, annotate_position=(1, 1)):
 
-    check_is_vf(input_vf)
+    qr.check_is_vf(input_vf)
 
-    id_field = id_eulerian_like(input_vf)
+    id_field = gen_id.id_eulerian_like(input_vf)
 
     fig = plt.figure(fig_tag)
     ax0 = fig.add_subplot(111)
@@ -296,11 +298,11 @@ def see_2_fields(input_obj_0, input_obj_1,
     :return:
     """
 
-    check_is_vf(input_obj_0)
-    check_is_vf(input_obj_1)
+    qr.check_is_vf(input_obj_0)
+    qr.check_is_vf(input_obj_1)
 
-    id_field_0 = id_eulerian_like(input_obj_0)  # other option is casting with Field()
-    id_field_1 = id_eulerian_like(input_obj_1)
+    id_field_0 = gen_id.id_eulerian_like(input_obj_0)  # other option is casting with Field()
+    id_field_1 = gen_id.id_eulerian_like(input_obj_1)
 
     input_field_0 = copy.deepcopy(input_obj_0)
     input_field_1 = copy.deepcopy(input_obj_1)

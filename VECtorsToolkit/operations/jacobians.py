@@ -1,12 +1,11 @@
 import numpy as np
-from VECtorsToolkit.aux.matrices import id_matrix_field, matrix_vector_field_product, \
-    matrix_fields_product_iterative
 
-from VECtorsToolkit.fields.queries import check_is_vf
+from VECtorsToolkit.aux import matrices
+from VECtorsToolkit.fields import queries as qr
 
 
 def initialise_jacobian(input_vf):
-    d = check_is_vf(input_vf)
+    d = qr.check_is_vf(input_vf)
     sh = list(input_vf.shape)
     while len(sh) < 5:
         sh.extend([1])
@@ -45,7 +44,7 @@ def compute_jacobian(input_vf, affine=np.eye(4), is_lagrangian=False):
             output_data[..., i * d + j] = grad[j].squeeze()
 
     if is_lagrangian:
-        jacobian += id_matrix_field(input_vf.shape[:d])
+        jacobian += matrices.id_matrix_field(input_vf.shape[:d])
 
     return jacobian
 
@@ -59,7 +58,7 @@ def compute_jacobian_determinant(input_vf, is_lagrangian=False):
     Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
     !! It works only for 1 time point - provisional !!
     """
-    d = check_is_vf(input_vf)
+    d = qr.check_is_vf(input_vf)
 
     vf_jacobian = compute_jacobian(input_vf, is_lagrangian=is_lagrangian)
 
@@ -85,7 +84,7 @@ def jacobian_product(vf_left, vf_right):
     left  = np.copy(vf_left)
     right = np.copy(vf_right)
 
-    result_array = matrix_vector_field_product(compute_jacobian(right), left)
+    result_array = matrices.matrix_vector_field_product(compute_jacobian(right), left)
 
     return result_array
 
@@ -99,7 +98,7 @@ def iterative_jacobian_product(vf, n):
     jv_field = compute_jacobian(vf)[...]
     v_field = vf[...]
 
-    jv_n_prod_v = matrix_vector_field_product(matrix_fields_product_iterative(jv_field, n-1), v_field)
+    jv_n_prod_v = matrices.matrix_vector_field_product(matrices.matrix_fields_product_iterative(jv_field, n-1), v_field)
 
     return jv_n_prod_v
 

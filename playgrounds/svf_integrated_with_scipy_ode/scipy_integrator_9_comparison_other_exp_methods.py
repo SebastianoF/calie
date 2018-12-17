@@ -12,12 +12,13 @@ The integrator with scipy has been added!
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.operations.lie_exponential import lie_exponential_scipy, lie_exponential
-from VECtorsToolkit.tools.transformations.se2_a import se2_g
-from VECtorsToolkit.tools.visualisations.fields.fields_comparisons import see_n_fields_special
 
-from VECtorsToolkit.fields import generate_from_matrix
-from VECtorsToolkit.fields import vf_norm
+from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.transformations import se2
+from VECtorsToolkit.visualisations.fields import fields_comparisons
+
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import queries as qr
 
 if __name__ == '__main__':
 
@@ -34,27 +35,27 @@ if __name__ == '__main__':
 
     passepartout = 2
 
-    m_0 = se2_g.Se2G(theta, tx, ty)
-    dm_0 = se2_g.se2_g_log(m_0)
+    m_0 = se2.Se2G(theta, tx, ty)
+    dm_0 = se2.se2g_log(m_0)
 
     print(dm_0.get_matrix)
     print(m_0.get_matrix)
 
     # -> generate subsequent vector fields
-    svf_0   = generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
-    sdisp_0 = generate_from_matrix(omega, m_0.get_matrix, structure='group')
+    svf_0   = gen.generate_from_matrix(omega, dm_0.get_matrix, structure='algebra')
+    sdisp_0 = gen.generate_from_matrix(omega, m_0.get_matrix, structure='group')
 
     # -> compute exponential with different available methods:
 
     spline_interpolation_order = 3
 
-    sdisp_ss      = lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
-    sdisp_ss_pa   = lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
-    sdisp_euler   = lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
-    sdisp_mid_p   = lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
-    sdisp_euler_m = lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
-    sdisp_rk4     = lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
-    sdisp_vode    = lie_exponential_scipy(svf_0, verbose=True, passepartout=passepartout)
+    sdisp_ss      = lie_exponential.lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
+    sdisp_ss_pa   = lie_exponential.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
+    sdisp_euler   = lie_exponential.lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
+    sdisp_mid_p   = lie_exponential.lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
+    sdisp_euler_m = lie_exponential.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
+    sdisp_rk4     = lie_exponential.lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
+    sdisp_vode    = lie_exponential.lie_exponential_scipy(svf_0, verbose=True, passepartout=passepartout)
 
     print(type(sdisp_ss))
     print(type(sdisp_ss_pa))
@@ -64,11 +65,11 @@ if __name__ == '__main__':
 
     print('--------------------')
     print("Norm of the svf:")
-    print(vf_norm(svf_0, passe_partout_size=4))
+    print(qr.vf_norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(vf_norm(sdisp_0, passe_partout_size=4))
+    print(qr.vf_norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the errors:")
@@ -106,12 +107,12 @@ if __name__ == '__main__':
         list_fields_of_field += [[svf_0, sdisp_0, third_field]]
         list_colors += ['r', 'b', 'm']
 
-    see_n_fields_special(list_fields_of_field, fig_tag=50,
-                         colors_input=list_colors,
-                         titles_input=title_input_l,
-                         sample=(1, 1),
-                         zoom_input=[0, 14, 0, 14],
-                         window_title_input='matrix, random generated',
-                         legend_on=False)
+    fields_comparisons.see_n_fields_special(list_fields_of_field, fig_tag=50,
+                                            colors_input=list_colors,
+                                            titles_input=title_input_l,
+                                            sample=(1, 1),
+                                            zoom_input=[0, 14, 0, 14],
+                                            window_title_input='matrix, random generated',
+                                            legend_on=False)
 
     plt.show()

@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.tools.visualisations.fields.fields_at_the_window import see_field
+from VECtorsToolkit.visualisations.fields import fields_at_the_window
 
-from VECtorsToolkit.fields import lagrangian_dot_lagrangian
+from VECtorsToolkit.fields import compose as cp
 
 if __name__ == '__main__':
     shape = (6, 6, 1, 1, 2)
@@ -28,15 +28,15 @@ if __name__ == '__main__':
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
             svf_g[x, y, 0, 0, :] = function_g(1, [x, y])
 
-    f_o_g = lagrangian_dot_lagrangian(svf_f, svf_g)
-    g_o_f = lagrangian_dot_lagrangian(svf_g, svf_f)
+    f_o_g = cp.lagrangian_dot_lagrangian(svf_f, svf_g)
+    g_o_f = cp.lagrangian_dot_lagrangian(svf_g, svf_f)
 
-    see_field(svf_f, fig_tag=2, input_color='b')
-    see_field(svf_g, fig_tag=2, input_color='r')
-    see_field(f_o_g, fig_tag=2, input_color='g', title_input='composition (f o g) in green')
+    fields_at_the_window.see_field(svf_f, fig_tag=2, input_color='b')
+    fields_at_the_window.see_field(svf_g, fig_tag=2, input_color='r')
+    fields_at_the_window.see_field(f_o_g, fig_tag=2, input_color='g', title_input='composition (f o g) in green')
 
-    see_field(svf_f, fig_tag=3, input_color='b')
-    see_field(svf_g, fig_tag=3, input_color='r')
-    see_field(g_o_f, fig_tag=3, input_color='g', title_input='composition (g o f) in green')
+    fields_at_the_window.see_field(svf_f, fig_tag=3, input_color='b')
+    fields_at_the_window.see_field(svf_g, fig_tag=3, input_color='r')
+    fields_at_the_window.see_field(g_o_f, fig_tag=3, input_color='g', title_input='composition (g o f) in green')
 
     plt.show()

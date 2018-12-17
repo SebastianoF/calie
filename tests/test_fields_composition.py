@@ -18,7 +18,7 @@ from VECtorsToolkit.fields.generate_identities import id_lagrangian
 
 # Lagrangian dot lagrangian
 
-def test_2_easy_vector_fields(get_figures=False):
+def test_2_simple_vector_fields(get_figures=False):
 
     dec = 15  # decimal for the error
     passe_partout = 0
@@ -485,7 +485,7 @@ if __name__ == '__main__':
 
     see_graphs = False
 
-    test_2_easy_vector_fields(see_graphs)
+    test_2_simple_vector_fields(see_graphs)
     test_2_less_easy_vector_fields(see_graphs)
     test_easy_composition_with_identity(see_graphs)
     test_less_easy_composition_with_identity(see_graphs)

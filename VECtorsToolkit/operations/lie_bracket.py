@@ -1,7 +1,7 @@
 import numpy as np
 
-from VECtorsToolkit.operations.jacobians import compute_jacobian
-from VECtorsToolkit.fields.queries import check_is_vf
+from VECtorsToolkit.operations import jacobians as jac
+from VECtorsToolkit.fields import queries as qr
 
 
 def lie_bracket(left, right):
@@ -16,11 +16,11 @@ def lie_bracket(left, right):
         :return Return the resulting velocity
         """
 
-        left_jac = compute_jacobian(left)
-        right_jac = compute_jacobian(right)
+        left_jac = jac.compute_jacobian(left)
+        right_jac = jac.compute_jacobian(right)
 
         result = np.zeros_like(left)
-        num_dims = check_is_vf(result)
+        num_dims = qr.check_is_vf(result)
 
         if num_dims == 2:
             result[..., 0] = \
