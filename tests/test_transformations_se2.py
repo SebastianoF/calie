@@ -5,7 +5,7 @@ import scipy.linalg as lin
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_equal, assert_raises
 
 from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.aux.angles import mod_pipi
+from VECtorsToolkit.aux import angles
 
 '''
 Test for the module translation
@@ -54,7 +54,7 @@ def test_se2_a_quotient_projection_greater_than_pi():
     theta_in = np.pi + 0.3
     tx_in = 3
     ty_in = 4
-    fact = mod_pipi(theta_in)/theta_in
+    fact = angles.mod_pipi(theta_in)/theta_in
     theta_out = -np.pi + 0.3
     tx_out = tx_in * fact
     ty_out = ty_in * fact
@@ -75,7 +75,7 @@ def test_se2_a_add_0_translation():
     any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx_2 = 0
     ty_2 = 0
-    expected_output_angle = mod_pipi(any_angle_1 + any_angle_2)
+    expected_output_angle =angles. mod_pipi(any_angle_1 + any_angle_2)
     expected_output_tx = 0
     expected_output_ty = 0
     expected_output = [expected_output_angle, expected_output_tx, expected_output_ty]
@@ -115,7 +115,7 @@ def test_se2_a_add_random_input():
     sum_tx = any_tx_1 + any_tx_2
     sum_ty = any_ty_1 + any_ty_2
 
-    sum_angle_mod = mod_pipi(sum_angle)
+    sum_angle_mod = angles.mod_pipi(sum_angle)
     if not sum_angle == sum_angle_mod:
         modfact = sum_angle_mod / sum_angle
         sum_tx = modfact*sum_tx
@@ -149,7 +149,7 @@ def test_se2_a_comparing_sum_restricted_form_and_matrix_form():
     matrix_sum_output = \
         se2.Se2A(any_angle_1, any_tx_1, any_ty_1).get_matrix + se2.Se2A(any_angle_2, any_tx_2, any_ty_2).get_matrix
 
-    theta_mod = mod_pipi(matrix_sum_output[1, 0])
+    theta_mod = angles.mod_pipi(matrix_sum_output[1, 0])
     if not matrix_sum_output[1, 0] == theta_mod:
         modfact = theta_mod / matrix_sum_output[1, 0]
         matrix_sum_output[0, 2] = matrix_sum_output[0, 2] * modfact
@@ -215,20 +215,20 @@ def test_se2_a_norm_standard_fixed_input_non0():
     angle, tx, ty = se2.Se2A(4, 5, 6).quot.get  # input data has to be considered in the quotient space
     lamb = 1
     element = se2.Se2A(angle, tx, ty)
-    assert_equal(element.norm('lamb', lamb), np.sqrt(mod_pipi(angle)**2 + lamb*(tx**2 + ty**2)))
+    assert_equal(element.norm('lamb', lamb), np.sqrt(angles.mod_pipi(angle)**2 + lamb*(tx**2 + ty**2)))
 
 
 def test_se2_a_norm_translation_fixed_input_non0():
     angle, tx, ty = se2.Se2A(4, 5, 6).quot.get  # input data has to be considered in the quotient space
     element = se2.Se2A(angle, tx, ty)
-    factmod = mod_pipi(angle)/angle
+    factmod = angles.mod_pipi(angle)/angle
     assert_equal(element.norm('translation'), factmod*np.sqrt(tx**2 + ty**2))
 
 
 def test_se2_a_norm_fro_fixed_input_non0():
     angle, tx, ty = se2.Se2A(4, 5, 6).quot.get  # input data has to be considered in the quotient space
     element = se2.Se2A(angle, tx, ty)
-    factmod = mod_pipi(angle)/angle
+    factmod = angles.mod_pipi(angle)/angle
     assert_equal(element.norm('fro'), np.sqrt(2*angle**2 + factmod**2 * (tx**2 + ty**2)))
 
 
@@ -354,8 +354,8 @@ def test_se2_a_lie_bracket_one_element_out_quotient():
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
     # the first input manually reduced to quotient space
-    mod_fact = mod_pipi(any_angle_1)/any_angle_1
-    any_angle_1 = mod_pipi(any_angle_1)
+    mod_fact = angles.mod_pipi(any_angle_1)/any_angle_1
+    any_angle_1 = angles.mod_pipi(any_angle_1)
     any_tx_1 *= mod_fact
     any_ty_1 *= mod_fact
     #
@@ -487,7 +487,7 @@ def test_se2_a_list2se2_a_insane_input():
 
 
 def test_se2_a_list2se2_a_good_input():
-    tt = [mod_pipi(3.2), 1, 2]
+    tt = [angles.mod_pipi(3.2), 1, 2]
     ans = se2.list2se2a(tt)
     assert_array_almost_equal(ans.get, tt)
 
@@ -578,7 +578,7 @@ def test_se2_g_mul_0_translation():
     any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     tx_2 = 0
     ty_2 = 0
-    expected_output_angle = mod_pipi(any_angle_1 + any_angle_2)
+    expected_output_angle = angles.mod_pipi(any_angle_1 + any_angle_2)
     expected_output_tx = 0
     expected_output_ty = 0
     expected_output = [expected_output_angle, expected_output_tx, expected_output_ty]
@@ -608,7 +608,7 @@ def test_se2_g_mul_random_input():
     any_angle_2 = uniform(-np.pi + np.abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
-    expected_output_angle = mod_pipi(any_angle_1 + any_angle_2)
+    expected_output_angle = angles.mod_pipi(any_angle_1 + any_angle_2)
     expected_output_tx = any_tx_1 + any_tx_2 * np.cos(any_angle_1) - any_ty_2 * np.sin(any_angle_1)
     expected_output_ty = any_ty_1 + any_tx_2 * np.sin(any_angle_1) + any_ty_2 * np.cos(any_angle_1)
     expected_output = [expected_output_angle, expected_output_tx, expected_output_ty]
@@ -690,7 +690,7 @@ def test_se2_g_norm_standard_fixed_input_non0():
     angle, tx,  ty = 4, 5, 6
     lamb = 1
     element = se2.Se2G(angle, tx, ty)
-    assert_equal(element.norm('standard', lamb), np.sqrt(mod_pipi(angle)**2 + lamb*(tx**2 + ty**2)))
+    assert_equal(element.norm('standard', lamb), np.sqrt(angles.mod_pipi(angle)**2 + lamb*(tx**2 + ty**2)))
 
 
 def test_se2_g_norm_translation_fixed_input_non0():
@@ -1032,7 +1032,7 @@ def test_se2_g_list2se2_g_insane_input():
 
 
 def test_se2_g_list2se2_g_good_input():
-    tt = [mod_pipi(3.2), 1, 2]
+    tt = [angles.mod_pipi(3.2), 1, 2]
     ans = se2.list2se2g(tt)
     assert_array_almost_equal(ans.get, tt)
 

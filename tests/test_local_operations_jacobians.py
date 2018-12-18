@@ -2,8 +2,8 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.operations.jacobians import compute_jacobian, initialise_jacobian, jacobian_product
-from VECtorsToolkit.fields.generate_identities import id_lagrangian
+from VECtorsToolkit.operations import jacobians as jac
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 # -- Jacobian tests for the class Image 2d
@@ -19,15 +19,15 @@ def test_jacobian_toy_field_1():
     def jacobian_f(_, x):
         return 0.0, 1.0, -1.0, 0.0
 
-    svf_f        = id_lagrangian(omega=(20, 20))
-    jac_f_ground = initialise_jacobian(svf_f)
+    svf_f        = gen_id.id_lagrangian(omega=(20, 20))
+    jac_f_ground = jac.initialise_jacobian(svf_f)
 
     for i in range(0, 20):
         for j in range(0, 20):
             svf_f[i, j, 0, 0, :] = field_f(1, [i, j])
             jac_f_ground[i, j, 0, 0, :] = jacobian_f(1, [i, j])
 
-    jac_f_numeric = compute_jacobian(svf_f)
+    jac_f_numeric = jac.compute_jacobian(svf_f)
 
     square_size = range(0, 20)
     assert_array_almost_equal(jac_f_ground[square_size, square_size, 0, 0, :],
@@ -45,15 +45,15 @@ def test_jacobian_toy_field_2():
         t = float(t); x = [float(y) for y in x]
         return 0.5, 0.6, 0.0, 0.8
 
-    svf_f        = id_lagrangian(omega=(20, 20))
-    jac_f_ground = initialise_jacobian(svf_f)
+    svf_f        = gen_id.id_lagrangian(omega=(20, 20))
+    jac_f_ground = jac.initialise_jacobian(svf_f)
 
     for i in range(0, 20):
         for j in range(0, 20):
             svf_f[i, j, 0, 0, :] = field_f(1, [i, j])
             jac_f_ground[i, j, 0, 0, :] = jacobian_f(1, [i, j])
 
-    jac_f_numeric = compute_jacobian(svf_f)
+    jac_f_numeric = jac.compute_jacobian(svf_f)
 
     square_size = range(0, 20)
     assert_array_almost_equal(jac_f_ground[square_size, square_size, 0, 0, :],
@@ -71,15 +71,15 @@ def test_jacobian_toy_field_3():
         t = float(t); x = [float(y) for y in x]
         return 2.0 * x[0] + 2.0, 1.0, 3.0, 0.0
 
-    svf_f        = id_lagrangian(omega=(30, 30))
-    jac_f_ground = initialise_jacobian(svf_f)
+    svf_f        = gen_id.id_lagrangian(omega=(30, 30))
+    jac_f_ground = jac.initialise_jacobian(svf_f)
 
     for i in range(0, 30):
         for j in range(0, 30):
             svf_f[i, j, 0, 0, :] = field_f(1, [i, j])
             jac_f_ground[i, j, 0, 0, :] = jacobian_f(1, [i, j])
 
-    jac_f_numeric = compute_jacobian(svf_f)
+    jac_f_numeric = jac.compute_jacobian(svf_f)
 
     pp = 2
     assert_array_almost_equal(jac_f_ground[pp:-pp, pp:-pp, 0, 0, :],
@@ -126,8 +126,8 @@ def test_jacobian_product_toy_example_2d_1():
             ground_u_v[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
             ground_v_u[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
 
-    jac_prod_u_v = jacobian_product(u, v)
-    jac_prod_v_u = jacobian_product(v, u)
+    jac_prod_u_v = jac.jacobian_product(u, v)
+    jac_prod_v_u = jac.jacobian_product(v, u)
 
     pp = 1
     assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
@@ -171,8 +171,8 @@ def test_jacobian_product_toy_example_2d_2():
             ground_u_v[i, j, 0, 0, :] = ground_jac_product_u_v(1, [i, j])
             ground_v_u[i, j, 0, 0, :] = ground_jac_product_v_u(1, [i, j])
 
-    jac_prod_u_v = jacobian_product(u, v)
-    jac_prod_v_u = jacobian_product(v, u)
+    jac_prod_u_v = jac.jacobian_product(u, v)
+    jac_prod_v_u = jac.jacobian_product(v, u)
 
     pp = 1
     assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
@@ -216,8 +216,8 @@ def test_jacobian_product_toy_example_3d():
                 ground_u_v[i, j, k, 0, :] = ground_jac_product_u_v(1, [i, j, k])
                 ground_v_u[i, j, k, 0, :] = ground_jac_product_v_u(1, [i, j, k])
 
-    jac_prod_u_v = jacobian_product(u, v)
-    jac_prod_v_u = jacobian_product(v, u)
+    jac_prod_u_v = jac.jacobian_product(u, v)
+    jac_prod_v_u = jac.jacobian_product(v, u)
 
     pp = 1
     assert_array_almost_equal(jac_prod_u_v[pp:-pp, pp:-pp, 0, 0, :], ground_u_v[pp:-pp, pp:-pp, 0, 0, :])
@@ -230,8 +230,8 @@ def test_jacobian_product_toy_example_3d():
 def test_jacobian_toy_field_3_2(open_fig=False):
     clear_cache()
 
-    svf_f        = np.zeros((20,20,20,1,3))
-    jac_f_ground = initialise_jacobian(svf_f)
+    svf_f        = np.zeros((20, 20, 20, 1, 3))
+    jac_f_ground = jac.initialise_jacobian(svf_f)
 
     print(jac_f_ground.shape)
 

@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from VECtorsToolkit.operations.lie_exponential import lie_exponential
-from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
+from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.visualisations.fields import fields_at_the_window
 
-from VECtorsToolkit.fields.generate import generate_random
-from VECtorsToolkit.fields.compose import lagrangian_dot_lagrangian
-from VECtorsToolkit.fields.generate_identities import id_lagrangian
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import compose as cp
+from VECtorsToolkit.fields import generate_identities as gen_id
 
 
 # Lagrangian dot lagrangian
@@ -25,9 +25,9 @@ def test_2_simple_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = id_lagrangian(omega)
-    svf_f     = id_lagrangian(omega)
-    svf_f_inv = id_lagrangian(omega)
+    svf_zeros = gen_id.id_lagrangian(omega)
+    svf_f     = gen_id.id_lagrangian(omega)
+    svf_f_inv = gen_id.id_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t)
@@ -39,8 +39,8 @@ def test_2_simple_vector_fields(get_figures=False):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
             svf_f_inv[x, y, 0, 0, :] = -1 * function_f(1, [x, y])
 
-    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
-    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
+    f_o_f_inv = cp.lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
+    f_inv_o_f = cp.lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
 
     assert_array_almost_equal(f_o_f_inv[10, 10, 0, 0, :], [.0, .0], decimal=dec)
     assert_array_almost_equal(f_inv_o_f[10, 10, 0, 0, :], [.0, .0], decimal=dec)
@@ -54,16 +54,16 @@ def test_2_simple_vector_fields(get_figures=False):
                               decimal=dec)
 
     if get_figures:
-        see_field(svf_f)
-        see_field(svf_f_inv, input_color='r', title_input='2 vector fields: f blue, g red')
+        fields_at_the_window.see_field(svf_f)
+        fields_at_the_window.see_field(svf_f_inv, input_color='r', title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=2)
-        see_field(svf_f_inv, fig_tag=2, input_color='r')
-        see_field(f_o_f_inv, fig_tag=2, input_color='g', title_input='composition (f o f^(-1)) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=2)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=2, input_color='r')
+        fields_at_the_window.see_field(f_o_f_inv, fig_tag=2, input_color='g', title_input='composition (f o f^(-1)) in green')
 
-        see_field(svf_f, fig_tag=3)
-        see_field(svf_f_inv, fig_tag=3, input_color='r')
-        see_field(f_inv_o_f, fig_tag=3, input_color='g', title_input='composition (f^(-1) o f) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=3)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=3, input_color='r')
+        fields_at_the_window.see_field(f_inv_o_f, fig_tag=3, input_color='g', title_input='composition (f^(-1) o f) in green')
 
     plt.show()
 
@@ -75,9 +75,9 @@ def test_2_less_easy_vector_fields(get_figures=False):
 
     omega = (20, 20)
 
-    svf_zeros = id_lagrangian(omega)
-    svf_f     = id_lagrangian(omega)
-    svf_f_inv = id_lagrangian(omega)
+    svf_zeros = gen_id.id_lagrangian(omega)
+    svf_f     = gen_id.id_lagrangian(omega)
+    svf_f_inv = gen_id.id_lagrangian(omega)
 
     def function_f(t, x):
         t = float(t)
@@ -89,8 +89,8 @@ def test_2_less_easy_vector_fields(get_figures=False):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
             svf_f_inv[x, y, 0, 0, :] = -1 * function_f(1, [x, y])
 
-    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
-    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
+    f_o_f_inv = cp.lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
+    f_inv_o_f = cp.lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
 
     assert_array_almost_equal(f_o_f_inv[10, 10, 0, 0, :], [.0, .0], decimal=dec)
     assert_array_almost_equal(f_inv_o_f[10, 10, 0, 0, :], [.0, .0], decimal=dec)
@@ -104,16 +104,19 @@ def test_2_less_easy_vector_fields(get_figures=False):
                               decimal=dec)
 
     if get_figures:
-        see_field(svf_f)
-        see_field(svf_f_inv, input_color='r', title_input='2 vector fields: f blue, g red')
+        fields_at_the_window.see_field(svf_f)
+        fields_at_the_window.see_field(svf_f_inv, input_color='r',
+                                       title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=2)
-        see_field(svf_f_inv, fig_tag=2)
-        see_field(f_o_f_inv, fig_tag=2, input_color='g', title_input='composition (f o f^(-1)) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=2)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=2)
+        fields_at_the_window.see_field(f_o_f_inv, fig_tag=2, input_color='g',
+                                       title_input='composition (f o f^(-1)) in green')
 
-        see_field(svf_f, fig_tag=3)
-        see_field(svf_f_inv, fig_tag=3, input_color='r')
-        see_field(f_inv_o_f, fig_tag=3, input_color='g', title_input='composition (f^(-1) o f) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=3)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=3, input_color='r')
+        fields_at_the_window.see_field(f_inv_o_f, fig_tag=3, input_color='g',
+                                       title_input='composition (f^(-1) o f) in green')
 
     plt.show()
 
@@ -125,9 +128,9 @@ def test_easy_composition_with_identity(get_figures=False):
 
     omega = (10, 10)
 
-    svf_zeros = id_lagrangian(omega)
-    svf_f     = id_lagrangian(omega)
-    svf_id    = id_lagrangian(omega)  # id in lagrangian coordinates is the zero field
+    svf_zeros = gen_id.id_lagrangian(omega)
+    svf_f     = gen_id.id_lagrangian(omega)
+    svf_id    = gen_id.id_lagrangian(omega)  # id in lagrangian coordinates is the zero field
 
     def function_f(t, x):
         t = float(t); x = [float(y) for y in x]
@@ -137,21 +140,21 @@ def test_easy_composition_with_identity(get_figures=False):
         for y in range(10):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
 
-    f_o_id = lagrangian_dot_lagrangian(svf_f, svf_id, add_right=True)
-    id_o_f = lagrangian_dot_lagrangian(svf_id, svf_f, add_right=True)
+    f_o_id = cp.lagrangian_dot_lagrangian(svf_f, svf_id, add_right=True)
+    id_o_f = cp.lagrangian_dot_lagrangian(svf_id, svf_f, add_right=True)
 
     # sfv_0 is provided in Lagrangian coordinates!
     if get_figures:
-        see_field(svf_f, fig_tag=21)
-        see_field(svf_id, fig_tag=21, input_color='r', title_input='2 vector fields: f blue, g red')
+        fields_at_the_window.see_field(svf_f, fig_tag=21)
+        fields_at_the_window.see_field(svf_id, fig_tag=21, input_color='r', title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=22)
-        see_field(svf_id, fig_tag=22, input_color='r')
-        see_field(f_o_id, fig_tag=22, input_color='g', title_input='composition (f o id) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=22)
+        fields_at_the_window.see_field(svf_id, fig_tag=22, input_color='r')
+        fields_at_the_window.see_field(f_o_id, fig_tag=22, input_color='g', title_input='composition (f o id) in green')
 
-        see_field(svf_f, fig_tag=23)
-        see_field(svf_id, fig_tag=23, input_color='r')
-        see_field(id_o_f, fig_tag=23, input_color='g', title_input='composition (id o f) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=23)
+        fields_at_the_window.see_field(svf_id, fig_tag=23, input_color='r')
+        fields_at_the_window.see_field(id_o_f, fig_tag=23, input_color='g', title_input='composition (id o f) in green')
 
     plt.show()
 
@@ -175,9 +178,9 @@ def test_less_easy_composition_with_identity(get_figures=False):
 
     omega = (20, 25)
 
-    svf_zeros = id_lagrangian(omega=omega)
-    svf_f     = id_lagrangian(omega=omega)
-    svf_id    = id_lagrangian(omega=omega)
+    svf_zeros = gen_id.id_lagrangian(omega=omega)
+    svf_f     = gen_id.id_lagrangian(omega=omega)
+    svf_id    = gen_id.id_lagrangian(omega=omega)
 
     def function_f(t, x):
         t = float(t)
@@ -188,8 +191,8 @@ def test_less_easy_composition_with_identity(get_figures=False):
         for y in range(20):
             svf_f[x, y, 0, 0, :] = function_f(1, [x, y])
 
-    f_o_id = lagrangian_dot_lagrangian(svf_f, svf_id, add_right=True)
-    id_o_f = lagrangian_dot_lagrangian(svf_id, svf_f, add_right=True)
+    f_o_id = cp.lagrangian_dot_lagrangian(svf_f, svf_id, add_right=True)
+    id_o_f = cp.lagrangian_dot_lagrangian(svf_id, svf_f, add_right=True)
 
     # test if the compositions are still in lagrangian coordinates, as attributes and as shape
     assert_array_almost_equal(f_o_id[5, 5, 0, 0, :], function_f(1, [5, 5]), decimal=dec)
@@ -205,16 +208,19 @@ def test_less_easy_composition_with_identity(get_figures=False):
                               decimal=dec)
 
     if get_figures:
-        see_field(svf_f, fig_tag=41)
-        see_field(svf_id, fig_tag=41, input_color='r', title_input='2 vector fields: f blue, g red')
+        fields_at_the_window.see_field(svf_f, fig_tag=41)
+        fields_at_the_window.see_field(svf_id, fig_tag=41, input_color='r',
+                                       title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=42)
-        see_field(svf_id, fig_tag=42, input_color='r')
-        see_field(f_o_id, fig_tag=42, input_color='g', title_input='composition (f o id) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=42)
+        fields_at_the_window.see_field(svf_id, fig_tag=42, input_color='r')
+        fields_at_the_window.see_field(f_o_id, fig_tag=42, input_color='g',
+                                       title_input='composition (f o id) in green')
 
-        see_field(svf_f, fig_tag=43)
-        see_field(svf_id, fig_tag=43, input_color='r')
-        see_field(id_o_f, fig_tag=43, input_color='g', title_input='composition (id o f) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=43)
+        fields_at_the_window.see_field(svf_id, fig_tag=43, input_color='r')
+        fields_at_the_window.see_field(id_o_f, fig_tag=43, input_color='g',
+                                       title_input='composition (id o f) in green')
 
     plt.show()
 
@@ -228,12 +234,12 @@ def test_2_random_vector_fields_svf(get_figures=False):
 
     omega = (10, 10)
 
-    svf_f     = id_lagrangian(omega=omega)
+    svf_f     = gen_id.id_lagrangian(omega=omega)
     svf_f_inv = np.copy(-1 * svf_f)
 
-    f_o_f_inv = lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
-    f_inv_o_f = lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
-    svf_id = id_lagrangian(omega=omega)
+    f_o_f_inv = cp.lagrangian_dot_lagrangian(svf_f, svf_f_inv, add_right=True)
+    f_inv_o_f = cp.lagrangian_dot_lagrangian(svf_f_inv, svf_f, add_right=True)
+    svf_id = gen_id.id_lagrangian(omega=omega)
 
     # # results of a composition of 2 lagrangian must be a lagrangian zero field
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
@@ -244,16 +250,19 @@ def test_2_random_vector_fields_svf(get_figures=False):
                               decimal=dec)
 
     if get_figures:
-        see_field(svf_f, fig_tag=51)
-        see_field(svf_f_inv, fig_tag=51, input_color='r', title_input='2 vector fields: f blue, g red')
+        fields_at_the_window.see_field(svf_f, fig_tag=51)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=51, input_color='r',
+                                       title_input='2 vector fields: f blue, g red')
 
-        see_field(svf_f, fig_tag=52)
-        see_field(svf_f_inv, fig_tag=52, input_color='r')
-        see_field(f_o_f_inv, fig_tag=52, input_color='g', title_input='composition (f o f^(-1)) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=52)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=52, input_color='r')
+        fields_at_the_window.see_field(f_o_f_inv, fig_tag=52, input_color='g',
+                                       title_input='composition (f o f^(-1)) in green')
 
-        see_field(svf_f, fig_tag=53)
-        see_field(svf_f_inv, fig_tag=53, input_color='r')
-        see_field(f_inv_o_f, fig_tag=53, input_color='g', title_input='composition (f^(-1) o f) in green')
+        fields_at_the_window.see_field(svf_f, fig_tag=53)
+        fields_at_the_window.see_field(svf_f_inv, fig_tag=53, input_color='r')
+        fields_at_the_window.see_field(f_inv_o_f, fig_tag=53, input_color='g',
+                                       title_input='composition (f^(-1) o f) in green')
 
     plt.show()
 
@@ -267,14 +276,14 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
 
     sigma_init = 4
     sigma_gaussian_filter = 2
-    svf_zeros = id_lagrangian(omega)
-    svf_0     = generate_random(omega, parameters=(sigma_init, sigma_gaussian_filter))
+    svf_zeros = gen_id.id_lagrangian(omega)
+    svf_0     = gen.generate_random(omega, parameters=(sigma_init, sigma_gaussian_filter))
 
-    sdisp_0 = lie_exponential(svf_0, algorithm='ss')
-    sdisp_0_inv = lie_exponential(-1 * svf_0, algorithm='ss')
+    sdisp_0 = lie_exponential.lie_exponential(svf_0, algorithm='ss')
+    sdisp_0_inv = lie_exponential.lie_exponential(-1 * svf_0, algorithm='ss')
 
-    f_o_f_inv = lagrangian_dot_lagrangian(sdisp_0, sdisp_0_inv, add_right=True)
-    f_inv_o_f = lagrangian_dot_lagrangian(sdisp_0_inv, sdisp_0, add_right=True)
+    f_o_f_inv = cp.lagrangian_dot_lagrangian(sdisp_0, sdisp_0_inv, add_right=True)
+    f_inv_o_f = cp.lagrangian_dot_lagrangian(sdisp_0_inv, sdisp_0, add_right=True)
 
     # results of a composition of 2 lagrangian must be a lagrangian zero field
     assert_array_almost_equal(f_o_f_inv[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
@@ -285,16 +294,19 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
                               decimal=dec)
 
     if get_figures:
-        see_field(sdisp_0, fig_tag=61)
-        see_field(sdisp_0_inv, fig_tag=61, input_color='r', title_input='2 displacement fields: f blue, g red')
+        fields_at_the_window.see_field(sdisp_0, fig_tag=61)
+        fields_at_the_window.see_field(sdisp_0_inv, fig_tag=61, input_color='r',
+                                       title_input='2 displacement fields: f blue, g red')
 
-        see_field(sdisp_0, fig_tag=62)
-        see_field(sdisp_0_inv, fig_tag=62, input_color='r')
-        see_field(f_o_f_inv, fig_tag=62, input_color='g', title_input='composition (f o f^(-1)) in green')
+        fields_at_the_window.see_field(sdisp_0, fig_tag=62)
+        fields_at_the_window.see_field(sdisp_0_inv, fig_tag=62, input_color='r')
+        fields_at_the_window.see_field(f_o_f_inv, fig_tag=62, input_color='g',
+                                       title_input='composition (f o f^(-1)) in green')
 
-        see_field(sdisp_0, fig_tag=63)
-        see_field(sdisp_0_inv, fig_tag=63, input_color='r')
-        see_field(f_inv_o_f, fig_tag=63, input_color='g', title_input='composition (f^(-1) o f) in green')
+        fields_at_the_window.see_field(sdisp_0, fig_tag=63)
+        fields_at_the_window.see_field(sdisp_0_inv, fig_tag=63, input_color='r')
+        fields_at_the_window.see_field(f_inv_o_f, fig_tag=63, input_color='g',
+                                       title_input='composition (f^(-1) o f) in green')
 
     plt.show()
 
@@ -316,10 +328,10 @@ def test_controlled_composition_of_two_closed_form_vector_fields_2d_1(get_figure
     def v_dot_u(x, y):
         return 1, 1
 
-    svf_u = id_lagrangian(omega=omega)
-    svf_v = id_lagrangian(omega=omega)
-    svf_u_dot_v = id_lagrangian(omega=omega)
-    svf_v_dot_u = id_lagrangian(omega=omega)
+    svf_u = gen_id.id_lagrangian(omega=omega)
+    svf_v = gen_id.id_lagrangian(omega=omega)
+    svf_u_dot_v = gen_id.id_lagrangian(omega=omega)
+    svf_v_dot_u = gen_id.id_lagrangian(omega=omega)
 
     for x in range(omega[0]):
         for y in range(omega[1]):
@@ -328,26 +340,29 @@ def test_controlled_composition_of_two_closed_form_vector_fields_2d_1(get_figure
             svf_u_dot_v[x, y, 0, 0, :] = u_dot_v(x, y)
             svf_v_dot_u[x, y, 0, 0, :] = v_dot_u(x, y)
 
-    svf_u_dot_v_numerical = lagrangian_dot_lagrangian(svf_u, svf_v, add_right=False)
-    svf_v_dot_u_numerical = lagrangian_dot_lagrangian(svf_v, svf_u, add_right=False)
+    svf_u_dot_v_numerical = cp.lagrangian_dot_lagrangian(svf_u, svf_v, add_right=False)
+    svf_v_dot_u_numerical = cp.lagrangian_dot_lagrangian(svf_v, svf_u, add_right=False)
 
     if get_figures:
 
-        see_field(svf_u, fig_tag=62)
-        see_field(svf_v, fig_tag=62, input_color='r')
-        see_field(svf_u_dot_v, fig_tag=62, input_color='g', title_input='(u o v) closed form')
+        fields_at_the_window.see_field(svf_u, fig_tag=62)
+        fields_at_the_window.see_field(svf_v, fig_tag=62, input_color='r')
+        fields_at_the_window.see_field(svf_u_dot_v, fig_tag=62, input_color='g', title_input='(u o v) closed form')
 
-        see_field(svf_u, fig_tag=63)
-        see_field(svf_v, fig_tag=63, input_color='r')
-        see_field(svf_u_dot_v_numerical, fig_tag=63, input_color='g', title_input='(u o v) numerical')
+        fields_at_the_window.see_field(svf_u, fig_tag=63)
+        fields_at_the_window.see_field(svf_v, fig_tag=63, input_color='r')
+        fields_at_the_window.see_field(svf_u_dot_v_numerical, fig_tag=63, input_color='g',
+                                       title_input='(u o v) numerical')
 
-        see_field(svf_u, fig_tag=64)
-        see_field(svf_v, fig_tag=64, input_color='r')
-        see_field(svf_v_dot_u, fig_tag=64, input_color='g', title_input='composition v o u closed form')
+        fields_at_the_window.see_field(svf_u, fig_tag=64)
+        fields_at_the_window.see_field(svf_v, fig_tag=64, input_color='r')
+        fields_at_the_window.see_field(svf_v_dot_u, fig_tag=64, input_color='g',
+                                       title_input='composition v o u closed form')
 
-        see_field(svf_u, fig_tag=65)
-        see_field(svf_v, fig_tag=65, input_color='r')
-        see_field(svf_v_dot_u_numerical, fig_tag=65, input_color='g', title_input='composition v o u numerical')
+        fields_at_the_window.see_field(svf_u, fig_tag=65)
+        fields_at_the_window.see_field(svf_v, fig_tag=65, input_color='r')
+        fields_at_the_window.see_field(svf_v_dot_u_numerical, fig_tag=65, input_color='g',
+                                       title_input='composition v o u numerical')
 
         plt.show()
 

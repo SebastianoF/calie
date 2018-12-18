@@ -1,29 +1,29 @@
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises
 
-from VECtorsToolkit.fields.generate import generate_random, generate_from_matrix, \
-    generate_from_projective_matrix
+from VECtorsToolkit.fields import generate as gen
+
 
 ''' test generate_random '''
 
 
 def test_generate_random_wrong_timepoints():
     with assert_raises(IndexError):
-        generate_random((10, 11), t=2)
+        gen.generate_random((10, 11), t=2)
 
 
 def test_generate_random_wrong_omega():
     with assert_raises(IndexError):
-        generate_random((10, 11, 12, 12), t=2)
+        gen.generate_random((10, 11, 12, 12), t=2)
 
 
 def test_generate_random_test_shape_2d():
-    vf = generate_random((10, 11))
+    vf = gen.generate_random((10, 11))
     assert_array_equal(vf.shape, (10, 11, 1, 1, 2))
 
 
 def test_generate_random_test_shape_3d():
-    vf = generate_random((10, 11, 9))
+    vf = gen.generate_random((10, 11, 9))
     assert_array_equal(vf.shape, (10, 11, 9, 1, 3))
 
 
@@ -32,22 +32,22 @@ def test_generate_random_test_shape_3d():
 
 def test_generate_from_matrix_wrong_timepoints():
     with assert_raises(IndexError):
-        generate_from_matrix((10, 11), np.eye(4), t=2)
+        gen.generate_from_matrix((10, 11), np.eye(4), t=2)
 
 
 def test_generate_from_matrix_wrong_structure():
     with assert_raises(IOError):
-        generate_from_matrix((10, 11), np.eye(4), t=1, structure='spam')
+        gen.generate_from_matrix((10, 11), np.eye(4), t=1, structure='spam')
 
 
 def test_generate_from_matrix_incompatible_matrix_omega_2d():
     with assert_raises(IOError):
-        generate_from_matrix((10, 10), np.eye(4), t=1)
+        gen.generate_from_matrix((10, 10), np.eye(4), t=1)
 
 
 def test_generate_from_matrix_incompatible_matrix_omega_3d():
     with assert_raises(IOError):
-        generate_from_matrix((10, 10, 12), np.eye(5), t=1)
+        gen.generate_from_matrix((10, 10, 12), np.eye(5), t=1)
 
 
 def test_generate_from_matrix_from_algebra_element_2d():
@@ -57,7 +57,7 @@ def test_generate_from_matrix_from_algebra_element_2d():
     a3 = [0, 0, 0]
     m = np.array([a1, a2, a3])
 
-    vf = generate_from_matrix((10, 10), m, t=1, structure='algebra')
+    vf = gen.generate_from_matrix((10, 10), m, t=1, structure='algebra')
 
     vf_expected = np.zeros((10, 10, 1, 1, 2))
 
@@ -75,7 +75,7 @@ def test_generate_from_matrix_from_group_element_2d():
     a3 = [0, 0, 1]
     m = np.array([a1, a2, a3])
 
-    vf = generate_from_matrix((10, 10), m, t=1, structure='group')
+    vf = gen.generate_from_matrix((10, 10), m, t=1, structure='group')
 
     vf_expected = np.zeros((10, 10, 1, 1, 2))
 
@@ -96,7 +96,7 @@ def test_generate_from_matrix_from_algebra_element_3d_2d_matrix():
     a3 = [0, 0, 0]
     m = np.array([a1, a2, a3])
 
-    vf = generate_from_matrix((10, 10, 5), m, t=1, structure='algebra')
+    vf = gen.generate_from_matrix((10, 10, 5), m, t=1, structure='algebra')
 
     vf_expected = np.zeros((10, 10, 5, 1, 3))
 
@@ -117,7 +117,7 @@ def test_generate_from_matrix_from_group_element_3d_2d_matrix():
     a3 = [0, 0, 1]
     m = np.array([a1, a2, a3])
 
-    vf = generate_from_matrix((10, 10, 5), m, t=1, structure='group')
+    vf = gen.generate_from_matrix((10, 10, 5), m, t=1, structure='group')
 
     vf_expected = np.zeros((10, 10, 5, 1, 3))
 
@@ -140,7 +140,7 @@ def test_generate_from_matrix_from_algebra_element_3d_3d_matrix():
     m[:3, :3] = r
     m[:3, 3] = np.array([3, 4, 5])
 
-    vf = generate_from_matrix((10, 10, 5), m, t=1, structure='algebra')
+    vf = gen.generate_from_matrix((10, 10, 5), m, t=1, structure='algebra')
     vf_expected = np.zeros((10, 10, 5, 1, 3))
 
     for x in range(10):
@@ -157,7 +157,7 @@ def test_generate_from_matrix_from_group_element_3d_3d_matrix():
     m[:3, :3] = r
     m[:3, 3] = np.array([3, 4, 5])
 
-    vf = generate_from_matrix((10, 10, 5), m, t=1, structure='group')
+    vf = gen.generate_from_matrix((10, 10, 5), m, t=1, structure='group')
     vf_expected = np.zeros((10, 10, 5, 1, 3))
 
     # move to lagrangian coordinates to compute the ground truth:
@@ -176,12 +176,12 @@ def test_generate_from_matrix_from_group_element_3d_3d_matrix():
 
 def test_generate_from_projective_matrix_wrong_timepoints():
     with assert_raises(IndexError):
-        generate_from_projective_matrix((10, 11), np.eye(4), t=2)
+        gen.generate_from_projective_matrix((10, 11), np.eye(4), t=2)
 
 
 def test_generate_from_projective_matrix_wrong_structure():
     with assert_raises(IOError):
-        generate_from_projective_matrix((10, 11), np.eye(4), t=1, structure='spam')
+        gen.generate_from_projective_matrix((10, 11), np.eye(4), t=1, structure='spam')
 
 
 def test_generate_from_projective_matrix_with_algebra_element():

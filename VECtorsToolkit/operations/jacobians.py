@@ -26,7 +26,7 @@ def compute_jacobian(input_vf, affine=np.eye(4), is_lagrangian=False):
     Jacobian matrix at each point of the grid is stored in a vector of size 9 in row major order.
     """
     # TODO It works only for svf (1 time point) - provisional - do with multiple time point
-    d = check_is_vf(input_vf)
+    d = qr.check_is_vf(input_vf)
 
     jacobian = initialise_jacobian(input_vf)
 

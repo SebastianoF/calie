@@ -4,23 +4,23 @@ import numpy as np
 import scipy.linalg as lin
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
 
-from VECtorsToolkit.transformations.se2 import Se2A, se2a_exp
-from VECtorsToolkit.aux.matrices import bch_right_jacobian, matrix_vector_field_product, \
-    matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
+from VECtorsToolkit.transformations import se2
+from VECtorsToolkit.aux import matrices as mat #import bch_right_jacobian, matrix_vector_field_product, \
+# matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
 
 ''' test BCH right Jacobian '''
 
 
 def test_bch_right_jacobian_all_zero():
     inp = [0, 0, 0]
-    output = bch_right_jacobian(inp)
+    output = mat.bch_right_jacobian(inp)
     expected_output = np.identity(3)
     assert np.alltrue(output == expected_output)
 
 
 def test_bch_right_jacobian_zero_angle():
     inp = [0, 2.6, 6.9]
-    output = bch_right_jacobian(inp)
+    output = mat.bch_right_jacobian(inp)
     expected_output = np.identity(3)
     expected_output[1, 0] = 0.5 * inp[2]
     expected_output[2, 0] = - 0.5 * inp[1]
@@ -30,7 +30,7 @@ def test_bch_right_jacobian_zero_angle():
 def test_bch_right_jacobian_zero_translation():
     theta = 0.2
     inp = [theta, 0, 0]
-    output = bch_right_jacobian(inp)
+    output = mat.bch_right_jacobian(inp)
     expected_output = np.identity(3)
     factor = (theta * 0.5) / np.tan(theta * 0.5)
     expected_output[1, 1] = factor
@@ -45,7 +45,7 @@ def test_bch_right_jacobian_little_rotation_zero_traslation():
     factor1 = theta / 12.0
     factor2 = 1 - (theta ** 2) / 12.0
     inp = [theta - 0.001 * np.spacing(0), 0, 0]
-    output = bch_right_jacobian(inp)
+    output = mat.bch_right_jacobian(inp)
     expected_output = np.identity(3)
     expected_output[1, 0] = - factor1 * inp[1] + 0.5 * inp[2]
     expected_output[2, 0] = - 0.5 * inp[2] - factor1 * inp[1]
@@ -61,12 +61,12 @@ def test_bch_ground_random_input_comparing_matrices_step_1():
     any_angle_2 = uniform(-np.pi + abs(np.spacing(-np.pi)), np.pi)
     any_tx_2 = uniform(-10, 10)
     any_ty_2 = uniform(-10, 10)
-    a = Se2A(any_angle_1, any_tx_1, any_ty_1)
-    da = Se2A(any_angle_2, any_tx_2, any_ty_2)
+    a = se2.Se2A(any_angle_1, any_tx_1, any_ty_1)
+    da = se2.Se2A(any_angle_2, any_tx_2, any_ty_2)
     a_matrix = a.get_matrix
     da_matrix = da.get_matrix
     exp_exp_pade = lin.expm(a_matrix).real.dot(lin.expm(da_matrix).real).real
-    exp_exp_my = se2a_exp(a) * se2a_exp(da)
+    exp_exp_my = se2.se2a_exp(a) * se2.se2a_exp(da)
     assert_array_almost_equal(exp_exp_pade, exp_exp_my.get_matrix)
 
 
@@ -77,13 +77,13 @@ def test_split_the_time_incorrect_input_len():
     t = [0, 1, 2, 3]
     x = [0.1, 0.2, 0.3, 0.4, 0.5]
     with assert_raises(TypeError):
-        split_the_time(t, x)
+        mat.split_the_time(t, x)
 
 
 def test_split_the_time_easy_array_1():
     t = [0, 2, 1, 3, 4]
     x = [0.1, 0.2, 0.3, 0.4, 0.5]
-    x_split = split_the_time(t, x, number_of_intervals=2)
+    x_split = mat.split_the_time(t, x, number_of_intervals=2)
     x_expected = [[0.1, 0.3], [0.2, 0.4, 0.5]]
     assert_array_equal(x_expected, x_split)
 
@@ -91,7 +91,7 @@ def test_split_the_time_easy_array_1():
 def test_split_the_time_easy_array_2():
     t = range(11)[::-1]
     x = range(11)[::-1]
-    x_split = split_the_time(t, x, number_of_intervals=5)
+    x_split = mat.split_the_time(t, x, number_of_intervals=5)
     x_expected = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9, 10]]
     assert_array_equal(x_expected, x_split)
 
@@ -99,7 +99,7 @@ def test_split_the_time_easy_array_2():
 def test_split_the_time_easy_array_3():
     t = range(11)[::-1]
     x = range(11)[::-1]
-    x_split = split_the_time(t, x, number_of_intervals=3, len_range=(2.1, 7))
+    x_split = mat.split_the_time(t, x, number_of_intervals=3, len_range=(2.1, 7))
     x_expected = [[3], [4, 5], [6, 7]]
     assert_array_equal(x_expected, x_split)
 
@@ -134,7 +134,7 @@ def test_matrix_vector_field_product_2d():
 
             ground_jac_v[i, j, :] = field_ground_product(1, [i, j])
 
-    jac_v = matrix_vector_field_product(jac, v)
+    jac_v = mat.matrix_vector_field_product(jac, v)
 
     assert_array_equal(jac_v.shape, np.array([20, 20, 2]))
     assert_array_equal(jac_v, ground_jac_v)
@@ -171,7 +171,7 @@ def test_matrix_vector_field_product_toy_example_3d():
 
                 ground_jac_v[i, j, k, :] = field_ground_product(1, [i, j, k])
 
-    jac_v = matrix_vector_field_product(jac, v)
+    jac_v = mat.matrix_vector_field_product(jac, v)
 
     assert_array_equal(jac_v.shape, np.array([20, 20, 20, 3]))
     assert_array_almost_equal(jac_v, ground_jac_v)
@@ -217,8 +217,8 @@ def test_matrix_fields_product_2d_1():
             ground_m1_times_m2[i, j, :] = product_a_b(1, [i, j])
             ground_m2_times_m1[i, j, :] = product_b_a(1, [i, j])
 
-    computed_m1_times_m2 = matrix_fields_product(m1, m2)
-    computed_m2_times_m1 = matrix_fields_product(m2, m1)
+    computed_m1_times_m2 = mat.matrix_fields_product(m1, m2)
+    computed_m2_times_m1 = mat.matrix_fields_product(m2, m1)
 
     assert_array_equal(computed_m1_times_m2.shape, ground_m1_times_m2.shape)
     assert_array_equal(computed_m2_times_m1.shape, ground_m2_times_m1.shape)
@@ -268,8 +268,8 @@ def test_matrix_fields_product_3d():
                 ground_m1_times_m2[i, j, k, :] = product_a_b(1, [i, j, k])
                 ground_m2_times_m1[i, j, k, :] = product_b_a(1, [i, j, k])
 
-    computed_m1_times_m2 = matrix_fields_product(m1, m2)
-    computed_m2_times_m1 = matrix_fields_product(m2, m1)
+    computed_m1_times_m2 = mat.matrix_fields_product(m1, m2)
+    computed_m2_times_m1 = mat.matrix_fields_product(m2, m1)
 
     assert_array_equal(computed_m1_times_m2.shape, ground_m1_times_m2.shape)
     assert_array_equal(computed_m2_times_m1.shape, ground_m2_times_m1.shape)
@@ -315,9 +315,9 @@ def test_matrix_fields_product_iterative_2d():
             ground_m2[i, j, :] = field_matrix_a_square(1, [i, j])
             ground_m3[i, j, :] = field_matrix_a_cube(1, [i, j])
 
-    computed_m1 = matrix_fields_product_iterative(m1)
-    computed_m2 = matrix_fields_product_iterative(m1, 2)
-    computed_m3 = matrix_fields_product_iterative(m1, 3)
+    computed_m1 = mat.matrix_fields_product_iterative(m1)
+    computed_m2 = mat.matrix_fields_product_iterative(m1, 2)
+    computed_m3 = mat.matrix_fields_product_iterative(m1, 3)
 
     assert_array_almost_equal(m1, computed_m1)
     assert_array_almost_equal(ground_m2, computed_m2)
@@ -347,8 +347,8 @@ def test_matrix_fields_product_iterative_diag_matrix_2d():
             m1[i, j, :]  = field_matrix_a(1, [i, j])
             ground_m1_pow_n[i, j, :] = field_matrix_a_pow_n(1, [i, j], n)
 
-    computed_m1 = matrix_fields_product_iterative(m1)
-    computed_m1_pow_n = matrix_fields_product_iterative(m1, 5)
+    computed_m1 = mat.matrix_fields_product_iterative(m1)
+    computed_m1_pow_n = mat.matrix_fields_product_iterative(m1, 5)
 
     assert_array_almost_equal(m1, computed_m1)
     assert_array_almost_equal(ground_m1_pow_n, computed_m1_pow_n)
@@ -357,10 +357,10 @@ def test_matrix_fields_product_iterative_diag_matrix_2d():
 def test_id_matrix_field_2d_and_3d():
 
     domain_2d = [13, 17]
-    id_2d = id_matrix_field(domain_2d)
+    id_2d = mat.id_matrix_field(domain_2d)
 
     domain_3d = domain_2d + [23, ]
-    id_3d = id_matrix_field(domain_3d)
+    id_3d = mat.id_matrix_field(domain_3d)
 
     flat_id_2d = np.eye(2).reshape(4)
     flat_id_3d = np.eye(3).reshape(9)

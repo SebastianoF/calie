@@ -7,12 +7,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations.lie_exponential import lie_exponential
-from VECtorsToolkit.transformations.se2 import Se2G, se2g_log
-from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
+from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.transformations import se2
+from VECtorsToolkit.visualisations.fields import fields_comparisons
 
-from VECtorsToolkit.fields.generate import generate_from_matrix
-from VECtorsToolkit.fields.queries import vf_norm
+from VECtorsToolkit.fields import generate as gen
+from VECtorsToolkit.fields import queries as qr
 
 
 def test_visual_assessment_method_one_se2(show=False):
@@ -62,13 +62,13 @@ def test_visual_assessment_method_one_se2(show=False):
     # model
     # -----
 
-    m_0 = Se2G(theta, tx, ty)
-    dm_0 = se2g_log(m_0)
+    m_0 = se2.Se2G(theta, tx, ty)
+    dm_0 = se2.se2g_log(m_0)
 
     # -- generate subsequent vector fields
 
-    svf_0   = generate_from_matrix(domain, dm_0.get_matrix, structure='algebra')
-    sdisp_0 = generate_from_matrix(domain, m_0.get_matrix, structure='group')
+    svf_0   = gen.generate_from_matrix(domain, dm_0.get_matrix, structure='algebra')
+    sdisp_0 = gen.generate_from_matrix(domain, m_0.get_matrix, structure='group')
 
     # -- compute exponential with different available methods:
 
@@ -77,7 +77,8 @@ def test_visual_assessment_method_one_se2(show=False):
 
     for num_met, met in enumerate(methods_list):
         start = time.time()
-        sdisp_list.append(lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order, input_num_steps=10))
+        sdisp_list.append(lie_exponential.lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order,
+                                                          input_num_steps=10))
         res_time[num_met] = (time.time() - start)
 
     # ----
@@ -86,18 +87,18 @@ def test_visual_assessment_method_one_se2(show=False):
 
     print('--------------------')
     print('Norm of the svf: ')
-    print(vf_norm(svf_0, passe_partout_size=4))
+    print(qr.vf_norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(vf_norm(sdisp_0, passe_partout_size=4))
+    print(qr.vf_norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
     print('Norm of the errors: ')
     print('--------------------')
 
     for num_met in range(len(methods_list)):
-        err = vf_norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
+        err = qr.vf_norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
         print('|{0:>12} - disp|  = {1}'.format(methods_list[num_met], err))
 
         if methods_list[num_met] == 'euler':
@@ -119,15 +120,16 @@ def test_visual_assessment_method_one_se2(show=False):
             list_fields_of_field += [[svf_0, sdisp_0, third_field]]
             list_colors += ['r', 'b', 'm']
 
-        see_n_fields_special(list_fields_of_field, fig_tag=50,
-                             row_fig=3,
-                             col_fig=5,
-                             input_figsize=(14, 7),
-                             colors_input=list_colors,
-                             titles_input=title_input_l,
-                             sample=(1, 1),
-                             zoom_input=[0, 20, 0, 20],
-                             window_title_input='matrix generated svf')
+        fields_comparisons.see_n_fields_special(list_fields_of_field,
+                                                fig_tag=50,
+                                                row_fig=3,
+                                                col_fig=5,
+                                                input_figsize=(14, 7),
+                                                colors_input=list_colors,
+                                                titles_input=title_input_l,
+                                                sample=(1, 1),
+                                                zoom_input=[0, 20, 0, 20],
+                                                window_title_input='matrix generated svf')
 
         plt.show()
 
