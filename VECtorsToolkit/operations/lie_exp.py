@@ -430,7 +430,7 @@ class LieExp:
 
         return self.phi
 
-    def trapzoid_midpoint(self, input_vf, input_num_steps=None, input_pix_dims=None):
+    def trapezoid_midpoint(self, input_vf, input_num_steps=None, input_pix_dims=None):
         """  """
         # (0)
         self.initialise_input(input_vf)
