@@ -1,8 +1,3 @@
-"""
-Module to test the scaling and squaring-based methods.
-Some tests are visual test only
-"""
-
 import time
 
 import matplotlib.pyplot as plt
@@ -43,19 +38,26 @@ def test_visual_assessment_method_one_se2(show=False):
     passepartout = 5
     spline_interpolation_order = 3
 
-    methods_list = ['ss',
-                    'gss_ei',
-                    'gss_ei_mod',
-                    'gss_aei',
-                    'midpoint',
-                    'series',
-                    'euler',
-                    'euler_aei',
-                    'euler_mod',
-                    'heun',
-                    'heun_mod',
-                    'rk4',
-                    'gss_rk4',
+    l_exp = lie_exp.LieExp()
+    l_exp.s_i_o = spline_interpolation_order
+
+    methods_list = [l_exp.scaling_and_squaring,
+                    l_exp.gss_ei,
+                    l_exp.gss_ei_mod,
+                    l_exp.gss_aei,
+                    l_exp.midpoint,
+                    l_exp.series,
+                    l_exp.euler,
+                    l_exp.euler_aei,
+                    l_exp.euler_mod,
+                    l_exp.heun,
+                    l_exp.heun_mod,
+                    l_exp.rk4,
+                    l_exp.gss_rk4,
+                    l_exp.trapeziod_euler,
+                    l_exp.trapzoid_midpoint,
+                    l_exp.gss_trapezoid_euler,
+                    l_exp.gss_trapezoid_midpoint
                     ]
 
     # -----
@@ -77,8 +79,7 @@ def test_visual_assessment_method_one_se2(show=False):
 
     for num_met, met in enumerate(methods_list):
         start = time.time()
-        sdisp_list.append(lie_exp.lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order,
-                                                  input_num_steps=10))
+        sdisp_list.append(met(svf_0, input_num_steps=10))
         res_time[num_met] = (time.time() - start)
 
     # ----
@@ -99,9 +100,9 @@ def test_visual_assessment_method_one_se2(show=False):
 
     for num_met in range(len(methods_list)):
         err = qr.norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
-        print('|{0:>12} - disp|  = {1}'.format(methods_list[num_met], err))
+        print('|{0:>22} - disp|  = {1}'.format(methods_list[num_met].__name__, err))
 
-        if methods_list[num_met] == 'euler':
+        if methods_list[num_met].__name__ == 'euler':
             assert err < 3
         else:
             assert err < 0.5
@@ -122,7 +123,7 @@ def test_visual_assessment_method_one_se2(show=False):
 
         fields_comparisons.see_n_fields_special(list_fields_of_field,
                                                 fig_tag=50,
-                                                row_fig=3,
+                                                row_fig=5,
                                                 col_fig=5,
                                                 input_figsize=(14, 7),
                                                 colors_input=list_colors,

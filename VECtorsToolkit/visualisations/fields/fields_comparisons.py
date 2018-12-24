@@ -368,7 +368,7 @@ def see_n_fields_special(list_of_list_vf,
             ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
             ax.set_axisbelow(True)
 
-    fig.set_tight_layout(True)
+    fig.set_tight_layout(False)
 
 
 def see_overlay_of_n_fields(list_of_vf,

@@ -279,8 +279,10 @@ def test_2_random_vector_fields_as_deformations(get_figures=False):
     svf_zeros = gen_id.id_lagrangian(omega)
     svf_0     = gen.generate_random(omega, parameters=(sigma_init, sigma_gaussian_filter))
 
-    sdisp_0 = lie_exp.lie_exponential(svf_0, algorithm='ss')
-    sdisp_0_inv = lie_exp.lie_exponential(-1 * svf_0, algorithm='ss')
+    l_exp = lie_exp.LieExp()
+
+    sdisp_0 = l_exp.scaling_and_squaring(svf_0)
+    sdisp_0_inv = l_exp.scaling_and_squaring(-1 * svf_0)
 
     f_o_f_inv = cp.lagrangian_dot_lagrangian(sdisp_0, sdisp_0_inv, add_right=True)
     f_inv_o_f = cp.lagrangian_dot_lagrangian(sdisp_0_inv, sdisp_0, add_right=True)
