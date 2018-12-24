@@ -30,8 +30,11 @@ if __name__ == '__main__':
 
     # we correctly perform the composition after exponentiating the SVF in the Lie group.
     # The outcome is the identity, as expected.
-    disp_v = lie_exp.lie_exponential(svf_v)
-    disp_v_inv = lie_exp.lie_exponential(svf_v_inv)
+
+    l_exp = lie_exp.LieExp()
+
+    disp_v = l_exp.scaling_and_squaring(svf_v)
+    disp_v_inv = l_exp.scaling_and_squaring(svf_v_inv)
 
     v_o_v_inv_grp = cp.lagrangian_dot_lagrangian(disp_v, disp_v_inv)
     f_inv_o_f_grp = cp.lagrangian_dot_lagrangian(disp_v_inv, disp_v)

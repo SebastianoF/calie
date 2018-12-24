@@ -66,9 +66,11 @@ if __name__ == '__main__':
     for met_id, met in enumerate(methods):
 
         start = time.time()
-        sdisp_num = l_exp.euler(svf_0)
+        sdisp_num = met(svf_0)
         res_time[met_id] = (time.time() - start)
+
         res_err[met_id] = qr.norm(sdisp_num - sdisp_0, passe_partout_size=passepartout)
+        print(res_err[met_id])
         fields_list.append(sdisp_num)
 
     print('--------------------')
@@ -84,13 +86,13 @@ if __name__ == '__main__':
     print('--------------------')
 
     for met_id, met in enumerate(methods):
-        print('|{} - disp|        = {}'.format(met.__name__, res_err[met_id]))
+        print('|{0:>22} - disp|        = {1}'.format(met.__name__, res_err[met_id]))
 
     print('--------------------')
     print("Computational Times: ")
     print('--------------------')
     for met_id, met in enumerate(methods):
-        print('time {}  = {}'.format(met.__name__, res_time[met_id]))
+        print('time {0:>22}  = {1}'.format(met.__name__, res_time[met_id]))
 
     title_input_l = ['Sfv Input', 'Ground Output'] + [met.__name__ for met in methods]
 
