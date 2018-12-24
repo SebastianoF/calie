@@ -4,7 +4,6 @@ import numpy as np
 from VECtorsToolkit.visualisations.fields import fields_at_the_window
 
 
-
 def f_vcon(t, x):
     """
     real eigenvalue both positive or both negative: stable node.

@@ -14,6 +14,7 @@ from VECtorsToolkit.visualisations.fields import fields_comparisons
 from VECtorsToolkit.fields import generate as gen
 from VECtorsToolkit.fields import queries as qr
 
+
 if __name__ == '__main__':
 
     # -> Controller <- #

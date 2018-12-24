@@ -49,13 +49,16 @@ if __name__ == '__main__':
 
     spline_interpolation_order = 3
 
-    sdisp_ss      = lie_exp.lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
-    sdisp_ss_pa   = lie_exp.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
-    sdisp_euler   = lie_exp.lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
-    sdisp_mid_p   = lie_exp.lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
-    sdisp_euler_m = lie_exp.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
-    sdisp_rk4     = lie_exp.lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
-    sdisp_vode    = lie_exp.lie_exponential_scipy(svf_0, verbose=True, passepartout=passepartout)
+    l_exp = lie_exp.LieExp()
+    l_exp.s_i_o = spline_interpolation_order
+
+    sdisp_ss      = l_exp.scaling_and_squaring(svf_0)
+    sdisp_ss_pa   = l_exp.gss_aei(svf_0)
+    sdisp_euler   = l_exp.euler(svf_0)
+    sdisp_mid_p   = l_exp.midpoint(svf_0)
+    sdisp_euler_m = l_exp.euler_mod(svf_0)
+    sdisp_rk4     = l_exp.rk4(svf_0)
+    sdisp_vode    = l_exp.scipy_pointwise(svf_0, verbose=True, passepartout=passepartout)
 
     print(type(sdisp_ss))
     print(type(sdisp_ss_pa))

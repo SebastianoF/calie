@@ -5,7 +5,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.operations.lie_exp import lie_exponential_scipy
+from VECtorsToolkit.operations.lie_exp import LieExp
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
 
@@ -73,7 +73,8 @@ if __name__ == '__main__':
                     # -> compute exponential with different available methods:
                     start = time.time()
 
-                    sdisp_scipy = lie_exponential_scipy(svf_0,
+                    l_exp = LieExp()
+                    sdisp_scipy = l_exp.scipy_pointwise(svf_0,
                                                         integrator=integrators[integrator_i],
                                                         method='adams',
                                                         max_steps=max_steps[max_step_i],
