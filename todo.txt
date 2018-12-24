@@ -18,4 +18,3 @@ New features
 - add latex documentation with guided formulas and examples (jupyter notebook?)
 - time varying velocity fields (add 4d vector fields and related solver)
 - First release here (after 100% test).
-- Further benchmarking with SVF generated out of DummyForMRI (?)
