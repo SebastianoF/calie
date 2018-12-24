@@ -4,7 +4,7 @@ Integration with scipy for one matrix-generated svf.
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields import fields_comparisons
 from VECtorsToolkit.visualisations.fields import fields_and_integral_curves
@@ -51,21 +51,21 @@ if __name__ == '__main__':
     spline_interpolation_order = 3
 
     #
-    sdisp_ss      = lie_exponential.lie_exponential(svf_0, algorithm='ss',        s_i_o=spline_interpolation_order)
-    sdisp_gss_ei  = lie_exponential.lie_exponential(svf_0, algorithm='gss_ei',    s_i_o=spline_interpolation_order)
-    sdisp_euler   = lie_exponential.lie_exponential(svf_0, algorithm='euler',     s_i_o=spline_interpolation_order)
-    sdisp_mid_p   = lie_exponential.lie_exponential(svf_0, algorithm='midpoint',  s_i_o=spline_interpolation_order)
-    sdisp_euler_m = lie_exponential.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
-    sdisp_rk4     = lie_exponential.lie_exponential(svf_0, algorithm='rk4',       s_i_o=spline_interpolation_order)
+    sdisp_ss      = lie_exp.lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
+    sdisp_gss_ei  = lie_exp.lie_exponential(svf_0, algorithm='gss_ei', s_i_o=spline_interpolation_order)
+    sdisp_euler   = lie_exp.lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
+    sdisp_mid_p   = lie_exp.lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
+    sdisp_euler_m = lie_exp.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
+    sdisp_rk4     = lie_exp.lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
     #
 
     if use_also_scipy:
         print('--------------------')
         print('Number of steps for scipy method : ' + str(steps_scipy))
         print('--------------------')
-        disp_scipy_out  = lie_exponential.lie_exponential_scipy(svf_0, method=methods_vode[1], max_steps=steps_scipy,
-                                                                verbose=False, passepartout=passepartout,
-                                                                return_integral_curves=True)
+        disp_scipy_out  = lie_exp.lie_exponential_scipy(svf_0, method=methods_vode[1], max_steps=steps_scipy,
+                                                        verbose=False, passepartout=passepartout,
+                                                        return_integral_curves=True)
 
         disp_scipy   = disp_scipy_out[0]
         integral_curves = disp_scipy_out[1]
@@ -73,7 +73,7 @@ if __name__ == '__main__':
         print(type(integral_curves))
         print(type(integral_curves[0]))
 
-        error = qr.vf_norm(disp_scipy - sdisp_0, passe_partout_size=3)
+        error = qr.norm(disp_scipy - sdisp_0, passe_partout_size=3)
 
     print(type(sdisp_ss))
     print(type(sdisp_gss_ei))
@@ -83,21 +83,21 @@ if __name__ == '__main__':
 
     print('--------------------')
     print("Norm of the svf:")
-    print(qr.vf_norm(svf_0, passe_partout_size=4))
+    print(qr.norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(qr.vf_norm(sdisp_0, passe_partout_size=4))
+    print(qr.norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the errors:")
     print('--------------------')
-    print('|ss - disp|        = ' + str(qr.vf_norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)))
-    print('|gss_ei - disp|    = ' + str(qr.vf_norm(sdisp_gss_ei - sdisp_0, passe_partout_size=passepartout)))
-    print('|euler - disp|     = ' + str(qr.vf_norm(sdisp_euler - sdisp_0, passe_partout_size=passepartout)))
-    print('|midpoint - disp|  = ' + str(qr.vf_norm(sdisp_mid_p - sdisp_0, passe_partout_size=passepartout)))
-    print('|euler_mod - disp| = ' + str(qr.vf_norm(sdisp_euler_m - sdisp_0, passe_partout_size=passepartout)))
-    print('|rk4 - disp|       = ' + str(qr.vf_norm(sdisp_rk4 - sdisp_0, passe_partout_size=passepartout)))
+    print('|ss - disp|        = ' + str(qr.norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)))
+    print('|gss_ei - disp|    = ' + str(qr.norm(sdisp_gss_ei - sdisp_0, passe_partout_size=passepartout)))
+    print('|euler - disp|     = ' + str(qr.norm(sdisp_euler - sdisp_0, passe_partout_size=passepartout)))
+    print('|midpoint - disp|  = ' + str(qr.norm(sdisp_mid_p - sdisp_0, passe_partout_size=passepartout)))
+    print('|euler_mod - disp| = ' + str(qr.norm(sdisp_euler_m - sdisp_0, passe_partout_size=passepartout)))
+    print('|rk4 - disp|       = ' + str(qr.norm(sdisp_rk4 - sdisp_0, passe_partout_size=passepartout)))
 
     if use_also_scipy:
         print('----------  Error scipy ----------------------')

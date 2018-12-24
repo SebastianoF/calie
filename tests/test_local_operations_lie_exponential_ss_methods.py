@@ -7,7 +7,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields import fields_comparisons
 
@@ -77,8 +77,8 @@ def test_visual_assessment_method_one_se2(show=False):
 
     for num_met, met in enumerate(methods_list):
         start = time.time()
-        sdisp_list.append(lie_exponential.lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order,
-                                                          input_num_steps=10))
+        sdisp_list.append(lie_exp.lie_exponential(svf_0, algorithm=met, s_i_o=spline_interpolation_order,
+                                                  input_num_steps=10))
         res_time[num_met] = (time.time() - start)
 
     # ----
@@ -87,18 +87,18 @@ def test_visual_assessment_method_one_se2(show=False):
 
     print('--------------------')
     print('Norm of the svf: ')
-    print(qr.vf_norm(svf_0, passe_partout_size=4))
+    print(qr.norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(qr.vf_norm(sdisp_0, passe_partout_size=4))
+    print(qr.norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
     print('Norm of the errors: ')
     print('--------------------')
 
     for num_met in range(len(methods_list)):
-        err = qr.vf_norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
+        err = qr.norm(sdisp_list[num_met] - sdisp_0, passe_partout_size=passepartout)
         print('|{0:>12} - disp|  = {1}'.format(methods_list[num_met], err))
 
         if methods_list[num_met] == 'euler':

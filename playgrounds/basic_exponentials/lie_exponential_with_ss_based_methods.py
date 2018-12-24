@@ -7,7 +7,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields import fields_comparisons
 
@@ -49,63 +49,63 @@ if __name__ == '__main__':
     # Compute exponential with different available methods:
 
     start = time.time()
-    sdisp_euler = lie_exponential.lie_exponential(svf_0, algorithm='euler', s_i_o=sio)
+    sdisp_euler = lie_exp.lie_exponential(svf_0, algorithm='euler', s_i_o=sio)
     res_time[0] = (time.time() - start)
 
     start = time.time()
-    sdisp_midpoint = lie_exponential.lie_exponential(svf_0, algorithm='midpoint', s_i_o=sio)
+    sdisp_midpoint = lie_exp.lie_exponential(svf_0, algorithm='midpoint', s_i_o=sio)
     res_time[1] = (time.time() - start)
 
     start = time.time()
-    sdisp_ss      = lie_exponential.lie_exponential(svf_0, algorithm='ss', s_i_o=sio)
+    sdisp_ss      = lie_exp.lie_exponential(svf_0, algorithm='ss', s_i_o=sio)
     res_time[2] = (time.time() - start)
 
     start = time.time()
-    sdisp_ss_pa   = lie_exponential.lie_exponential(svf_0, algorithm='gss_ei', s_i_o=sio)
+    sdisp_ss_pa   = lie_exp.lie_exponential(svf_0, algorithm='gss_ei', s_i_o=sio)
     res_time[3] = (time.time() - start)
 
     start = time.time()
-    sdisp_ss_pa_m = lie_exponential.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=sio)
+    sdisp_ss_pa_m = lie_exp.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=sio)
     res_time[4] = (time.time() - start)
 
     start = time.time()
-    sdisp_trap_eu = lie_exponential.lie_exponential(svf_0, algorithm='trapezoid_euler', s_i_o=sio)
+    sdisp_trap_eu = lie_exp.lie_exponential(svf_0, algorithm='trapezoid_euler', s_i_o=sio)
     res_time[5] = (time.time() - start)
 
     start = time.time()
-    sdisp_gss_trap_eu = lie_exponential.lie_exponential(svf_0, algorithm='gss_trapezoid_euler', s_i_o=sio)
+    sdisp_gss_trap_eu = lie_exp.lie_exponential(svf_0, algorithm='gss_trapezoid_euler', s_i_o=sio)
     res_time[6] = (time.time() - start)
 
     start = time.time()
-    sdisp_trap_mid = lie_exponential.lie_exponential(svf_0, algorithm='trapezoid_midpoint', s_i_o=sio)
+    sdisp_trap_mid = lie_exp.lie_exponential(svf_0, algorithm='trapezoid_midpoint', s_i_o=sio)
     res_time[7] = (time.time() - start)
 
     start = time.time()
-    sdisp_gss_trap_mid = lie_exponential.lie_exponential(svf_0, algorithm='gss_trapezoid_midpoint', s_i_o=sio)
+    sdisp_gss_trap_mid = lie_exp.lie_exponential(svf_0, algorithm='gss_trapezoid_midpoint', s_i_o=sio)
     res_time[8] = (time.time() - start)
     # -> view <- #
 
     print('--------------------')
     print("Norm of the svf:")
-    print(qr.vf_norm(svf_0, passe_partout_size=passepartout))
+    print(qr.norm(svf_0, passe_partout_size=passepartout))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(qr.vf_norm(sdisp_0, passe_partout_size=passepartout))
+    print(qr.norm(sdisp_0, passe_partout_size=passepartout))
 
     print('--------------------')
     print("Norm of the errors:")
     print('--------------------')
 
-    error_norm_euler         = qr.vf_norm(sdisp_euler - sdisp_0, passe_partout_size=passepartout)
-    error_norm_midpoint      = qr.vf_norm(sdisp_midpoint - sdisp_0, passe_partout_size=passepartout)
-    error_norm_ss            = qr.vf_norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)
-    error_norm_ss_ei         = qr.vf_norm(sdisp_ss_pa - sdisp_0, passe_partout_size=passepartout)
-    error_norm_ss_aei        = qr.vf_norm(sdisp_ss_pa_m - sdisp_0, passe_partout_size=passepartout)
-    error_norm_trap_eu       = qr.vf_norm(sdisp_trap_eu - sdisp_0, passe_partout_size=passepartout)
-    error_norm_gss_trap_eu   = qr.vf_norm(sdisp_gss_trap_eu - sdisp_0, passe_partout_size=passepartout)
-    error_norm_trap_mid      = qr.vf_norm(sdisp_trap_mid - sdisp_0, passe_partout_size=passepartout)
-    error_norm_gss_trap_mid  = qr.vf_norm(sdisp_gss_trap_mid - sdisp_0, passe_partout_size=passepartout)
+    error_norm_euler         = qr.norm(sdisp_euler - sdisp_0, passe_partout_size=passepartout)
+    error_norm_midpoint      = qr.norm(sdisp_midpoint - sdisp_0, passe_partout_size=passepartout)
+    error_norm_ss            = qr.norm(sdisp_ss - sdisp_0, passe_partout_size=passepartout)
+    error_norm_ss_ei         = qr.norm(sdisp_ss_pa - sdisp_0, passe_partout_size=passepartout)
+    error_norm_ss_aei        = qr.norm(sdisp_ss_pa_m - sdisp_0, passe_partout_size=passepartout)
+    error_norm_trap_eu       = qr.norm(sdisp_trap_eu - sdisp_0, passe_partout_size=passepartout)
+    error_norm_gss_trap_eu   = qr.norm(sdisp_gss_trap_eu - sdisp_0, passe_partout_size=passepartout)
+    error_norm_trap_mid      = qr.norm(sdisp_trap_mid - sdisp_0, passe_partout_size=passepartout)
+    error_norm_gss_trap_mid  = qr.norm(sdisp_gss_trap_mid - sdisp_0, passe_partout_size=passepartout)
 
     print('|euler - disp|        = {}'.format(str(error_norm_euler)))
     print('|midpoint - disp|     = {}'.format(str(error_norm_midpoint)))

@@ -2,7 +2,7 @@ import numpy as np
 import scipy.ndimage.filters as fil
 
 from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import change_space as cs
+from VECtorsToolkit.fields import coordinate as cs
 from VECtorsToolkit.fields import generate_identities as gen_id
 
 
@@ -17,7 +17,7 @@ def generate_random(omega, t=1, parameters=(5, 2)):
     if t > 1:  # TODO upgrade for more than one timepoint. correct tests afterwards.
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
-    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
+    v_shape = qr.shape_from_omega_and_timepoints(omega, t)
 
     sigma_init, sigma_gaussian_filter = parameters
     vf = np.random.normal(0, sigma_init, v_shape)
@@ -41,7 +41,7 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
     d = qr.check_omega(omega)
-    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
+    v_shape = qr.shape_from_omega_and_timepoints(omega, t)
     vf = np.zeros(v_shape)
 
     if structure == 'algebra':
@@ -114,7 +114,7 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
     d = qr.check_omega(omega)
-    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t)
+    v_shape = qr.shape_from_omega_and_timepoints(omega, t)
     vf = np.zeros(v_shape)
     idd = cs.affine_to_homogeneous(gen_id.id_eulerian(omega))
 

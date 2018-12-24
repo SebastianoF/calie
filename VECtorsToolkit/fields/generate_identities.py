@@ -30,7 +30,7 @@ def id_eulerian(omega, t=1):
     """
     d = qr.check_omega(omega)
     omega = list(omega)
-    v_shape = qr.vf_shape_from_omega_and_timepoints(omega, t=t)
+    v_shape = qr.shape_from_omega_and_timepoints(omega, t=t)
     id_vf = np.zeros(v_shape)
 
     if d == 2:
@@ -70,7 +70,7 @@ def id_eulerian_like(input_vf):
     in Lagrangian coordinates.
     """
     qr.check_is_vf(input_vf)
-    return id_eulerian(qr.get_omega_from_vf(input_vf), t=input_vf.shape[3])
+    return id_eulerian(qr.get_omega(input_vf), t=input_vf.shape[3])
 
 
 def id_matrices(omega, t=1):
@@ -95,7 +95,7 @@ def id_lagrangian_like_image(input_nib_image, t=1):
     :param t: additional timepoint
     :return: identity in lagrangian coordinate with same shape of the input image
     """
-    return id_lagrangian(qr.from_nib_to_omega(input_nib_image), t=t)
+    return id_lagrangian(qr.nib_to_omega(input_nib_image), t=t)
 
 
 def id_eulerian_like_image(input_nib_image, t=1):
@@ -104,4 +104,4 @@ def id_eulerian_like_image(input_nib_image, t=1):
     :param t: additional timepoint
     :return: identity in eulerian coordinate with same shape of the input image
     """
-    return id_eulerian(qr.from_nib_to_omega(input_nib_image), t=t)
+    return id_eulerian(qr.nib_to_omega(input_nib_image), t=t)

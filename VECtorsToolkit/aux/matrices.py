@@ -33,7 +33,7 @@ def bch_right_jacobian(r):
     return j
 
 
-def split_the_time(t, x, len_range=None, number_of_intervals=5, epsilon=0):
+def time_splitter(t, x, len_range=None, number_of_intervals=5, epsilon=0):
     """
 
     :param t: list or tuple relative to the time if unordered it will be ordered
@@ -139,7 +139,7 @@ def get_in_out_liers(data, coeff=0.6745, return_values=True):
 
 # ---------- vectors and matrices defined on a grid manipulators ---------------
 
-# transform_field_by_affine
+
 def matrix_vector_field_product(j_input, v_input):
     """
     :param j_input: matrix m x n x (4 or 9) as for example a jacobian column major

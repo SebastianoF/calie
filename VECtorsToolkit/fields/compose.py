@@ -4,7 +4,7 @@ from scipy.interpolate import griddata, Rbf
 
 from VECtorsToolkit.aux import matrices
 from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import change_space as cs
+from VECtorsToolkit.fields import coordinate as cs
 
 
 def one_point_interpolation(input_vf, point, method='linear', as_float=True):
@@ -85,7 +85,7 @@ def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
                             prefilter=True,
                             add_right=True):
 
-    omega_right = qr.get_omega_from_vf(vf_right_eul)
+    omega_right = qr.get_omega(vf_right_eul)
     d = len(omega_right)
 
     if affine_left_right is not None:
@@ -117,7 +117,7 @@ def scalar_dot_eulerian(sf_left, vf_right_eul,
                         cval=0.0,
                         prefilter=True):
 
-    omega_right = qr.get_omega_from_vf(vf_right_eul)
+    omega_right = qr.get_omega(vf_right_eul)
     d = len(omega_right)
 
     if affine_left_right is not None:

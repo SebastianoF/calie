@@ -13,7 +13,7 @@ The integrator with scipy has been added!
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields import fields_comparisons
 
@@ -49,13 +49,13 @@ if __name__ == '__main__':
 
     spline_interpolation_order = 3
 
-    sdisp_ss      = lie_exponential.lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
-    sdisp_ss_pa   = lie_exponential.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
-    sdisp_euler   = lie_exponential.lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
-    sdisp_mid_p   = lie_exponential.lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
-    sdisp_euler_m = lie_exponential.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
-    sdisp_rk4     = lie_exponential.lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
-    sdisp_vode    = lie_exponential.lie_exponential_scipy(svf_0, verbose=True, passepartout=passepartout)
+    sdisp_ss      = lie_exp.lie_exponential(svf_0, algorithm='ss', s_i_o=spline_interpolation_order)
+    sdisp_ss_pa   = lie_exp.lie_exponential(svf_0, algorithm='gss_aei', s_i_o=spline_interpolation_order)
+    sdisp_euler   = lie_exp.lie_exponential(svf_0, algorithm='euler', s_i_o=spline_interpolation_order)
+    sdisp_mid_p   = lie_exp.lie_exponential(svf_0, algorithm='midpoint', s_i_o=spline_interpolation_order)
+    sdisp_euler_m = lie_exp.lie_exponential(svf_0, algorithm='euler_mod', s_i_o=spline_interpolation_order)
+    sdisp_rk4     = lie_exp.lie_exponential(svf_0, algorithm='rk4', s_i_o=spline_interpolation_order)
+    sdisp_vode    = lie_exp.lie_exponential_scipy(svf_0, verbose=True, passepartout=passepartout)
 
     print(type(sdisp_ss))
     print(type(sdisp_ss_pa))
@@ -65,11 +65,11 @@ if __name__ == '__main__':
 
     print('--------------------')
     print("Norm of the svf:")
-    print(qr.vf_norm(svf_0, passe_partout_size=4))
+    print(qr.norm(svf_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the displacement field:")
-    print(qr.vf_norm(sdisp_0, passe_partout_size=4))
+    print(qr.norm(sdisp_0, passe_partout_size=4))
 
     print('--------------------')
     print("Norm of the errors:")

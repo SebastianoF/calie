@@ -77,13 +77,13 @@ def test_split_the_time_incorrect_input_len():
     t = [0, 1, 2, 3]
     x = [0.1, 0.2, 0.3, 0.4, 0.5]
     with assert_raises(TypeError):
-        mat.split_the_time(t, x)
+        mat.time_splitter(t, x)
 
 
 def test_split_the_time_easy_array_1():
     t = [0, 2, 1, 3, 4]
     x = [0.1, 0.2, 0.3, 0.4, 0.5]
-    x_split = mat.split_the_time(t, x, number_of_intervals=2)
+    x_split = mat.time_splitter(t, x, number_of_intervals=2)
     x_expected = [[0.1, 0.3], [0.2, 0.4, 0.5]]
     assert_array_equal(x_expected, x_split)
 
@@ -91,7 +91,7 @@ def test_split_the_time_easy_array_1():
 def test_split_the_time_easy_array_2():
     t = range(11)[::-1]
     x = range(11)[::-1]
-    x_split = mat.split_the_time(t, x, number_of_intervals=5)
+    x_split = mat.time_splitter(t, x, number_of_intervals=5)
     x_expected = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9, 10]]
     assert_array_equal(x_expected, x_split)
 
@@ -99,7 +99,7 @@ def test_split_the_time_easy_array_2():
 def test_split_the_time_easy_array_3():
     t = range(11)[::-1]
     x = range(11)[::-1]
-    x_split = mat.split_the_time(t, x, number_of_intervals=3, len_range=(2.1, 7))
+    x_split = mat.time_splitter(t, x, number_of_intervals=3, len_range=(2.1, 7))
     x_expected = [[3], [4, 5], [6, 7]]
     assert_array_equal(x_expected, x_split)
 

@@ -60,15 +60,15 @@ def test_check_is_vf_ok():
 
 def test_get_omega_from_vf_wrong_input():
     with assert_raises(IOError):
-        qr.get_omega_from_vf(np.zeros([10, 10, 10, 1, 2]))
+        qr.get_omega(np.zeros([10, 10, 10, 1, 2]))
 
 
 def test_get_omega_from_vf_3d():
-    assert_array_equal(qr.get_omega_from_vf(np.zeros([10, 10, 10, 1, 3])), [10, 10, 10])
+    assert_array_equal(qr.get_omega(np.zeros([10, 10, 10, 1, 3])), [10, 10, 10])
 
 
 def test_get_omega_from_vf_2d():
-    assert_array_equal(qr.get_omega_from_vf(np.zeros([10, 10, 1, 1, 2])), [10, 10])
+    assert_array_equal(qr.get_omega(np.zeros([10, 10, 1, 1, 2])), [10, 10])
 
 
 ''' test from_image_to_omega'''
@@ -76,28 +76,28 @@ def test_get_omega_from_vf_2d():
 
 def test_from_image_to_omega_by_non_existing_path():
     with assert_raises(IOError):
-        qr.from_nib_to_omega('z_spam_folder')
+        qr.nib_to_omega('z_spam_folder')
 
 
 @create_and_erase_temporary_folder_with_a_dummy_nifti_image
 def test_from_image_to_omega_by_path():
     pfi_im = os.path.join(pfo_tmp_test, 'dummy_image.nii.gz')
     expected_omega = (30, 29, 28)
-    obtained_omega = qr.from_nib_to_omega(pfi_im)
+    obtained_omega = qr.nib_to_omega(pfi_im)
     assert_array_equal(obtained_omega, expected_omega)
 
 
 def test_from_image_to_omega_by_nifti():
     expected_omega = (30, 29, 28)
     nib_im = nib.Nifti1Image(np.ones(expected_omega), affine=np.eye(4))
-    obtained_omega = qr.from_nib_to_omega(nib_im)
+    obtained_omega = qr.nib_to_omega(nib_im)
     assert_array_equal(obtained_omega, expected_omega)
 
 
 ''' test vf_shape_from_omega_and_timepoints '''
 
 def test_vf_shape_from_omega_and_timepoints():
-    assert_array_equal(qr.vf_shape_from_omega_and_timepoints([10, 10], 3), (10, 10, 1, 3, 2))
+    assert_array_equal(qr.shape_from_omega_and_timepoints([10, 10], 3), (10, 10, 1, 3, 2))
 
 
 ''' test vf_norm '''
@@ -105,17 +105,17 @@ def test_vf_shape_from_omega_and_timepoints():
 
 def test_vf_norm_zeros():
     vf = np.zeros([10, 10, 10, 1, 3])
-    assert_equal(qr.vf_norm(vf), 0)
+    assert_equal(qr.norm(vf), 0)
 
 
 def test_vf_norm_ones():
     vf = np.ones([10, 10, 10, 1, 3])
-    assert_almost_equal(qr.vf_norm(vf, passe_partout_size=0, normalized=False), 10**3 * np.sqrt(3))
+    assert_almost_equal(qr.norm(vf, passe_partout_size=0, normalized=False), 10 ** 3 * np.sqrt(3))
 
 
 def test_vf_norm_ones_normalised():
     vf = np.ones([10, 10, 10, 1, 3])
-    assert_almost_equal(qr.vf_norm(vf, passe_partout_size=0, normalized=True), np.sqrt(3))
+    assert_almost_equal(qr.norm(vf, passe_partout_size=0, normalized=True), np.sqrt(3))
 
 
 if __name__ == '__main__':

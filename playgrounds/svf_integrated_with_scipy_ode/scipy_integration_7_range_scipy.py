@@ -5,7 +5,7 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.operations.lie_exponential import lie_exponential_scipy
+from VECtorsToolkit.operations.lie_exp import lie_exponential_scipy
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
 
@@ -83,7 +83,7 @@ if __name__ == '__main__':
                                                         return_integral_curves=False)
 
                     operation_time = (time.time() - start)
-                    error = qr.vf_norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
+                    error = qr.norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)
 
                     print('----------  Error  ----------------------------')
                     print('|vode - disp| = {}'.format(str(error)))

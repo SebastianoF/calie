@@ -10,7 +10,7 @@ Afterwards we compose exp(v) and exp(-v) to see the approximated identity with t
 """
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.visualisations.fields import fields_at_the_window
 
 from VECtorsToolkit.fields import generate as gen
@@ -30,8 +30,8 @@ if __name__ == '__main__':
 
     # we correctly perform the composition after exponentiating the SVF in the Lie group.
     # The outcome is the identity, as expected.
-    disp_v = lie_exponential.lie_exponential(svf_v)
-    disp_v_inv = lie_exponential.lie_exponential(svf_v_inv)
+    disp_v = lie_exp.lie_exponential(svf_v)
+    disp_v_inv = lie_exp.lie_exponential(svf_v_inv)
 
     v_o_v_inv_grp = cp.lagrangian_dot_lagrangian(disp_v, disp_v_inv)
     f_inv_o_f_grp = cp.lagrangian_dot_lagrangian(disp_v_inv, disp_v)

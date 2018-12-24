@@ -11,6 +11,7 @@ from VECtorsToolkit.fields import queries as qr
 from VECtorsToolkit.fields import compose as cp
 
 
+# TODO: refactor as a class
 def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix_dims=None):
     """
     Compute the exponential of this velocity field using the
@@ -51,7 +52,7 @@ def lie_exponential(input_vf, algorithm='ss', s_i_o=3, input_num_steps=None, pix
     :param pix_dims: conversion of pixel-mm for each dimension, from matrix to mm.
     """
     d = qr.check_is_vf(input_vf)
-    omega = qr.get_omega_from_vf(input_vf)
+    omega = qr.get_omega(input_vf)
 
     vf = copy.deepcopy(input_vf)
     phi = np.zeros_like(vf)
@@ -461,7 +462,7 @@ def lie_exponential_scipy(input_vf,
     d = qr.check_is_vf(input_vf)
     assert d == 2  # only for 2 dim images at the moment.
 
-    omega = qr.get_omega_from_vf(input_vf)
+    omega = qr.get_omega(input_vf)
 
     vf = copy.deepcopy(input_vf)
     phi = np.zeros_like(vf)

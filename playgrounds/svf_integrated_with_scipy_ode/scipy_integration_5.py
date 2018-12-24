@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import ode
 
-from VECtorsToolkit.operations import lie_exponential
+from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.visualisations.fields import fields_comparisons
 
 from VECtorsToolkit.fields import generate_identities as gen_id
@@ -96,7 +96,7 @@ if __name__ == '__main__':
                                                          title_input_both='overlay')
 
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_1 = lie_exponential.lie_exponential(svf_0)
+    disp_1 = lie_exp.lie_exponential(svf_0)
 
     fields_comparisons.see_2_fields_separate_and_overlay(disp_1, svf_0,
                                                          fig_tag=3,

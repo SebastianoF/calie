@@ -40,7 +40,7 @@ def check_is_vf(input_obj):
         return d
 
 
-def get_omega_from_vf(input_vf):
+def get_omega(input_vf):
 
     if check_is_vf(input_vf):
 
@@ -52,14 +52,14 @@ def get_omega_from_vf(input_vf):
         return omega
 
 
-def vf_shape_from_omega_and_timepoints(omega, t=0):
+def shape_from_omega_and_timepoints(omega, t=0):
 
     d = check_omega(omega)
     v_shape = list(omega) + [1] * (3 - d) + [t, d]
     return v_shape
 
 
-def vf_norm(input_vf, passe_partout_size=1, normalized=False):
+def norm(input_vf, passe_partout_size=1, normalized=False):
     """
     Returns the L2-norm of the discretised vector field.
     The computation makes sense only with svf.
@@ -109,7 +109,7 @@ def vf_norm(input_vf, passe_partout_size=1, normalized=False):
     return num / float(den)
 
 
-def from_nib_to_omega(input_nib_image):
+def nib_to_omega(input_nib_image):
     """
     :param input_nib_image: nibabel image or path to a nifti image.
     :return: omega with the input image
@@ -122,12 +122,3 @@ def from_nib_to_omega(input_nib_image):
     else:
         omega = input_nib_image.shape
     return omega
-
-
-def from_image_to_omega(input_image):
-    """
-
-    :param input_image:
-    :return:
-    """
-    pass
