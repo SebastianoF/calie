@@ -55,7 +55,7 @@ def test_visual_assessment_method_one_se2(show=False):
                     l_exp.rk4,
                     l_exp.gss_rk4,
                     l_exp.trapeziod_euler,
-                    l_exp.trapzoid_midpoint,
+                    l_exp.trapezoid_midpoint,
                     l_exp.gss_trapezoid_euler,
                     l_exp.gss_trapezoid_midpoint
                     ]
