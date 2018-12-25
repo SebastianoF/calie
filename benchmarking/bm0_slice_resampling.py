@@ -1,9 +1,29 @@
 import os
 import numpy as np
 
+from .b_path_manager import pfo_brainweb
+
 
 def run_experiment(control, param):
-    pass
+
+    subject_id = 'BW38'
+    labels_brain = [1, 2, 3]
+    y_slice = 118
+
+    if control['prepare_data']:
+        # skull_strip subject
+        pass
+        # save transformation
+
+    if control['elaborate']:
+
+        pass
+
+    if control['save_results']:
+        pass
+
+    if control['show_results']:
+        pass
 
 
 if __name__ == '__main__':
