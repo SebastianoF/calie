@@ -17,4 +17,5 @@ New features
 - add 3d homographies and special euclidean group (see rodriguez formula)
 - add latex documentation with guided formulas and examples (jupyter notebook?)
 - time varying velocity fields (add 4d vector fields and related solver)
-- First release here (after 100% test).
+- First release here (after 90% test).
+- Visualisation, split components (vf and scalar fields in functions acting on axis).

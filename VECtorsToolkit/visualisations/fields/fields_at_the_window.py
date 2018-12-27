@@ -193,16 +193,14 @@ def see_one_slice(input_vf,
     return fig
 
 
-
-
-
 def see_field(input_vf,
               anatomical_plane='axial',
               h_slice=0, sample=(1, 1),
               window_title_input='quiver',
               title_input='2d vector field',
               long_title=False,
-              fig_tag=1, scale=1,
+              fig_tag=1,
+              scale=1,
               subtract_id=False,
               input_color='b',
               annotate=None, annotate_position=(1, 1)):
