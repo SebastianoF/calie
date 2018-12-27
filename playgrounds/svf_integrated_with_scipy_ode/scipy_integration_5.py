@@ -22,19 +22,14 @@ def vf(t, x):
     global svf_0
     return list(cp.one_point_interpolation(svf_0, point=x, method='cubic'))
 
+
 if __name__ == '__main__':
 
-    # Initialize the random field with the function input:
+    # Generate the random field with the function input:
     svf_0  = gen.generate_random(omega=(20, 20), parameters=(4, 2))
 
     # Initialize the displacement field that will be computed using the integral curves.
     disp_0 = gen_id.id_eulerian_like(svf_0)
-
-    t0, t1 = 0, 1
-    steps = 10.
-    dt = (t1 - t0) / steps
-
-    r = ode(vf).set_integrator('dopri5', method='bdf', max_step=dt)
 
     # Start getting the figure:
 
@@ -54,7 +49,13 @@ if __name__ == '__main__':
 
     print('Beginning of the integral curves computations')
 
-    # Plot integral curves
+    # Compute and plot integral curves
+
+    t0, t1 = 0, 1
+    steps = 10.
+    dt = (t1 - t0) / steps
+
+    r = ode(vf).set_integrator('dopri5', method='bdf', max_step=dt)
 
     passepartout = 4
 
@@ -96,7 +97,8 @@ if __name__ == '__main__':
                                                          title_input_both='overlay')
 
     # Initialize the displacement field that will be computed using the integral curves.
-    disp_1 = lie_exp.lie_exponential(svf_0)
+    l_exp = lie_exp.LieExp()
+    disp_1 = l_exp.scaling_and_squaring(svf_0)
 
     fields_comparisons.see_2_fields_separate_and_overlay(disp_1, svf_0,
                                                          fig_tag=3,

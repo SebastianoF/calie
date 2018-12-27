@@ -77,15 +77,16 @@ if __name__ == '__main__':
                     # -> compute exponential with different available methods: <- #
 
                     start = time.time()
+                    l_exp = lie_exp.LieExp()
 
-                    sdisp_scipy = lie_exp.lie_exponential_scipy(svf_0,
-                                                                integrator='vode',
-                                                                method=method,
-                                                                max_steps=max_step,
-                                                                interpolation_method=interp_method,
-                                                                verbose=verbose_exp,
-                                                                passepartout=passepartout,
-                                                                return_integral_curves=False)
+                    sdisp_scipy = l_exp.scipy_pointwise(svf_0,
+                                                        integrator='vode',
+                                                        method=method,
+                                                        max_steps=max_step,
+                                                        interpolation_method=interp_method,
+                                                        verbose=verbose_exp,
+                                                        passepartout=passepartout,
+                                                        return_integral_curves=False)
 
                     operation_time = (time.time() - start)
                     error = qr.norm(sdisp_scipy - sdisp_0, passe_partout_size=passepartout)

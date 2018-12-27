@@ -74,6 +74,7 @@ def euler_met_1(f, xa, xb, ya, n, verbose=False, y_ground=None, return_all=True)
     else:
         return w
 
+
 if __name__ == "__main__":
 
     # Functions collection:

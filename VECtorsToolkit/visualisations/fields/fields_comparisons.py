@@ -24,7 +24,7 @@ def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
                                       fig_tag=1,
                                       scale_0=1,
                                       scale_1=1,
-                                      subtract_id_0=True, subtract_id_1=False):
+                                      subtract_id_0=False, subtract_id_1=False):
 
     assert qr.check_is_vf(input_vf_0) == 2
     assert qr.check_is_vf(input_vf_1) == 2

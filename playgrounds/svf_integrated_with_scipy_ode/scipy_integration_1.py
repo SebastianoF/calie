@@ -42,11 +42,11 @@ if __name__ == '__main__':
 
     print('ground truth =  ' + str(function_1(1, [x1, y1])))
     print('values interpolated nearest = ' + str(cp.one_point_interpolation(
-        field_0, point=(x1, y1), method='nearest')))
+          field_0, point=(x1, y1), method='nearest')))
     print('values interpolated linear  = ' + str(cp.one_point_interpolation(
-        field_0, point=(x1, y1), method='linear')))
+          field_0, point=(x1, y1), method='linear')))
     print('values interpolated cubic   = ' + str(cp.one_point_interpolation(
-        field_0, point=(x1, y1), method='cubic')))
+          field_0, point=(x1, y1), method='cubic')))
 
     # Vector field function:
 
