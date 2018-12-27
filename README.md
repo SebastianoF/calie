@@ -5,10 +5,29 @@ Python 3.7 back compatible with 2.7.
 Research code for testing and comparing numerical integrations of vector fields in 
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
 
+![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/rotation.gif)
+
+Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) around the centre of the field of view of an axial
+slice from [BrainWeb]() dataset. The transformation is parametrised with stationary velocity field
+in Lagrangian coordinates (in red),
+whose integral or flow field between 0 and 1 represents the actual transformation (in blue).
+
+![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/LieExpLog.png)
+
+
+The stationary velocity fields are in general elements of the infinite dimensional Lie algebra of diffeomorphisms.
+A diffeomorphism ![img](http://latex.codecogs.com/svg.latex?\phi) is an element of the infinite dimensional Lie group
+over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
+![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
+In the image above a stationary velocity field is represented with an arrow of the tangent space of the group of
+diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the flow and vice versa.
+
 
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
 + [How](https://github.com/SebastianoF/VECtorsToolkit/wiki/How)
+
+
 
 ## Install
 
