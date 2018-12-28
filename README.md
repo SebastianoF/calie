@@ -14,7 +14,6 @@ whose integral or flow field between 0 and 1 represents the actual transformatio
 
 ![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/LieExpLog.png)
 
-
 The stationary velocity fields are in general elements of the infinite dimensional Lie algebra of diffeomorphisms.
 A diffeomorphism ![img](http://latex.codecogs.com/svg.latex?\phi) is an element of the infinite dimensional Lie group
 over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
@@ -22,12 +21,9 @@ over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
 In the image above a stationary velocity field is represented with an arrow of the tangent space of the group of
 diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the flow and vice versa.
 
-
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
 + [How](https://github.com/SebastianoF/VECtorsToolkit/wiki/How)
-
-
 
 ## Install
 

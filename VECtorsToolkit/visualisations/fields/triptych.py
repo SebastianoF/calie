@@ -1,11 +1,8 @@
 import copy
 from matplotlib import pyplot
-import scipy
-import numpy as np
 
 from VECtorsToolkit.fields import queries as qr
 from VECtorsToolkit.fields import generate_identities as gen_id
-from VECtorsToolkit.fields import compose as cp
 
 
 def triptych_image_quiver_image(image_1,

@@ -18,6 +18,13 @@ from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 
 if __name__ == '__main__':
+
+    # ----------------------------------------------------
+    # ----------  SET UP ---------------------------------
+    # ----------------------------------------------------
+
+    # controller and parameters
+
     control = {'prepare_data'    : False,
                'get_parts'       : True,
                'show_results'    : True,
@@ -26,18 +33,20 @@ if __name__ == '__main__':
     params = {'deformation_model'    : 'rotation',
               'integrate_with_scipy' : False}
 
+    # more parameters and initialisations:
+
     subject_id = 'BW38'
-    labels_brain = [2, 3]
+    labels_brain_to_keep = [2, 3]  # WM and GM
     y_slice = 118
     x_lim = [40, -40]
 
-    passepartout = 4
     sio = 3
     num_steps_integrations = 10
 
     l_exp = lie_exp.LieExp()
 
-    # stuff to save:
+    # path to file (pfi) to stuff to save:
+
     pfi_brain_tissue_mask = jph(pfo_output_A1, '{}_brain_tissue.nii.gz'.format(subject_id))
     pfi_skull_stripped = jph(pfo_output_A1, '{}_T1W_brain.nii.gz'.format(subject_id))
     pfi_coronal_slice = jph(pfo_output_A1, '{}_coronal.jpg'.format(subject_id))
@@ -62,13 +71,13 @@ if __name__ == '__main__':
         assert os.path.exists(pfi_input_T1W), pfi_input_T1W
         assert os.path.exists(pfi_input_crisp), pfi_input_crisp
 
-        # get skull strip mask
+        # get mask with only the selected label_brain
         nis_app = nis.App()
         nis_app.manipulate_labels.assign_all_other_labels_the_same_value(
-            pfi_input_crisp, pfi_brain_tissue_mask, labels_brain, 0
+            pfi_input_crisp, pfi_brain_tissue_mask, labels_brain_to_keep, 0
         )
         nis_app.manipulate_labels.relabel(
-            pfi_brain_tissue_mask, pfi_brain_tissue_mask, labels_brain, [1, ] * len(labels_brain)
+            pfi_brain_tissue_mask, pfi_brain_tissue_mask, labels_brain_to_keep, [1, ] * len(labels_brain_to_keep)
         )
 
         # skull strip
@@ -89,6 +98,7 @@ if __name__ == '__main__':
         # Parts are: vector field, list of resampled images and integral curves for increasing steps
 
         # --- generate rotational vector field same dimension of the given image, centered at the image centre
+
         coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
         omega = coronal_slice.shape
 
@@ -126,8 +136,11 @@ if __name__ == '__main__':
         with open(pfi_svf0, 'wb') as f:
             pickle.dump(svf_0, f)
 
-        # get integral curves and save:
-        if params['integrate_with_scipy']:  # very slow method:
+        # --- get integral curves and save ---
+
+        if params['integrate_with_scipy']:
+            # The first method is a very slow point-wise one.
+            # Compare it with the second one to see how quicker it can be to use the flows.
             t0, t1 = 0, 1
             dt = (t1 - t0) / float(num_steps_integrations)
 
@@ -155,7 +168,9 @@ if __name__ == '__main__':
             with open(pfi_int_curves, 'wb') as f:
                 pickle.dump(int_curves, f)
 
-        else:  # faster method, manipulating the input svf_0.
+        else:
+            # Second method, way faster! It is based on the algebraic
+            # manipulation of the input svf_0 and on the flow field.
 
             int_curves = []
 
@@ -193,6 +208,10 @@ if __name__ == '__main__':
         assert os.path.exists(pfi_svf0)
         for st in range(num_steps_integrations):
             assert os.path.exists(jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1)))
+
+    # ----------------------------------------------------
+    # ---------- SHOW ------------------------------------
+    # ----------------------------------------------------
 
     if control['show_results']:
         # load coronal slice
@@ -244,7 +263,7 @@ if __name__ == '__main__':
             pylab.savefig(
                 jph(pfo_output_A1, 'final_{}_sj_{}_step_{}.jpg'.format(
                     params['deformation_model'], subject_id, st+1)
-                )
+                    )
             )
 
         # -- produce video --
