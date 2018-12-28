@@ -8,7 +8,8 @@ Research code for testing and comparing numerical integrations of vector fields 
 ![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/rotation.gif)
 
 Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) around the centre of the field of view of an axial
-slice from [BrainWeb]() dataset. The transformation is parametrised with stationary velocity field
+slice from [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset.
+The transformation is parametrised with stationary velocity field
 in Lagrangian coordinates (in red),
 whose integral or flow field between 0 and 1 represents the actual transformation (in blue).
 
