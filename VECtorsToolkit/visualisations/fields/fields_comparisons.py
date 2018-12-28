@@ -163,10 +163,14 @@ def see_n_fields_separate(list_of_vf,
                           col_fig=5,
                           input_figsize=(15, 6),
                           anatomical_plane='axial',
-                          h_slice=0, sample=(1, 1),
+                          h_slice=0,
+                          sample=(1, 1),
                           window_title_input='quiver',
                           title_input=None,
-                          fig_tag=1, scale=1,
+                          fig_tag=1,
+                          scale=1,
+                          xy_lims=None,
+                          set_aspect_equal=True,
                           subtract_id=None,
                           input_color=None):
     """
@@ -181,6 +185,8 @@ def see_n_fields_separate(list_of_vf,
     :param title_input:
     :param fig_tag:
     :param scale:
+    :param xy_lims: (x0, x1, y0, y1) limits of the axis
+    :param set_aspect_equal: set equals ratio of x and y axes
     :param subtract_id:
     :param input_color:
     :return:
@@ -241,6 +247,13 @@ def see_n_fields_separate(list_of_vf,
                 raise TypeError('Anatomical_plane must be axial, sagittal or coronal')
 
             ax.set_title(title_input[num_vf])
+
+            if xy_lims is not None:
+                ax.set_xlim(xy_lims[0], xy_lims[1])
+                ax.set_ylim(xy_lims[2], xy_lims[3])
+
+            if set_aspect_equal:
+                ax.set_aspect('equal')
 
             ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
             ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)

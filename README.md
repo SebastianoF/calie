@@ -22,11 +22,13 @@ over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
 In the image above a stationary velocity field is represented with an arrow of the tangent space of the group of
 diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the flow and vice versa.
 
+## Documentation
+
 + [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
 + [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
 + [How](https://github.com/SebastianoF/VECtorsToolkit/wiki/How)
 
-## Install
+## Installing
 
 + Install the code in development mode in a newly created virtualenv.
 ```
