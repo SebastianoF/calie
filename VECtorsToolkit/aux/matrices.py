@@ -165,7 +165,7 @@ def matrix_vector_field_product(j_input, v_input):
     return np.sum(j_times_v.reshape(vol + [d, d]), axis=d+1).reshape(vol + [d])
 
     """
-    assert len(j_input.shape) == len(v_input.shape)
+    assert len(j_input.shape) == len(v_input.shape), [j_input.shape, v_input.shape]
 
     d = v_input.shape[-1]
     vol = list(v_input.shape[:d])

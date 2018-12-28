@@ -6,6 +6,7 @@ import numpy as np
 import nibabel as nib
 import scipy
 import nilabels as nis
+from nilabels.tools.aux_methods import utils_nib
 import pickle
 
 from VECtorsToolkit.fields import generate as gen
@@ -20,7 +21,7 @@ from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 if __name__ == '__main__':
 
-    # TODO BUG yet unsolved coordinates problem when resampling with a scalar field
+    # We use a 3D slab of the input image.
 
     # ----------------------------------------------------
     # ----------  SET UP ---------------------------------
@@ -28,7 +29,7 @@ if __name__ == '__main__':
 
     # controller and parameters
 
-    control = {'prepare_data'    : False,
+    control = {'prepare_data'    : True,
                'get_parts'       : True,
                'show_results'    : True,
                'make_video'      : True}
@@ -42,8 +43,10 @@ if __name__ == '__main__':
 
     subject_id = 'BW38'
     labels_brain_to_keep = [2, 3]  # WM and GM
-    y_slice = 118
     x_lim = [40, -40]
+    y_lim = [100, -100]
+
+    h_dist = 18
 
     sio = 3
     num_steps_integrations = 10
@@ -54,7 +57,7 @@ if __name__ == '__main__':
 
     pfi_brain_tissue_mask = jph(pfo_output_A1, '{}_brain_tissue.nii.gz'.format(subject_id))
     pfi_skull_stripped = jph(pfo_output_A1, '{}_T1W_brain.nii.gz'.format(subject_id))
-    pfi_coronal_slice = jph(pfo_output_A1, '{}_coronal.jpg'.format(subject_id))
+    pfi_coronal_slab = jph(pfo_output_A1, '{}_coronal_slab.nii.gz'.format(subject_id))
     pfi_int_curves = jph(pfo_output_A1, 'int_curves_new.pickle')
     pfi_svf0 = jph(pfo_output_A1, 'svf_0.pickle')
 
@@ -88,11 +91,12 @@ if __name__ == '__main__':
         # skull strip
         nis_app.math.prod(pfi_brain_tissue_mask, pfi_input_T1W, pfi_skull_stripped)
 
-        # get a slice in PNG
-        im_skull_stripped = nib.load(pfi_skull_stripped)
-        scipy.misc.toimage(
-            im_skull_stripped.get_data()[x_lim[0]:x_lim[1], y_slice, :].T
-        ).save(pfi_coronal_slice)
+        # get a slab as a nibabel image
+        im_coronal_slab = nib.load(pfi_skull_stripped)
+        im_coronal_slab = utils_nib.set_new_data(im_coronal_slab,
+                                                 im_coronal_slab.get_data()[x_lim[0]:x_lim[1], y_lim[0]:y_lim[1], :])
+
+        nib.save(im_coronal_slab, pfi_coronal_slab)
 
     else:
         # check data had been prepared
@@ -104,14 +108,15 @@ if __name__ == '__main__':
 
         # --- generate rotational vector field same dimension of the given image, centered at the image centre
 
-        coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
-        omega = coronal_slice.shape
+        im_coronal_slab = nib.load(pfi_coronal_slab)
+        omega = im_coronal_slab.shape
 
         # -> transformation model <- #
         if params['deformation_model'] == 'translation':
-            svf_0 = np.zeros(list(omega) + [1, 1, 2])
+            svf_0 = np.zeros(list(omega) + [1, 3])
             svf_0[..., 0] = 10
             svf_0[..., 1] = 0
+            svf_0[..., 2] = 0
 
         elif params['deformation_model'] == 'rotation':
 
@@ -209,7 +214,7 @@ if __name__ == '__main__':
                 ind_ij = 0
                 for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
                     for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                        int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, 0, 0, :]])
+                        int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, h_dist, 0, :][:2]])
                         ind_ij += 1
 
             with open(pfi_int_curves, 'wb') as f:
@@ -219,18 +224,18 @@ if __name__ == '__main__':
         for st in range(num_steps_integrations):
             alpha = (st + 1) / float(num_steps_integrations)
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
-            coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)
+            coronal_slab_resampled_st = cp.scalar_dot_lagrangian(im_coronal_slab.get_data(), sdisp_0)
 
-            # coronal_slice_resampled_st = coronal_slice_resampled_st
+            pfi_coronal_slab_resampled_st = jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1))
+            im_coronal_slab = utils_nib.set_new_data(im_coronal_slab, coronal_slab_resampled_st)
 
-            pfi_coronal_slice_resampled_st = jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1))
-            scipy.misc.toimage(coronal_slice_resampled_st).save(pfi_coronal_slice_resampled_st)
+            nib.save(im_coronal_slab, pfi_coronal_slab_resampled_st)
 
     else:
-        assert os.path.exists(pfi_coronal_slice)
+        assert os.path.exists(pfi_coronal_slab)
         assert os.path.exists(pfi_svf0)
         for st in range(num_steps_integrations):
-            assert os.path.exists(jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1)))
+            assert os.path.exists(jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)))
 
     # ----------------------------------------------------
     # ---------- SHOW ------------------------------------
@@ -239,29 +244,32 @@ if __name__ == '__main__':
     if control['show_results']:
         pylab.close('all')
 
-        # load coronal slice
-        coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
+        # load coronal slab
+        im_coronal_slab = nib.load(pfi_coronal_slab)
         # load svf
         with open(pfi_svf0, 'rb') as f:
             svf_0 = pickle.load(f)
         # load latest transformed
-        pfi_coronal_slice_resampled_last = jph(
-            pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, num_steps_integrations)
+        pfi_coronal_slab_resampled_last = jph(
+            pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, num_steps_integrations)
         )
-        coronal_slice_resampled = scipy.ndimage.imread(pfi_coronal_slice_resampled_last)
+        im_coronal_slab_resampled = nib.load(pfi_coronal_slab_resampled_last)
         # load integral curves
         with open(pfi_int_curves, 'rb') as f:
             int_curves = pickle.load(f)
 
         # visualise it in the triptych
-        triptych.image_quiver_image(coronal_slice, svf_0, coronal_slice_resampled, sampling_svf=sampling_svf,
-                                    fig_tag=2, h_slice=0, integral_curves=int_curves)
+        triptych.volume_quiver_volume(im_coronal_slab.get_data(),
+                                      svf_0,
+                                      im_coronal_slab_resampled.get_data(),
+                                      sampling_svf=sampling_svf,
+                                      fig_tag=2, h_slice=0, integral_curves=int_curves)
 
         pylab.show(block=True)
 
     if control['make_video']:
         # load coronal slice
-        coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
+        im_coronal_slab = nib.load(pfi_coronal_slab)
         # load svf
         with open(pfi_svf0, 'rb') as f:
             svf_0 = pickle.load(f)
@@ -274,16 +282,18 @@ if __name__ == '__main__':
 
             pylab.close('all')
 
-            pfi_coronal_slice_resampled = jph(
-                pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st + 1)
-            )
-            coronal_slice_resampled = scipy.ndimage.imread(pfi_coronal_slice_resampled)
+            pfi_coronal_slab_resampled = jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1))
+            im_coronal_slab_resampled = nib.load(pfi_coronal_slab_resampled)
 
             int_curves_step = [ic[:st+1, :] for ic in int_curves]
 
-            triptych.image_quiver_image(coronal_slice, svf_0, coronal_slice_resampled,
-                                        sampling_svf=sampling_svf,
-                                        fig_tag=2, h_slice=0, integral_curves=int_curves_step)
+            triptych.volume_quiver_volume(im_coronal_slab.get_data(),
+                                          svf_0,
+                                          im_coronal_slab_resampled.get_data(),
+                                          sampling_svf=sampling_svf,
+                                          fig_tag=2,
+                                          h_slice=0,
+                                          integral_curves=int_curves_step)
 
             pylab.savefig(
                 jph(pfo_output_A1, 'final_{}_sj_{}_step_{}.jpg'.format(

@@ -210,6 +210,12 @@ def scalar_dot_lagrangian(sf_left,
                           cval=0.0,
                           prefilter=True):
 
+    # passage = np.array([[0, -1], [-1, 0]])
+    #
+    # for x in range(vf_right_lag.shape[0]):
+    #     for y in range(vf_right_lag.shape[1]):
+    #         vf_right_lag[x, y, 0, 0, :] = passage.dot(vf_right_lag[x, y, 0, 0, :])
+
     vf_right_eul = cs.lagrangian_to_eulerian(vf_right_lag)
 
     return scalar_dot_eulerian(sf_left, vf_right_eul,
