@@ -60,29 +60,33 @@ def randomgen_linear_by_taste(sigma, taste, center=(0, 0)):
 
     if taste == 6:
         x_c, y_c = center
-        theta = sigma * np.random.randn(2 * sigma)
+        theta = sigma * np.random.randn() + 2 * sigma
 
         tx = (1 - np.cos(theta)) * x_c + np.sin(theta) * y_c
         ty = -np.sin(theta) * x_c + (1 - np.cos(theta)) * y_c
 
         m0 = se2.Se2G(theta, tx, ty)
-        return se2.se2g_log(m0)
+        dm0 = se2.se2g_log(m0)
+        return dm0.get_matrix
 
     else:
         found = False
-        rot = np.zeros(2, 2)
+        rot = np.zeros([2, 2])
         while not found:
             rot = np.random.randn(2, 2)
-            if get_taste(rot) == taste:
+            if get_taste(rot - np.eye(2)) == taste:
                 found = True
 
         dm = np.zeros([3, 3])
-        dm[:2, :2] = rot
+        dm[:2, :2] = (1 / sigma) * rot
 
         tx = (1 - dm[0, 0]) * center[0] - dm[0, 1] * center[1]
         ty = - dm[1, 0] * center[0] + (1 - dm[1, 1]) * center[1]
 
         dm[:2, 2] = np.array([tx, ty])
+
+        dm = dm - np.eye(3)
+        dm[2, 2] = 0
 
         return dm
 
