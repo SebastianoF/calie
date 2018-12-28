@@ -110,7 +110,8 @@ def lagrangian_dot_eulerian(vf_left_lag, vf_right_eul,
         return result.reshape(vf_left_lag.shape)
 
 
-def scalar_dot_eulerian(sf_left, vf_right_eul,
+def scalar_dot_eulerian(sf_left,
+                        vf_right_eul,
                         affine_left_right=None,
                         s_i_o=2,
                         mode='constant',
@@ -126,6 +127,7 @@ def scalar_dot_eulerian(sf_left, vf_right_eul,
         vf_right_eul = matrices.matrix_vector_field_product(np.linalg.inv(A_l).dot(A_r), vf_right_eul)
 
     coord = [vf_right_eul[..., i].reshape(omega_right, order='F') for i in range(d)]
+
     result = np.zeros_like(sf_left)
 
     ndimage.map_coordinates(sf_left,
@@ -200,7 +202,8 @@ def eulerian_dot_eulerian(vf_left_eul, vf_right_eul,
                                    add_right=add_right)
 
 
-def scalar_dot_lagrangian(sf_left, vf_right_lag,
+def scalar_dot_lagrangian(sf_left,
+                          vf_right_lag,
                           affine_left_right=None,
                           s_i_o=2,
                           mode='constant',

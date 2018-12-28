@@ -41,6 +41,9 @@ def triptych_image_quiver_image(image_1,
     # Central vector field
     ax_2 = pyplot.subplot(132)
 
+    # add background warped
+    ax_2.imshow(image_2, cmap='Greys', interpolation='none', origin='lower')
+
     # add integral curves if any
     for int_curve in integral_curves:
 

@@ -20,7 +20,7 @@ A diffeomorphism ![img](http://latex.codecogs.com/svg.latex?\phi) is an element 
 over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
 In the image above a stationary velocity field is represented with an arrow of the tangent space of the group of
-diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the flow and vice versa.
+diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the corresponding flow and vice versa.
 
 ## Documentation
 

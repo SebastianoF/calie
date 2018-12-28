@@ -14,6 +14,7 @@ from VECtorsToolkit.visualisations.fields import triptych
 from VECtorsToolkit.fields import compose as cp
 from VECtorsToolkit.fields import coordinate as coord
 from VECtorsToolkit.operations import lie_exp
+from VECtorsToolkit.transformations import linear
 from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 
@@ -30,10 +31,12 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'rotation',
+    params = {'deformation_model'    : 'linear',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
+
+    np.random.seed(42)
 
     subject_id = 'BW38'
     labels_brain_to_keep = [2, 3]  # WM and GM
@@ -53,8 +56,8 @@ if __name__ == '__main__':
     pfi_int_curves = jph(pfo_output_A1, 'int_curves_new.pickle')
     pfi_svf0 = jph(pfo_output_A1, 'svf_0.pickle')
 
-    if params['deformation_model'] == 'rotation':
-        sampling_svf = (15, 15)
+    if params['deformation_model'] in {'rotation', 'linear'} :
+        sampling_svf = (10, 10)
     elif params['deformation_model'] == 'gauss':
         sampling_svf = (5, 5)
     else:
@@ -122,6 +125,17 @@ if __name__ == '__main__':
             # Generate subsequent vector fields
             sdisp_0 = gen.generate_from_matrix(list(omega), m_0.get_matrix, structure='group')
             svf_0 = gen.generate_from_matrix(list(omega), dm_0.get_matrix, structure='algebra')
+
+        elif params['deformation_model'] == 'linear':
+
+            taste = 1
+            beta = 0.8
+
+            x_c, y_c = [c / 2 for c in omega]
+
+            dm = beta * linear.randomgen_linear_by_taste(1, taste, (x_c, y_c))
+            svf_0 = gen.generate_from_matrix(omega, dm, structure='algebra')
+            sdisp_0 = l_exp.gss_aei(svf_0)
 
         elif params['deformation_model'] == 'gauss':
 
@@ -200,6 +214,8 @@ if __name__ == '__main__':
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)
 
+            # coronal_slice_resampled_st = coronal_slice_resampled_st
+
             pfi_coronal_slice_resampled_st = jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1))
             scipy.misc.toimage(coronal_slice_resampled_st).save(pfi_coronal_slice_resampled_st)
 
@@ -214,6 +230,8 @@ if __name__ == '__main__':
     # ----------------------------------------------------
 
     if control['show_results']:
+        pylab.close('all')
+
         # load coronal slice
         coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
         # load svf
@@ -232,7 +250,7 @@ if __name__ == '__main__':
         triptych.triptych_image_quiver_image(coronal_slice, svf_0, coronal_slice_resampled, sampling_svf=sampling_svf,
                                              fig_tag=2, h_slice=0, integral_curves=int_curves)
 
-        pylab.show()
+        pylab.show(block=False)
 
     if control['make_video']:
         # load coronal slice
@@ -247,7 +265,7 @@ if __name__ == '__main__':
         # -- Produce images --
         for st in range(num_steps_integrations):
 
-            pylab.close()
+            pylab.close('all')
 
             pfi_coronal_slice_resampled = jph(
                 pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st + 1)
