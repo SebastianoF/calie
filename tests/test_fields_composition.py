@@ -375,6 +375,10 @@ def test_controlled_composition_of_two_closed_form_vector_fields_2d_1(get_figure
                               svf_v_dot_u_numerical[passe_partout:-passe_partout, passe_partout:-passe_partout, 0, 0, :],
                               decimal=dec)
 
+
+def test_compose_vector_field_with_scalar():
+    pass
+
 # def test_controlled_composition_of_two_closed_form_vector_fields_2d_2(get_figures=True):
 #     passe_partout = 3
 #     dec = 2

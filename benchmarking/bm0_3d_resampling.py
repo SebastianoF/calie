@@ -16,7 +16,7 @@ from VECtorsToolkit.fields import compose as cp
 from VECtorsToolkit.fields import coordinate as coord
 from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.transformations import linear
-from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
+from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1_3d
 
 
 if __name__ == '__main__':
@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
     # controller and parameters
 
-    control = {'prepare_data'    : True,
-               'get_parts'       : True,
+    control = {'prepare_data'    : False,
+               'get_parts'       : False,
                'show_results'    : True,
                'make_video'      : True}
 
@@ -143,7 +143,7 @@ if __name__ == '__main__':
             taste = 2
             beta = 0.8
 
-            x_c, y_c = [c / 2 for c in omega]
+            x_c, y_c, z_c = [c / 2 for c in omega]
 
             dm = beta * linear.randomgen_linear_by_taste(1, taste, (x_c, y_c))
             svf_0 = gen.generate_from_matrix(omega, dm, structure='algebra')
@@ -226,7 +226,9 @@ if __name__ == '__main__':
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slab_resampled_st = cp.scalar_dot_lagrangian(im_coronal_slab.get_data(), sdisp_0)
 
-            pfi_coronal_slab_resampled_st = jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1))
+            pfi_coronal_slab_resampled_st = jph(
+                pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)
+            )
             im_coronal_slab = utils_nib.set_new_data(im_coronal_slab, coronal_slab_resampled_st)
 
             nib.save(im_coronal_slab, pfi_coronal_slab_resampled_st)

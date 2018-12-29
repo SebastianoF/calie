@@ -161,7 +161,7 @@ def volume_quiver_volume(volume_1,
     ax_2 = pyplot.subplot(132)
 
     # add background warped
-    ax_2.imshow(image_2, cmap='Greys', interpolation='none', origin='lower')
+    # ax_2.imshow(volume_2, cmap='Greys', interpolation='none', origin='lower')
 
     # add integral curves if any
     for int_curve in integral_curves:
@@ -205,8 +205,8 @@ def volume_quiver_volume(volume_1,
     else:
         raise TypeError('Anatomical_plane must be axial, sagittal or coronal')
 
-    ax_2.set_xlim(0, image_1.shape[0])
-    ax_2.set_ylim(0, image_1.shape[1])
+    ax_2.set_xlim(0, volume_1.shape[0])
+    ax_2.set_ylim(0, volume_1.shape[1])
 
     ax_2.set_xlabel('Transformation', fontdict=font)
     ax_2.set_aspect('equal')

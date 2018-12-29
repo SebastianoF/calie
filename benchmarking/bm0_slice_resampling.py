@@ -28,12 +28,12 @@ if __name__ == '__main__':
 
     # controller and parameters
 
-    control = {'prepare_data'    : False,
+    control = {'prepare_data'    : True,
                'get_parts'       : True,
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'linear',
+    params = {'deformation_model'    : 'rotation',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
