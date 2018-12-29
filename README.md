@@ -5,7 +5,7 @@ Python 3.7 back compatible with 2.7.
 Research code for testing and comparing numerical integrations of vector fields in 
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
 
-![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/rotation.gif)
+![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/deformations.gif)
 
 Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) around the centre of the field of view of an axial
 slice from [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset.

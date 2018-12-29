@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     # controller and parameters
 
-    control = {'prepare_data'    : True,
+    control = {'prepare_data'    : False,
                'get_parts'       : True,
                'show_results'    : True,
                'make_video'      : True}
@@ -48,6 +48,8 @@ if __name__ == '__main__':
     sio = 3
     num_steps_integrations = 10
 
+    taste = ''  # for linear transformations
+
     l_exp = lie_exp.LieExp()
 
     # path to file (pfi) to stuff to save:
@@ -59,7 +61,7 @@ if __name__ == '__main__':
     pfi_svf0 = jph(pfo_output_A1, 'svf_0.pickle')
 
     if params['deformation_model'] in {'translation', 'rotation', 'linear'} :
-        sampling_svf = (10, 10)
+        sampling_svf = (20, 20)
     elif params['deformation_model'] == 'gauss':
         sampling_svf = (5, 5)
     else:
@@ -111,7 +113,7 @@ if __name__ == '__main__':
         if params['deformation_model'] == 'translation':
             svf_0 = np.zeros(list(omega) + [1, 1, 2])
             svf_0[..., 0] = 10
-            svf_0[..., 1] = 0
+            svf_0[..., 1] = 20
 
         elif params['deformation_model'] == 'rotation':
 
@@ -135,8 +137,8 @@ if __name__ == '__main__':
 
         elif params['deformation_model'] == 'linear':
 
-            taste = 2
-            beta = 0.8
+            taste = 5
+            beta = 0.5
 
             x_c, y_c = [c / 2 for c in omega]
 
@@ -217,7 +219,7 @@ if __name__ == '__main__':
 
         # get resampled images and save:
         for st in range(num_steps_integrations):
-            alpha = (st + 1) / float(num_steps_integrations)
+            alpha = -1 * (st + 1) / float(num_steps_integrations)
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)
 
@@ -283,11 +285,11 @@ if __name__ == '__main__':
 
             triptych.image_quiver_image(coronal_slice, svf_0, coronal_slice_resampled,
                                         sampling_svf=sampling_svf,
-                                        fig_tag=2, h_slice=0, integral_curves=int_curves_step)
+                                        fig_tag=2, h_slice=0, integral_curves=int_curves_step, show_overlay=False)
 
             pylab.savefig(
                 jph(pfo_output_A1, 'final_{}_sj_{}_step_{}.jpg'.format(
-                    params['deformation_model'], subject_id, st+1)
+                    params['deformation_model'] + str(taste), subject_id, st+1)
                     )
             )
 

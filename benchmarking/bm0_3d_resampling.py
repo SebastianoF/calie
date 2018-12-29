@@ -29,12 +29,12 @@ if __name__ == '__main__':
 
     # controller and parameters
 
-    control = {'prepare_data'    : False,
-               'get_parts'       : False,
+    control = {'prepare_data'    : True,
+               'get_parts'       : True,
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'linear',
+    params = {'deformation_model'    : 'rotation',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     subject_id = 'BW38'
     labels_brain_to_keep = [2, 3]  # WM and GM
     x_lim = [40, -40]
-    y_lim = [100, -100]
+    y_lim = [100, -120]
 
     h_dist = 18
 
@@ -55,11 +55,11 @@ if __name__ == '__main__':
 
     # path to file (pfi) to stuff to save:
 
-    pfi_brain_tissue_mask = jph(pfo_output_A1, '{}_brain_tissue.nii.gz'.format(subject_id))
-    pfi_skull_stripped = jph(pfo_output_A1, '{}_T1W_brain.nii.gz'.format(subject_id))
-    pfi_coronal_slab = jph(pfo_output_A1, '{}_coronal_slab.nii.gz'.format(subject_id))
-    pfi_int_curves = jph(pfo_output_A1, 'int_curves_new.pickle')
-    pfi_svf0 = jph(pfo_output_A1, 'svf_0.pickle')
+    pfi_brain_tissue_mask = jph(pfo_output_A1_3d, '{}_brain_tissue.nii.gz'.format(subject_id))
+    pfi_skull_stripped = jph(pfo_output_A1_3d, '{}_T1W_brain.nii.gz'.format(subject_id))
+    pfi_coronal_slab = jph(pfo_output_A1_3d, '{}_coronal_slab.nii.gz'.format(subject_id))
+    pfi_int_curves = jph(pfo_output_A1_3d, 'int_curves_new.pickle')
+    pfi_svf0 = jph(pfo_output_A1_3d, 'svf_0.pickle')
 
     if params['deformation_model'] in {'translation', 'rotation', 'linear'} :
         sampling_svf = (10, 10)
@@ -164,70 +164,39 @@ if __name__ == '__main__':
 
         # --- get integral curves and save ---
 
-        if params['integrate_with_scipy']:
-            # The first method is a very slow point-wise one.
-            # Compare it with the second one to see how quicker it can be to use the flows.
-            t0, t1 = 0, 1
-            dt = (t1 - t0) / float(num_steps_integrations)
+        # Second method, way faster! It is based on the algebraic
+        # manipulation of the input svf_0 and on the flow field.
 
-            r = scipy.integrate.ode(
-                lambda t, x: list(cp.one_point_interpolation(svf_0, point=x, method='linear'))
-            ).set_integrator('dopri5', method='bdf', max_step=dt)
+        int_curves = []
 
-            int_curves = []
+        for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
+            for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
+                int_curves.append(np.array([[i, j]]))
 
+        for st in range(num_steps_integrations):
+            print('integrating step {}/{}'.format(st+1, num_steps_integrations))
+            alpha = (st + 1) / float(num_steps_integrations)
+            sdisp_0 = l_exp.gss_aei(alpha * svf_0)
+
+            sdisp_0 = coord.lagrangian_to_eulerian(sdisp_0)
+
+            ind_ij = 0
             for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
                 for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
+                    int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, h_dist, 0, :][:2]])
+                    ind_ij += 1
 
-                    print('Integrating vf at the point {} between {} and {}, step size {}'.format((i, j), t0, t1, dt))
-
-                    Y, T = [], []
-                    r.set_initial_value([i, j], t0).set_f_params()  # initial conditions are point on the grid
-                    Y.append([i, j])
-                    while r.successful() and r.t + dt < t1:
-                        r.integrate(r.t + dt)
-                        Y.append(r.y)
-
-                    S = np.array(np.real(Y))
-                    int_curves += [S]
-
-            with open(pfi_int_curves, 'wb') as f:
-                pickle.dump(int_curves, f)
-
-        else:
-            # Second method, way faster! It is based on the algebraic
-            # manipulation of the input svf_0 and on the flow field.
-
-            int_curves = []
-
-            for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
-                for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                    int_curves.append(np.array([[i, j]]))
-
-            for st in range(num_steps_integrations):
-                print('integrating step {}/{}'.format(st+1, num_steps_integrations))
-                alpha = (st + 1) / float(num_steps_integrations)
-                sdisp_0 = l_exp.gss_aei(alpha * svf_0)
-
-                sdisp_0 = coord.lagrangian_to_eulerian(sdisp_0)
-
-                ind_ij = 0
-                for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
-                    for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                        int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, h_dist, 0, :][:2]])
-                        ind_ij += 1
-
-            with open(pfi_int_curves, 'wb') as f:
-                pickle.dump(int_curves, f)
+        with open(pfi_int_curves, 'wb') as f:
+            pickle.dump(int_curves, f)
 
         # get resampled images and save:
         for st in range(num_steps_integrations):
-            alpha = (st + 1) / float(num_steps_integrations)
+            alpha = -1 * (st + 1) / float(num_steps_integrations)
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slab_resampled_st = cp.scalar_dot_lagrangian(im_coronal_slab.get_data(), sdisp_0)
 
             pfi_coronal_slab_resampled_st = jph(
-                pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)
+                pfo_output_A1_3d, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)
             )
             im_coronal_slab = utils_nib.set_new_data(im_coronal_slab, coronal_slab_resampled_st)
 
@@ -237,7 +206,7 @@ if __name__ == '__main__':
         assert os.path.exists(pfi_coronal_slab)
         assert os.path.exists(pfi_svf0)
         for st in range(num_steps_integrations):
-            assert os.path.exists(jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)))
+            assert os.path.exists(jph(pfo_output_A1_3d, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1)))
 
     # ----------------------------------------------------
     # ---------- SHOW ------------------------------------
@@ -253,7 +222,7 @@ if __name__ == '__main__':
             svf_0 = pickle.load(f)
         # load latest transformed
         pfi_coronal_slab_resampled_last = jph(
-            pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, num_steps_integrations)
+            pfo_output_A1_3d, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, num_steps_integrations)
         )
         im_coronal_slab_resampled = nib.load(pfi_coronal_slab_resampled_last)
         # load integral curves
@@ -284,7 +253,7 @@ if __name__ == '__main__':
 
             pylab.close('all')
 
-            pfi_coronal_slab_resampled = jph(pfo_output_A1, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1))
+            pfi_coronal_slab_resampled = jph(pfo_output_A1_3d, '{}_coronal_slab_step_{}.nii.gz'.format(subject_id, st+1))
             im_coronal_slab_resampled = nib.load(pfi_coronal_slab_resampled)
 
             int_curves_step = [ic[:st+1, :] for ic in int_curves]
@@ -298,7 +267,7 @@ if __name__ == '__main__':
                                           integral_curves=int_curves_step)
 
             pylab.savefig(
-                jph(pfo_output_A1, 'final_{}_sj_{}_step_{}.jpg'.format(
+                jph(pfo_output_A1_3d, 'final_{}_sj_{}_step_{}.jpg'.format(
                     params['deformation_model'], subject_id, st+1)
                     )
             )

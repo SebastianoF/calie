@@ -20,7 +20,8 @@ def image_quiver_image(image_1,
                        line_arrowwidths=0.01,
                        arrowwidths=0.5,
                        integral_curves=(),
-                       curve_width=0.5):
+                       curve_width=0.5,
+                       show_overlay=False):
 
     pyplot.cla()
     fig = pyplot.figure(fig_tag, figsize=input_fig_size, dpi=100, facecolor='w', edgecolor='k')
@@ -42,7 +43,8 @@ def image_quiver_image(image_1,
     ax_2 = pyplot.subplot(132)
 
     # add background warped
-    ax_2.imshow(image_2, cmap='Greys', interpolation='none', origin='lower')
+    if show_overlay:
+        ax_2.imshow(image_2, cmap='Greys', interpolation='none', origin='lower')
 
     # add integral curves if any
     for int_curve in integral_curves:
