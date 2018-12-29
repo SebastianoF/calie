@@ -294,4 +294,40 @@ if __name__ == '__main__':
             )
 
         # -- produce video --
-        # manually with: ffmpeg -r 2 -i final_sj_BW38_step_%01d.jpg -vcodec gif -y movie.gif
+        '''
+        # manually with: 
+        ffmpeg -r 2 -i final_sj_BW38_step_%01d.jpg -vcodec gif -y movie.gif
+        # or with:
+        ffmpeg -r 3 -f concat -safe 0 -i myfile.txt -y output.gif
+        # where myfile.txt contains something like:
+        file 'final_translation_sj_BW38_step_1.jpg'
+        file 'final_translation_sj_BW38_step_2.jpg'
+        file 'final_translation_sj_BW38_step_3.jpg'
+        file 'final_translation_sj_BW38_step_4.jpg'
+        file 'final_translation_sj_BW38_step_5.jpg'
+        file 'final_translation_sj_BW38_step_6.jpg'
+        file 'final_translation_sj_BW38_step_7.jpg'
+        file 'final_translation_sj_BW38_step_8.jpg'
+        file 'final_translation_sj_BW38_step_9.jpg'
+        file 'final_translation_sj_BW38_step_10.jpg'
+        file 'final_rotation_sj_BW38_step_1.jpg'
+        file 'final_rotation_sj_BW38_step_2.jpg'
+        file 'final_rotation_sj_BW38_step_3.jpg'
+        file 'final_rotation_sj_BW38_step_4.jpg'
+        file 'final_rotation_sj_BW38_step_5.jpg'
+        file 'final_rotation_sj_BW38_step_6.jpg'
+        file 'final_rotation_sj_BW38_step_7.jpg'
+        file 'final_rotation_sj_BW38_step_8.jpg'
+        file 'final_rotation_sj_BW38_step_9.jpg'
+        file 'final_rotation_sj_BW38_step_10.jpg'
+        file 'final_linear5_sj_BW38_step_1.jpg'
+        file 'final_linear5_sj_BW38_step_2.jpg'
+        file 'final_linear5_sj_BW38_step_3.jpg'
+        file 'final_linear5_sj_BW38_step_4.jpg'
+        file 'final_linear5_sj_BW38_step_5.jpg'
+        file 'final_linear5_sj_BW38_step_6.jpg'
+        file 'final_linear5_sj_BW38_step_7.jpg'
+        file 'final_linear5_sj_BW38_step_8.jpg'
+        file 'final_linear5_sj_BW38_step_9.jpg'
+        file 'final_linear5_sj_BW38_step_10.jpg' 
+        '''

@@ -7,20 +7,24 @@ Research code for testing and comparing numerical integrations of vector fields 
 
 ![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/deformations.gif)
 
-Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) around the centre of the field of view of an axial
-slice from [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset.
+Translation, rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) and then inward spiral
+(linear transformation, complex conjugate eigenvectors with negative real part) around the centre of the field.
+ Transformed image is an axial
+slice from the [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset - Subject BW 38.
 The transformation is parametrised with stationary velocity field
 in Lagrangian coordinates (in red),
 whose integral or flow field between 0 and 1 represents the actual transformation (in blue).
 
 ![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/LieExpLog.png)
 
-The stationary velocity fields are in general elements of the infinite dimensional Lie algebra of diffeomorphisms.
+The stationary velocity fields are in general elements of the infinite dimensional Lie algebra of diffeomorphisms
+that parametrise the transformation in an Euclidean space.
 A diffeomorphism ![img](http://latex.codecogs.com/svg.latex?\phi) is an element of the infinite dimensional Lie group
 over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
-In the image above a stationary velocity field is represented with an arrow of the tangent space of the group of
-diffeomorphisms. Lie exponential and Lie logarithm map the vector field in the corresponding flow and vice versa.
+In the schematic representation above, a stationary velocity field is represented with an arrow of the tangent
+space of the group of diffeomorphisms.
+Lie exponential and Lie logarithm map the vector field in the corresponding flow and vice versa.
 
 ## Documentation
 
