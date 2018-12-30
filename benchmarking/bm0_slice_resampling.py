@@ -33,7 +33,7 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'rotation',
+    params = {'deformation_model'    : 'gauss',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     if params['deformation_model'] in {'translation', 'rotation', 'linear'} :
         sampling_svf = (20, 20)
     elif params['deformation_model'] == 'gauss':
-        sampling_svf = (5, 5)
+        sampling_svf = (10, 10)
     else:
         raise IOError
 
@@ -148,8 +148,8 @@ if __name__ == '__main__':
 
         elif params['deformation_model'] == 'gauss':
 
-            sampling_svf = (5, 5)
-            svf_0 = gen.generate_random(omega, 1, (20, 4))
+            svf_0 = gen.generate_random(omega, 1, (20, 2))
+            # svf_0 = svf_0[0:omega[0], 1:omega[1], ...]
             sdisp_0 = l_exp.scaling_and_squaring(svf_0)
 
         else:
