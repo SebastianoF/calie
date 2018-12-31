@@ -33,7 +33,7 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'linear',
+    params = {'deformation_model'    : 'translation',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
@@ -104,7 +104,9 @@ if __name__ == '__main__':
     if control['get_parts']:
         # Parts are: vector field, list of resampled images and integral curves for increasing steps
 
-        # --- generate rotational vector field same dimension of the given image, centered at the image centre
+        # --- generate rotational vector field same dimension of the given image
+        # (in real coordinates - swap x and y !!),
+        # centered at the image centre
 
         coronal_slice = scipy.ndimage.imread(pfi_coronal_slice)
         omega = coronal_slice.shape

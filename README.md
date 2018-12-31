@@ -7,7 +7,9 @@ Research code for testing and comparing numerical integrations of vector fields 
 
 ![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/deformations.gif)
 
-Translation, rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8) and then inward spiral
+Translation, rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8), unstable node
+(linear transformation with real positive eigenvalues)
+and then inward spiral
 (linear transformation, complex conjugate eigenvectors with negative real part) around the centre of the field.
  Transformed image is an axial
 slice from the [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset - Subject BW 38.

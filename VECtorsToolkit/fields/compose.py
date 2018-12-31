@@ -130,7 +130,6 @@ def scalar_dot_eulerian(sf_left,
         assert vf_right_eul.shape[:2] == sf_left.shape[::-1], 'Shape inconsistency.'
         coord = [vf_right_eul[..., i].reshape(omega_right, order='F').T for i in range(d)][::-1]
         result = np.zeros_like(sf_left)
-        # result = np.zeros(omega_right).T
     else:
         coord = [vf_right_eul[..., i].reshape(omega_right, order='F') for i in range(d)]
         result = np.zeros_like(sf_left)
