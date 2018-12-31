@@ -33,7 +33,7 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'gauss',
+    params = {'deformation_model'    : 'linear',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
         # -> transformation model <- #
         if params['deformation_model'] == 'translation':
-            svf_0 = np.zeros(list(omega) + [1, 1, 2])
+            svf_0 = np.zeros(list(omega)[::-1] + [1, 1, 2])
             svf_0[..., 0] = 10
             svf_0[..., 1] = 20
 
@@ -132,23 +132,23 @@ if __name__ == '__main__':
             print(dm_0.get_matrix)
 
             # Generate subsequent vector fields
-            sdisp_0 = gen.generate_from_matrix(list(omega), m_0.get_matrix, structure='group')
-            svf_0 = gen.generate_from_matrix(list(omega), dm_0.get_matrix, structure='algebra')
+            sdisp_0 = gen.generate_from_matrix(list(omega)[::-1], m_0.get_matrix, structure='group')
+            svf_0 = gen.generate_from_matrix(list(omega)[::-1], dm_0.get_matrix, structure='algebra')
 
         elif params['deformation_model'] == 'linear':
 
-            taste = 5
+            taste = 1
             beta = 0.5
 
             x_c, y_c = [c / 2 for c in omega]
 
             dm = beta * linear.randomgen_linear_by_taste(1, taste, (x_c, y_c))
-            svf_0 = gen.generate_from_matrix(omega, dm, structure='algebra')
+            svf_0 = gen.generate_from_matrix(omega[::-1], dm, structure='algebra')
             sdisp_0 = l_exp.gss_aei(svf_0)
 
         elif params['deformation_model'] == 'gauss':
 
-            svf_0 = gen.generate_random(omega, 1, (20, 2))
+            svf_0 = gen.generate_random(omega[::-1], 1, (20, 2))
             # svf_0 = svf_0[0:omega[0], 1:omega[1], ...]
             sdisp_0 = l_exp.scaling_and_squaring(svf_0)
 

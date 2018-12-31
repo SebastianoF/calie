@@ -37,7 +37,7 @@ if __name__ == '__main__':
     params = {'deformation_model'    : 'rotation',
               'integrate_with_scipy' : False,
               'integration_side'     : 'coronal',
-              'field_of_view_side'   : (0.15, 0.15, 0.25)}
+              'field_of_view_side'   : (0.15, 0.10, 0.25)}
 
     # more parameters and initialisations:
 
@@ -169,9 +169,6 @@ if __name__ == '__main__':
             pickle.dump(svf_0, f)
 
         # --- get integral curves and save ---
-
-        # Second method, way faster! It is based on the algebraic
-        # manipulation of the input svf_0 and on the flow field.
 
         int_curves = []
 
