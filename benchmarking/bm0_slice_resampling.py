@@ -33,7 +33,7 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'translation',
+    params = {'deformation_model'    : 'rotation',
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 
         if params['integrate_with_scipy']:
             # The first method is a very slow point-wise one.
-            # Compare it with the second one to see how quicker it can be to use the flows.
+            # Compare it with the second one to see the benefits of the flow approach.
             t0, t1 = 0, 1
             dt = (t1 - t0) / float(num_steps_integrations)
 
@@ -219,14 +219,11 @@ if __name__ == '__main__':
             with open(pfi_int_curves, 'wb') as f:
                 pickle.dump(int_curves, f)
 
-        # get resampled images and save:
+        # get warped (resampled) images for each time-step and save:
         for st in range(num_steps_integrations):
             alpha = -1 * (st + 1) / float(num_steps_integrations)
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)
-
-            # coronal_slice_resampled_st = coronal_slice_resampled_st
-
             pfi_coronal_slice_resampled_st = jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1))
             scipy.misc.toimage(coronal_slice_resampled_st).save(pfi_coronal_slice_resampled_st)
 
