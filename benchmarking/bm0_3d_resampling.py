@@ -34,9 +34,9 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'rotation',
+    params = {'deformation_model'    : 'translation',
               'integrate_with_scipy' : False,
-              'integration_side'     : 'coronal',
+              'integration_side'     : 'coronal',  # Can be axial, sagittal, coronal
               'field_of_view_side'   : (0.15, 0.10, 0.25)}
 
     # more parameters and initialisations:
@@ -59,12 +59,14 @@ if __name__ == '__main__':
     pfi_skull_stripped = jph(pfo_output_A1_3d, '{}_T1W_brain.nii.gz'.format(subject_id))
     pfi_slab = jph(pfo_output_A1_3d, '{}_slab.nii.gz'.format(subject_id))
     pfi_int_curves = jph(pfo_output_A1_3d, 'int_curves_new.pickle')
-    pfi_svf0 = jph(pfo_output_A1_3d, 'svf_0.pickle')
+    pfi_svf0 = jph(pfo_output_A1_3d, 'svf_0.nii.gz')
 
-    if params['deformation_model'] in {'translation', 'rotation', 'linear'} :
-        sampling_svf = (10, 10)
+    if params['deformation_model'] in {'translation'}:
+        sampling_svf = (12, 12, 12)
+    elif params['deformation_model'] in {'rotation', 'linear'} :
+        sampling_svf = (10, 10, 10)
     elif params['deformation_model'] == 'gauss':
-        sampling_svf = (5, 5)
+        sampling_svf = (5, 5, 5)
     else:
         raise IOError
 
@@ -101,7 +103,6 @@ if __name__ == '__main__':
         new_data = im_slab.get_data()[x_lim[0]:x_lim[1], y_lim[0]:y_lim[1], z_lim[0]:z_lim[1]]
 
         im_slab = utils_nib.set_new_data(im_slab, new_data)
-
         nib.save(im_slab, pfi_slab)
 
     else:
@@ -117,12 +118,19 @@ if __name__ == '__main__':
         im_slab = nib.load(pfi_slab)
         omega = im_slab.shape
 
+        print('Shape of the input image: {}'.format(omega))
+
         # -> transformation model <- #
         if params['deformation_model'] == 'translation':
             svf_0 = np.zeros(list(omega) + [1, 3])
-            svf_0[..., 0] = 10
-            svf_0[..., 1] = 0
+            svf_0[..., 0] = 0
+            svf_0[..., 1] = 12
             svf_0[..., 2] = 0
+
+            # identify origin - set the origin corner to zero and the opposite and the right to ones:
+            # svf_0[0:4, 0:4, 0:4, 0, :] = np.zeros_like(svf_0[0:4, 0:4, 0:4, 0, :])
+            # svf_0[-4:, -4:, -4:, 0, :] = np.ones_like(svf_0[-4:, -4:, -4:, 0, :])
+            # svf_0[-4:, 0:4, 0:4, 0, :] = 2 * np.ones_like(svf_0[-4:, 0:4, 0:4, 0, :])
 
         elif params['deformation_model'] == 'rotation':
 
@@ -164,33 +172,34 @@ if __name__ == '__main__':
         else:
             raise IOError
 
-        # save svf:
-        with open(pfi_svf0, 'wb') as f:
-            pickle.dump(svf_0, f)
+        # save svf as nifti image:
+        im_svf0 = utils_nib.set_new_data(im_slab, svf_0)
+        nib.save(im_svf0, pfi_svf0)
+        print('shape of vector field: {}'.format(im_svf0.shape))
 
         # --- get integral curves and save ---
 
-        int_curves = []
-
-        for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
-            for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                int_curves.append(np.array([[i, j]]))
-
-        for st in range(num_steps_integrations):
-            print('integrating step {}/{}'.format(st+1, num_steps_integrations))
-            alpha = (st + 1) / float(num_steps_integrations)
-            sdisp_0 = l_exp.gss_aei(alpha * svf_0)
-
-            sdisp_0 = coord.lagrangian_to_eulerian(sdisp_0)
-
-            ind_ij = 0
-            for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
-                for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                    int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, h_dist, 0, :][:2]])
-                    ind_ij += 1
-
-        with open(pfi_int_curves, 'wb') as f:
-            pickle.dump(int_curves, f)
+        # int_curves = []
+        #
+        # for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
+        #     for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
+        #         int_curves.append(np.array([[i, j]]))
+        #
+        # for st in range(num_steps_integrations):
+        #     print('integrating step {}/{}'.format(st+1, num_steps_integrations))
+        #     alpha = (st + 1) / float(num_steps_integrations)
+        #     sdisp_0 = l_exp.gss_aei(alpha * svf_0)
+        #
+        #     sdisp_0 = coord.lagrangian_to_eulerian(sdisp_0)
+        #
+        #     ind_ij = 0
+        #     for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
+        #         for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
+        #             int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, h_dist, 0, :][:2]])
+        #             ind_ij += 1
+        #
+        # with open(pfi_int_curves, 'wb') as f:
+        #     pickle.dump(int_curves, f)
 
         # get resampled images and save:
         for st in range(num_steps_integrations):
@@ -215,65 +224,64 @@ if __name__ == '__main__':
     # ---------- SHOW ------------------------------------
     # ----------------------------------------------------
 
-    if control['show_results']:
-        pylab.close('all')
-
-        # load slab
-        im_slab = nib.load(pfi_slab)
-        # load svf
-        with open(pfi_svf0, 'rb') as f:
-            svf_0 = pickle.load(f)
-        # load latest transformed
-        pfi_slab_resampled_last = jph(
-            pfo_output_A1_3d, '{}_slab_step_{}.nii.gz'.format(subject_id, num_steps_integrations)
-        )
-        im_slab_resampled = nib.load(pfi_slab_resampled_last)
-        # load integral curves
-        with open(pfi_int_curves, 'rb') as f:
-            int_curves = pickle.load(f)
-
-        # visualise it in the triptych
-        triptych.volume_quiver_volume(im_slab.get_data(),
-                                      svf_0,
-                                      im_slab_resampled.get_data(),
-                                      sampling_svf=sampling_svf,
-                                      fig_tag=2, h_slice=0, integral_curves=int_curves)
-
-        pylab.show(block=True)
-
-    if control['make_video']:
-        # load slice
-        im_slab = nib.load(pfi_slab)
-        # load svf
-        with open(pfi_svf0, 'rb') as f:
-            svf_0 = pickle.load(f)
-        # load integral curves
-        with open(pfi_int_curves, 'rb') as f:
-            int_curves = pickle.load(f)
-
-        # -- Produce images --
-        for st in range(num_steps_integrations):
-
-            pylab.close('all')
-
-            pfi_slab_resampled = jph(pfo_output_A1_3d, '{}_slab_step_{}.nii.gz'.format(subject_id, st + 1))
-            im_slab_resampled = nib.load(pfi_slab_resampled)
-
-            int_curves_step = [ic[:st+1, :] for ic in int_curves]
-
-            triptych.volume_quiver_volume(im_slab.get_data(),
-                                          svf_0,
-                                          im_slab_resampled.get_data(),
-                                          sampling_svf=sampling_svf,
-                                          fig_tag=2,
-                                          h_slice=0,
-                                          integral_curves=int_curves_step)
-
-            pylab.savefig(
-                jph(pfo_output_A1_3d, 'final_{}_sj_{}_step_{}.jpg'.format(
-                    params['deformation_model'], subject_id, st+1)
-                    )
-            )
+    # if control['show_results']:
+    #     pylab.close('all')
+    #
+    #     # load slab
+    #     im_slab = nib.load(pfi_slab)
+    #     # load svf
+    #     svf_0 = nib.load(pfi_svf0)
+    #     # load latest transformed
+    #     pfi_slab_resampled_last = jph(
+    #         pfo_output_A1_3d, '{}_slab_step_{}.nii.gz'.format(subject_id, num_steps_integrations)
+    #     )
+    #     im_slab_resampled = nib.load(pfi_slab_resampled_last)
+    #     # load integral curves
+    #     with open(pfi_int_curves, 'rb') as f:
+    #         int_curves = pickle.load(f)
+    #
+    #     # visualise it in the triptych
+    #     triptych.volume_quiver_volume(im_slab.get_data(),
+    #                                   svf_0,
+    #                                   im_slab_resampled.get_data(),
+    #                                   sampling_svf=sampling_svf,
+    #                                   fig_tag=2, h_slice=0, integral_curves=int_curves)
+    #
+    #     pylab.show(block=True)
+    #
+    # if control['make_video']:
+    #     # load slice
+    #     im_slab = nib.load(pfi_slab)
+    #     # load svf
+    #     with open(pfi_svf0, 'rb') as f:
+    #         svf_0 = pickle.load(f)
+    #     # load integral curves
+    #     with open(pfi_int_curves, 'rb') as f:
+    #         int_curves = pickle.load(f)
+    #
+    #     # -- Produce images --
+    #     for st in range(num_steps_integrations):
+    #
+    #         pylab.close('all')
+    #
+    #         pfi_slab_resampled = jph(pfo_output_A1_3d, '{}_slab_step_{}.nii.gz'.format(subject_id, st + 1))
+    #         im_slab_resampled = nib.load(pfi_slab_resampled)
+    #
+    #         int_curves_step = [ic[:st+1, :] for ic in int_curves]
+    #
+    #         triptych.volume_quiver_volume(im_slab.get_data(),
+    #                                       svf_0,
+    #                                       im_slab_resampled.get_data(),
+    #                                       sampling_svf=sampling_svf,
+    #                                       fig_tag=2,
+    #                                       h_slice=0,
+    #                                       integral_curves=int_curves_step)
+    #
+    #         pylab.savefig(
+    #             jph(pfo_output_A1_3d, 'final_{}_sj_{}_step_{}.jpg'.format(
+    #                 params['deformation_model'], subject_id, st+1)
+    #                 )
+    #         )
 
         # -- produce video --
         # manually with: ffmpeg -r 2 -i final_sj_BW38_step_%01d.jpg -vcodec gif -y movie.gif
