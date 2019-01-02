@@ -8,14 +8,15 @@ Code development
 - test 100% fields.matrices and auxiliaries
 - test Jacobians
 - test Lie brackets
+- test transformations.linear
 
 New features
 - add log-composition
-- add Bossa Algorithm for the log function
-- add agents and facade for the design pattern
-- add well behaved homographies, with reasoned input and test
+- Bossa Algorithm for the log function
+- bump function,
+- agents and facade for the design pattern
+- well behaved homographies, with reasoned input and test
 - add 3d homographies and special euclidean group (see rodriguez formula)
-- add latex documentation with guided formulas and examples (jupyter notebook?)
+- add latex documentation with guided formulas and examples (independent from the code)
 - time varying velocity fields (add 4d vector fields and related solver)
-- First release here (after 90% test).
-- Visualisation, split components (vf and scalar fields in functions acting on axis).
+- Test 90%, then first release 1.0.0 here!!

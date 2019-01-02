@@ -114,7 +114,6 @@ if __name__ == '__main__':
         # Parts are: vector field, list of resampled images and integral curves for increasing steps
 
         # --- generate rotational vector field same dimension of the given image, centered at the image centre
-
         im_slab = nib.load(pfi_slab)
         omega = im_slab.shape
 
@@ -179,6 +178,7 @@ if __name__ == '__main__':
 
         # --- get integral curves and save ---
 
+        # TODO visualisation of integral curves in 2d projection for the given integration_side param.
         # int_curves = []
         #
         # for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
