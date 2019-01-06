@@ -10,15 +10,14 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.fields import generate as gen
 from VECtorsToolkit.fields import queries as qr
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
-from benchmarking.b_path_manager import pfo_output_A4_SE2
+from benchmarking.b_path_manager import pfo_output_A4_GAU
 
 """
-Module for the computation of a dataset of 2d SVF generated with matrix of se2_a.
+Module for the computation of a dataset of 3d gaussian generated with gaussian filters matrices.
 It compares computational time and error for the exponential computation with different methods and time steps.
 """
 
@@ -28,10 +27,11 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : False,
-               'compute_exps'     : False,
-               'get_statistics'   : False,
-               'show_graphs'      : True}
+    control = {'generate_dataset'   : True,
+               'compute_exps'       : False,
+               'visualise_selected' : False,
+               'get_statistics'     : False,
+               'show_graphs'        : False}
 
     # parameters:
 
@@ -44,17 +44,15 @@ if __name__ == '__main__':
         omega = (x_1, y_1, z_1)
 
     centre_delta = (5, 5, 5)
-    max_angle = np.pi / 8
 
     params.update({'experiment id'   : 'ex1'})
     params.update({'omega'           : omega})
+    params.update({'sigma_init'      : 1})
+    params.update({'sigma_filter'    : 1})
+    params.update({'selected_ground' : 'rk4'})
     params.update({'passepartout'    : 5})
-    params.update({'max_angle'       : max_angle})
     params.update({'centre_delta'    : centre_delta})
-    params.update({'interval_theta'  : (- max_angle, max_angle)})
     params.update({'epsilon'         : np.pi / 12})
-    params.update({'interval_center' : (int(omega[0] / 2 - centre_delta[0]), int(omega[0] / 2 + centre_delta[0]),
-                                        int(omega[1] / 2 - centre_delta[1]), int(omega[1] / 2 + centre_delta[1]))})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 0})
     params.update({'num_samples'     : 50})
@@ -62,11 +60,11 @@ if __name__ == '__main__':
 
     # Path manager
 
-    print("\nPath to results folder {}\n".format(pfo_output_A4_SE2))
+    print("\nPath to results folder {}\n".format(pfo_output_A4_GAU))
 
-    ########################
-    #   Generate dataset   #
-    ########################
+    ####################
+    # Generate dataset #
+    ####################
 
     if control['generate_dataset']:
 
@@ -74,27 +72,18 @@ if __name__ == '__main__':
             np.random.seed(params['random_seed'])
 
         print('--------------------------------------------------------------------------')
-        print('Generating dataset SE2! filename: se2-<s>-<algebra/group>.npy j = 1,...,N ')
+        print('Generating dataset GAU! filename: gau-<s>-<algebra/group>.npy j = 1,...,N ')
         print('--------------------------------------------------------------------------')
 
         for s in range(params['num_samples']):  # sample s
 
-            # generate matrices
-            m_0 = se2.se2g_randomgen_custom_center(interval_theta=params['interval_theta'],
-                                                   interval_center=params['interval_center'],
-                                                   epsilon_zero_avoidance=params['epsilon'])
-            dm_0 = se2.se2g_log(m_0)
-
             # Generate SVF
-            svf1 = gen.generate_from_matrix(omega, dm_0.get_matrix, t=1, structure='algebra')
-            flow1_ground = gen.generate_from_matrix(omega, m_0.get_matrix, t=1, structure='group')
 
-            print('\nSampling ' + str(s + 1) + '/' + str(params['num_samples']) + '.')
-            print('theta, tx, ty =    ' + str(m_0.get))
-            print('dtheta, dtx, dty = ' + str(dm_0.get))
+            svf1         = gen.generate_random(omega, 1, (params['sigma_init'], params['sigma_filter']))
+            flow1_ground = methods[params['selected_ground']][0](svf1)
 
-            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
-            pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
+            pfi_svf0 = jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1))
+            pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))
 
             np.save(pfi_svf0, svf1)
             np.save(pfi_flow, flow1_ground)
@@ -109,8 +98,8 @@ if __name__ == '__main__':
     else:
 
         for s in range(params['num_samples']):
-            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
-            pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
+            pfi_svf0 = jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1))
+            pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))
             assert os.path.exists(pfi_svf0), pfi_svf0
             assert os.path.exists(pfi_flow), pfi_flow
 
@@ -119,7 +108,7 @@ if __name__ == '__main__':
     ############################
 
     print('--------------------------------------------------------------------------')
-    print('Compute exponentials SE2! filename: se2-<method>-STEPS_<steps>.csv        ')
+    print('Compute exponentials GAU! filename: gau-<method>-STEPS_<steps>.csv        ')
     print('--------------------------------------------------------------------------')
 
     if control['compute_exps']:
@@ -139,8 +128,8 @@ if __name__ == '__main__':
 
                 for s in range(params['num_samples']):
 
-                    pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
-                    pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
+                    pfi_svf0 = jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1))
+                    pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))
 
                     svf1         = np.load(pfi_svf0)
                     flow1_ground = np.load(pfi_flow)
@@ -162,7 +151,7 @@ if __name__ == '__main__':
 
                 # save pandas df in csv
                 print(df_time_error)
-                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_GAU, 'gau-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error.to_csv(pfi_df_time_error)
 
     else:
@@ -170,7 +159,7 @@ if __name__ == '__main__':
         # assert pandas dataframes exists
         for method_name in [k for k in methods.keys() if methods[k][1]]:
             for st in params['steps']:
-                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_GAU, 'gau-{}-steps-{}.csv'.format(method_name, st))
                 assert os.path.exists(pfi_df_time_error), pfi_df_time_error
 
     ##################
@@ -181,7 +170,7 @@ if __name__ == '__main__':
 
         # for each method get mean and std indexed by num-steps.
         # | steps | mu_error | sigma_error | mu_time | sigma_error |
-        # in a file called se2-stats-<method>.csv
+        # in a file called gau-stats-<method>.csv
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
@@ -195,7 +184,7 @@ if __name__ == '__main__':
 
                 print('\n Steps {}'.format(st))
 
-                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_GAU, 'gau-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error = pd.read_csv(pfi_df_time_error)
 
                 df_mean_std['steps'][st_index] = st
@@ -206,13 +195,13 @@ if __name__ == '__main__':
                 df_mean_std['mu_error'][st_index]  = df_time_error['error (mm)'].mean()
                 df_mean_std['std_error'][st_index] = df_time_error['error (mm)'].std()
 
-            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_GAU, 'gau-stats-{}.csv'.format(method_name))
             df_mean_std.to_csv(pfi_df_mean_std)
 
     else:
 
         for method_name in [k for k in methods.keys() if methods[k][1]][:1]:
-            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_GAU, 'gau-stats-{}.csv'.format(method_name))
             assert os.path.exists(pfi_df_mean_std), pfi_df_mean_std
 
     ###############
@@ -229,11 +218,11 @@ if __name__ == '__main__':
 
         fig, ax = plt.subplots(figsize=(7, 7))
 
-        fig.canvas.set_window_title('se2_times_vs_errors.pdf')
+        fig.canvas.set_window_title('gau_times_vs_errors.pdf')
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
-            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_GAU, 'gau-stats-{}.csv'.format(method_name))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
             ax.plot(df_mean_std['mu_time'].values,
@@ -264,7 +253,7 @@ if __name__ == '__main__':
         # ax.set_xscale('log', nonposy='clip')
         # ax.set_yscale('log', nonposy='clip')
 
-        pfi_figure_time_vs_error = jph(pfo_output_A4_SE2, 'graph_time_vs_error.pdf')
+        pfi_figure_time_vs_error = jph(pfo_output_A4_GAU, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)
 
         plt.show(block=True)

@@ -5,6 +5,8 @@ from VECtorsToolkit.operations import lie_exp
 
 spline_interpolation_order = 3
 
+steps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30]
+
 l_exp = lie_exp.LieExp()
 l_exp.s_i_o = spline_interpolation_order
 

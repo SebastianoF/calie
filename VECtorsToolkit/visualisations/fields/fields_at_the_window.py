@@ -1,5 +1,9 @@
 import copy
 
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib
+import numpy as np
+
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 
@@ -391,6 +395,116 @@ def see_2_fields(input_obj_0, input_obj_1,
 
     fig.set_tight_layout(True)
 
+
+def quiver_3d(svf, flow=None, sample=(1, 1, 1), scale=1):
+
+    omega_svf  = qr.check_is_vf(svf)
+    omega_flow = qr.check_is_vf(flow)
+
+    np.testing.assert_array_equal(omega_flow, omega_svf)
+
+    id_field = gen_id.id_eulerian_like(svf)
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    x = id_field[::sample[0], ::sample[1], ::sample[2], 0, 0]
+    y = id_field[::sample[0], ::sample[1], ::sample[2], 0, 1]
+    z = id_field[::sample[0], ::sample[1], ::sample[2], 0, 2]
+
+    x = x.reshape(np.product(x.shape))
+    y = y.reshape(np.product(y.shape))
+    z = z.reshape(np.product(z.shape))
+
+    svf_x = svf[::sample[0], ::sample[1], ::sample[2], 0, 0]
+    svf_y = svf[::sample[0], ::sample[1], ::sample[2], 0, 1]
+    svf_z = svf[::sample[0], ::sample[1], ::sample[2], 0, 2]
+
+    svf_x = svf_x.reshape(np.product(svf_x.shape))
+    svf_y = svf_y.reshape(np.product(svf_y.shape))
+    svf_z = svf_z.reshape(np.product(svf_z.shape))
+
+    lengths = scale * np.sqrt(svf_x ** 2 + svf_y ** 2 + svf_z ** 2)
+
+    for x1, y1, z1, u1, v1, w1, l in zip(x, y, z, svf_x, svf_y, svf_z, lengths):
+        ax.quiver(x1, y1, z1, u1, v1, w1, pivot='tail', length=l, color='r', linewidths=0.1)
+
+    if flow is not None:
+        flow_x = flow[::sample[0], ::sample[1], ::sample[2], 0, 0]
+        flow_y = flow[::sample[0], ::sample[1], ::sample[2], 0, 1]
+        flow_z = flow[::sample[0], ::sample[1], ::sample[2], 0, 2]
+
+        flow_x = flow_x.reshape(np.product(flow_x.shape))
+        flow_y = flow_y.reshape(np.product(flow_y.shape))
+        flow_z = flow_z.reshape(np.product(flow_z.shape))
+
+        lengthsflow = scale * np.sqrt(svf_x ** 2 + svf_y ** 2 + svf_z ** 2)
+
+        for x1, y1, z1, u1, v1, w1, l in zip(x, y, z, flow_x, flow_y, flow_z, lengthsflow):
+            ax.quiver(x1, y1, z1, u1, v1, w1, pivot='tail', length=l, color='b', linewidths=0.1)
+
+
+if __name__ == '__main__':
+
+    import scipy
+
+    from VECtorsToolkit.transformations import linear
+    from VECtorsToolkit.fields import generate as gen
+    from VECtorsToolkit.operations import lie_exp
+
+    # --- Linear example
+
+    beta = 0.1
+    omega = (10, 12, 13)
+
+    # generate matrix
+    dm1 = beta * linear.randomgen_linear_by_taste(1, 1, [int(c / 2) for c in omega])
+    m1 = scipy.linalg.expm(dm1)
+
+    # generate SVF
+    svf1 = gen.generate_from_matrix(omega, dm1, t=1, structure='algebra')
+    flow1_ground = gen.generate_from_matrix(omega, m1, t=1, structure='group')
+
+    quiver_3d(svf1, flow1_ground)
+
+    plt.show(block=False)
+
+    # --- Gaussian example
+
+    # generate SVF
+    svf1 = gen.generate_random(omega, 1, (1, 1))
+
+    l_exp = lie_exp.LieExp()
+    l_exp.s_i_o = 3
+    flow1_ground = l_exp.gss_aei(svf1)
+
+    quiver_3d(svf1, flow1_ground)
+
+    plt.show(block=True)
+
+    #
+    #
+    # fig = plt.figure()
+    # ax = fig.gca(projection='3d')
+    #
+    # x, y, z = np.meshgrid(np.arange(-1, 1, 0.4),
+    #                       np.arange(-1, 1, 0.4),
+    #                       np.arange(-1, 1, 0.4))
+    # x = x.reshape(np.product(x.shape))
+    # y = y.reshape(np.product(y.shape))
+    # z = z.reshape(np.product(z.shape))
+    #
+    # scale_ = 0.02
+    # u = np.sin(np.pi * x) * np.cos(np.pi * y) * np.cos(np.pi * z)
+    # v = -np.cos(np.pi * x) * np.sin(np.pi * y) * np.cos(np.pi * z)
+    # w = np.sqrt(2.0 / 3.0) * np.cos(np.pi * x) * np.cos(np.pi * y) * np.sin(np.pi * z)
+    # lengths = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+    #
+    # for x1, y1, z1, u1, v1, w1, l in zip(x, y, z, u, v, w, lengths):
+    #     ax.quiver(x1, y1, z1, u1, v1, w1, pivot='tail', length=l * 0.5)
+    #
+    # # ax.scatter(x, y, z, color='black')
+    # plt.show()
 
 
 
