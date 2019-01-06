@@ -20,8 +20,6 @@ from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 if __name__ == '__main__':
 
-    # TODO BUG yet unsolved coordinates problem when resampling with a scalar field
-
     # ----------------------------------------------------
     # ----------  SET UP ---------------------------------
     # ----------------------------------------------------
@@ -221,6 +219,7 @@ if __name__ == '__main__':
 
         # get warped (resampled) images for each time-step and save:
         for st in range(num_steps_integrations):
+            # this is a possible option to address the right-left difference in 2D:
             alpha = -1 * (st + 1) / float(num_steps_integrations)
             sdisp_0 = l_exp.gss_aei(alpha * svf_0)
             coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)

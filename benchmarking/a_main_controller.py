@@ -24,4 +24,5 @@ methods = [[l_exp.scaling_and_squaring,   True,    7,    'b',      '-',     '+',
            [l_exp.trapezoid_midpoint,     True,    10,   'y',     '--',     'x', []],
            [l_exp.gss_trapezoid_euler,    True,    10,   'y',     '--',     'x', []],
            [l_exp.gss_trapezoid_midpoint, True,    10,   'y',     '--',     'x', []],
-           [l_exp.scipy_pointwise,        True,     7,   'r',     '--',     '.', ['vode', 'lsoda']]]
+           [l_exp.scipy_pointwise,        True,     7,   'r',     '--',     '.', ['vode']],
+           [l_exp.scipy_pointwise,        True,     7,   'r',     '--',     '.', ['lsoda']]]
