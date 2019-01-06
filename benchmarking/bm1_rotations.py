@@ -1,19 +1,20 @@
 import os
-import pickle
 import time
 from os.path import join as jph
+from collections import OrderedDict
 
 import pandas as pd
 import numpy as np
+import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
 
 from VECtorsToolkit.transformations import se2
 from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.operations import lie_exp
 from VECtorsToolkit.fields import queries as qr
 
-from benchmarking.a_main_controller import methods
+from benchmarking.a_main_controller import methods, spline_interpolation_order
 from benchmarking.b_path_manager import pfo_output_A4_SE2
 
 """
@@ -25,38 +26,41 @@ steps defined by the user.
 
 if __name__ == '__main__':
 
+    clear_cache()
+
     # controller
 
-    control = {'generate_dataset' : True,
-               'compute_exps'     : True,
+    control = {'generate_dataset' : False,
+               'compute_exps'     : False,
+               'get_statistics'   : False,
                'show_graphs'      : True}
 
     # parameters:
 
-    x_1, y_1, z_1 = 20, 20, 5
+    params = OrderedDict()
 
+    x_1, y_1, z_1 = 50, 50, 50
     if z_1 == 1:
         omega = (x_1, y_1)
     else:
         omega = (x_1, y_1, z_1)
 
-    kind = 'SE2'
-    number = 'multiple'
-    tag = '_' + str(1)
-
-    passepartout = 5
-    max_angle = np.pi / 8
     centre_delta = (5, 5, 5)
-    interval_theta = (- max_angle, max_angle)
-    epsilon = np.pi / 12
-    interval_center = (int(omega[0] / 2 - centre_delta[0]), int(omega[0] / 2 + centre_delta[0]),
-                       int(omega[1] / 2 - centre_delta[1]), int(omega[1] / 2 + centre_delta[1]))
+    max_angle = np.pi / 8
 
-    random_seed = 0
-
-    s_i_o = 3  # spline interpolation order
-
-    N = 50
+    params.update({'experiment id'   : 'ex1'})
+    params.update({'omega'           : omega})
+    params.update({'passepartout'    : 5})
+    params.update({'max_angle'       : max_angle})
+    params.update({'centre_delta'    : centre_delta})
+    params.update({'interval_theta'  : (- max_angle, max_angle)})
+    params.update({'epsilon'         : np.pi / 12})
+    params.update({'interval_center' : (int(omega[0] / 2 - centre_delta[0]), int(omega[0] / 2 + centre_delta[0]),
+                                        int(omega[1] / 2 - centre_delta[1]), int(omega[1] / 2 + centre_delta[1]))})
+    params.update({'sio'             : spline_interpolation_order})
+    params.update({'random_seed'     : 0})
+    params.update({'num_samples'     : 50})
+    params.update({'steps'           : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30]})
 
     # Path manager
 
@@ -68,31 +72,31 @@ if __name__ == '__main__':
 
     if control['generate_dataset']:
 
-        if random_seed > 0:
-            np.random.seed(random_seed)
+        if params['random_seed'] > 0:
+            np.random.seed(params['random_seed'])
 
-        print('----------------------------------------------------------')
-        print('Generating dataset SE2! filename: se2_<s>_<algebra/group>.npy j = 1,...,N ')
-        print('----------------------------------------------------------')
+        print('--------------------------------------------------------------------------')
+        print('Generating dataset SE2! filename: se2-<s>-<algebra/group>.npy j = 1,...,N ')
+        print('--------------------------------------------------------------------------')
 
-        for s in range(N):  # sample
+        for s in range(params['num_samples']):  # sample s
 
             # generate matrices
-            m_0 = se2.se2g_randomgen_custom_center(interval_theta=interval_theta, interval_center=interval_center,
-                                                   epsilon_zero_avoidance=epsilon)
+            m_0 = se2.se2g_randomgen_custom_center(interval_theta=params['interval_theta'],
+                                                   interval_center=params['interval_center'],
+                                                   epsilon_zero_avoidance=params['epsilon'])
             dm_0 = se2.se2g_log(m_0)
 
             # Generate SVF
             svf1 = gen.generate_from_matrix(omega, dm_0.get_matrix, t=1, structure='algebra')
             flow1_ground = gen.generate_from_matrix(omega, m_0.get_matrix, t=1, structure='group')
 
-            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2_{}_algebra.npy'.format(s))
-            pfi_flow = jph(pfo_output_A4_SE2, 'se2_{}_group.npy'.format(s))
-
-            print('Sampling ' + str(s + 1) + '/' + str(N) + ' .')
+            print('\nSampling ' + str(s + 1) + '/' + str(params['num_samples']) + '.')
             print('theta, tx, ty =    ' + str(m_0.get))
             print('dtheta, dtx, dty = ' + str(dm_0.get))
 
+            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
+            pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
 
             np.save(pfi_svf0, svf1)
             np.save(pfi_flow, flow1_ground)
@@ -106,170 +110,163 @@ if __name__ == '__main__':
 
     else:
 
-        for s in range(N):
-            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2_{}_algebra.npy'.format(s + 1))
-            pfi_flow = jph(pfo_output_A4_SE2, 'se2_{}_group.npy'.format(s + 1))
+        for s in range(params['num_samples']):
+            pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
+            pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
             assert os.path.exists(pfi_svf0), pfi_svf0
             assert os.path.exists(pfi_flow), pfi_flow
 
+    ############################
+    #   Compute exponentials   #
+    ############################
+
+    print('--------------------------------------------------------------------------')
+    print('Compute exponentials SE2! filename: se2-<method>-STEPS_<steps>.csv        ')
+    print('--------------------------------------------------------------------------')
+
     if control['compute_exps']:
 
-        for exp_method in
-        errors = np.zeros([num_method_considered, N])  # Row: method, col: sampling
-        res_time = np.zeros([num_method_considered, N])  # Row: method, col: sampling
+        for method_name in [k for k in methods.keys() if methods[k][1]]:
 
-        for s in range(N):  # sample
-            pass
+            for st in params['steps']:
 
-        for m in range(num_method_considered):  # method
-            if names_method_considered[m] == 'vode' or names_method_considered[m] == 'lsoda':
-                start = time.time()
-                disp_computed = lie_exponential_scipy(svf_0, integrator=names_method_considered[m],
-                                                      max_steps=steps_methods_considered[m])
-                res_time[m] = (time.time() - start)
+                print('\n Computing method {} for steps {}'.format(method_name, st))
 
-            else:
-                start = time.time()
-                disp_computed = lie_exponential(svf_0, algorithm=names_method_considered[m], s_i_o=s_i_o,
-                                                input_num_steps=steps_methods_considered[m])
-                res_time[m, s] = (time.time() - start)
+                exp_method = methods[method_name][0]
+                sub_method = methods[method_name][6]
 
-            # compute error:
-            errors[m, s] = vf_norm(disp_computed - disp_ground, passe_partout_size=pp, normalized=True)
+                # initialise pandas df
+                df_time_error = pd.DataFrame(columns=['subject', 'time (sec)', 'error (mm)'],
+                                             index=range(params['num_samples']))
 
-            results_by_column = [[met, err, tim]
-                                 for met, err, tim
-                                 in zip(names_method_considered, list(errors[:, s]), list(res_time[:, s]))]
+                for s in range(params['num_samples']):
 
-            print('--------------------')
-            print('Sampling ' + str(s + 1) + '/' + str(N) + ' .')
-            print('--------------------')
-            print('theta, tx, ty =    ' + str(m_0.get))
-            print('dtheta, dtx, dty = ' + str(dm_0.get))
-            print('--------------------')
-            print('--------------------')
+                    pfi_svf0 = jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1))
+                    pfi_flow = jph(pfo_output_A4_SE2, 'se2-{}-group.npy'.format(s + 1))
 
-    ### Save data to folder ###
-    np.save(pfi_array_errors_output, errors)
-    np.save(pfi_array_comp_time_output, res_time)
+                    svf1         = np.load(pfi_svf0)
+                    flow1_ground = np.load(pfi_flow)
 
-    with open(pfi_transformation_parameters, 'wb') as f:
-        pickle.dump(parameters, f)
+                    if methods[method_name][6]:
+                        raise IOError('TODO for point-wise methods differentiate vode, lsoda')
 
-    with open(pfi_numerical_method_table, 'wb') as f:
-        pickle.dump(methods, f)
+                    # compute exponetial with time:
+                    start = time.time()
+                    disp_computed = exp_method(svf1, input_num_steps=st)
+                    stop = (time.time() - start)
+
+                    # compute error:
+                    error = qr.norm(disp_computed - flow1_ground, passe_partout_size=params['passepartout'], normalized=True)
+
+                    df_time_error['subject'][s] = 'sj{}'.format(s+1)
+                    df_time_error['time (sec)'][s] = stop
+                    df_time_error['error (mm)'][s] = error
+
+                # save pandas df in csv
+                print(df_time_error)
+                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                df_time_error.to_csv(pfi_df_time_error)
 
     else:
-        pass
 
+        # assert pandas dataframes exists
+        for method_name in [k for k in methods.keys() if methods[k][1]]:
+            for st in params['steps']:
+                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                assert os.path.exists(pfi_df_time_error), pfi_df_time_error
 
-    ###############################
-    # Plot parameters and methods #
-    ###############################
+    ##################
+    # get statistics #
+    ##################
 
-    if verbose:
-        print('Error-bar and time for multiple se2 generated SVF')
-        print
-        '-------------------------------------------------'
+    if control['get_statistics']:
 
-        print
-        '\nParameters of the transformation se2:'
-        print
-        'Number of samples = ' + str(parameters[3])
-        print
-        'domain = ' + str(parameters[:3])
-        print
-        'interval theta = ' + str(parameters[4:6])
-        print
-        'Omega, interval tx, ty = ' + str(parameters[6:])
+        # for each method get mean and std indexed by num-steps.
+        # | steps | mu_error | sigma_error | mu_time | sigma_error |
+        # in a file called se2-stats-<method>.csv
 
-        print
-        '\n'
-        print
-        'Methods and parameters:'
-        print
-        tabulate(methods,
-                 headers=['name', 'compute (True/False)', 'num_steps'])
-        print
-        '\n'
+        for method_name in [k for k in methods.keys() if methods[k][1]]:
 
-        print
-        'List of the methods considered:'
-        print
-        names_method_considered
-        print
-        'List of the steps of the methods considered'
-        print
-        steps_methods_considered
+            print('------------------------------------------------')
+            print('\n Statistics for method {} '.format(method_name))
 
-    ################################
-    # Visualization and statistics #
-    ################################
+            df_mean_std = pd.DataFrame(columns=['steps', 'mu_time', 'std_time', 'mu_error', 'std_error'],
+                                       index=range(len(params['steps'])))
 
-    mean_errors = np.mean(errors, axis=1)
-    mean_res_time = np.mean(res_time, axis=1)
+            for st_index, st in enumerate(params['steps']):
 
-    print
-    mean_errors
-    print
-    len(mean_errors)
+                print('\n Steps {}'.format(st))
 
-    results_by_column = [[met, err, tim]
-                         for met, err, tim in zip(names_method_considered, list(mean_errors), list(mean_res_time))]
+                pfi_df_time_error = jph(pfo_output_A4_SE2, 'se2-{}-steps-{}.csv'.format(method_name, st))
+                df_time_error = pd.read_csv(pfi_df_time_error)
 
-    print
-    '\n'
-    print
-    'Results and computational time:'
-    print
-    tabulate(results_by_column,
-             headers=['method', 'mean error', 'mean comp. time (sec)'])
-    print
-    '\n END'
+                df_mean_std['steps'][st_index] = st
 
-    # plot results
-    if plot_results:
+                df_mean_std['mu_time'][st_index]  = df_time_error['time (sec)'].mean()
+                df_mean_std['std_time'][st_index] = df_time_error['time (sec)'].std()
 
-        reordered_errors_for_plot = []
-        reordered_times_for_plot = []
-        for m in range(errors.shape[0]):
-            reordered_errors_for_plot += [list(errors[m, :])]
-            reordered_times_for_plot += [list(res_time[m, :])]
+                df_mean_std['mu_error'][st_index]  = df_time_error['error (mm)'].mean()
+                df_mean_std['std_error'][st_index] = df_time_error['error (mm)'].std()
 
-        # BOXPLOT custom
+            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            df_mean_std.to_csv(pfi_df_mean_std)
 
-        plot_custom_boxplot(input_data=reordered_errors_for_plot,
-                            input_names=names_method_considered,
-                            fig_tag=11,
-                            input_titles=('Error exponential map for multiple SE2-generated svf', 'field'),
-                            kind='multiple_SE2',
-                            window_title_input='bar_plot_multiple_se2',
-                            additional_field=None,
-                            log_scale=False,
-                            input_parameters=parameters,
+    else:
 
-                            annotate_mean=True,
-                            add_extra_annotation=mean_res_time)
+        for method_name in [k for k in methods.keys() if methods[k][1]][:1]:
+            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            assert os.path.exists(pfi_df_mean_std), pfi_df_mean_std
 
-        # SCATTER-PLOT custom
+    ###############
+    # show graphs #
+    ###############
 
-        plot_custom_cluster(reordered_errors_for_plot, reordered_times_for_plot,
-                            fig_tag=22,
-                            clusters_labels=names_method_considered,
-                            clusters_colors=colour_methods_considered,
-                            clusters_markers=markers_methods_considered)
+    if control['show_graphs']:
 
-        plt.show()
+        font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
+        font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
+        legend_prop = {'size': 12}
 
-    ### Save figures in external folder ###
+        sns.set_style()
 
-    if save_external:
-        os.system('mkdir -p {}'.format(pfo_notes_figures))
-        # Save table csv
-        # np.savetxt(pfi_csv_table_errors_output, errors, delimiter=" & ")
-        # np.savetxt(pfi_csv_table_comp_time_output, errors, delimiter=" & ")
-        # Save image:
-        plt.savefig(pfi_figure_output, format='pdf', dpi=400)
-        print
-        'Figure ' + fin_figure_output + ' saved in the external folder ' + str(pfi_figure_output)
+        fig, ax = plt.subplots(figsize=(7, 7))
 
+        fig.canvas.set_window_title('se2_times_vs_errors.pdf')
+
+        for method_name in [k for k in methods.keys() if methods[k][1]]:
+
+            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            df_mean_std = pd.read_csv(pfi_df_mean_std)
+
+            ax.plot(df_mean_std['mu_time'].values,
+                    df_mean_std['mu_error'].values,
+                    label=method_name,
+                    color=methods[method_name][3],
+                    linestyle=methods[method_name][4],
+                    marker=methods[method_name][5])
+
+            for i in df_mean_std.index:
+                el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
+                                      df_mean_std['std_time'][i], df_mean_std['std_error'][i],
+                                      angle=0,
+                                      alpha=0.2,
+                                      color=methods[method_name][3],
+                                      linewidth=None)
+                ax.add_artist(el)
+
+        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.legend(loc='upper right', shadow=True, prop=legend_prop)
+
+        ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
+        ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
+        ax.set_axisbelow(True)
+
+        ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
+        ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
+        # ax.set_xscale('log', nonposy='clip')
+        # ax.set_yscale('log', nonposy='clip')
+
+        pfi_figure_time_vs_error = jph(pfo_output_A4_SE2, 'graph_time_vs_error.pdf')
+        plt.savefig(pfi_figure_time_vs_error, dpi=150)
+
+        plt.show(block=True)
