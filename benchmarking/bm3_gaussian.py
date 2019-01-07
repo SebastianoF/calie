@@ -27,10 +27,9 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : True,
-               'compute_exps'       : False,
-               'visualise_selected' : False,
-               'get_statistics'     : False,
+    control = {'generate_dataset'   : False,
+               'compute_exps'       : True,
+               'get_statistics'     : True,
                'show_graphs'        : False}
 
     # parameters:
@@ -52,7 +51,6 @@ if __name__ == '__main__':
     params.update({'selected_ground' : 'rk4'})
     params.update({'passepartout'    : 5})
     params.update({'centre_delta'    : centre_delta})
-    params.update({'epsilon'         : np.pi / 12})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 0})
     params.update({'num_samples'     : 50})
