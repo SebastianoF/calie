@@ -12,8 +12,11 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.fields import generate as gen
+from nilabels.tools.aux_methods.utils import print_and_run
+from nilabels.tools.aux_methods.utils_nib import set_new_data
+
 from VECtorsToolkit.fields import queries as qr
+from VECtorsToolkit.fields import coordinate as coord
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_BW, pfo_brainweb
@@ -30,10 +33,15 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : False,
-               'compute_exps'       : False,
-               'get_statistics'     : False,
-               'show_graphs'        : False}
+    control = {'generate_dataset'   : True,
+                   'generate_dataset_skul_strip' : False,
+                   'generate_dataset_aff'        : False,
+                   'generate_dataset_nrig'       : True,
+                   'generate_dataset_get_svf'    : True,
+                   'generate_dataset_get_exp'    : True,
+               'compute_exps'       : True,
+               'get_statistics'     : True,
+               'show_graphs'        : True}
 
     # parameters:
 
@@ -69,97 +77,139 @@ if __name__ == '__main__':
 
     if control['generate_dataset']:
 
-        print('--------------------------------------------------------------------------')
-        print('Generating dataset BW! filename: bw-<s>-<algebra/group>.npy j = 1,...,N ')
-        print('--------------------------------------------------------------------------')
+        print('---------------------------------------------------------------------------')
+        print('Generating dataset BW! filename: bw-<s>-<algebra/group>.npy sj in BrainWeb ')
+        print('---------------------------------------------------------------------------')
 
         # prepare dataset to obtain 38 realistic svf
         # for each subject, skull strip and save with their masks
+        # and then register all to one (target_sj) with the brain tissue mask.
 
-        # and then register all to one (BW04) with the brain tissue mask.
+        if control['generate_dataset_skul_strip']:
 
-        # register all non-rigidly to BW04 and then all non-rigidly to BW05. The 38 obtained SVF are saved and
-        # used in the next steps.
+            for sj in params['subjects']:
+                print('--------------------------------------------------')
+                print('Extract masks and skull-strip, sj {} \n'.format(sj))
 
-        print('Extract masks and skull-strip')
-        for sj in params['subjects']:
+                pfi_input_T1W   = jph(pfo_brainweb, 'A_nifti', 'BW' + sj, 'BW{}_T1W.nii.gz'.format(sj))
+                pfi_input_crisp = jph(pfo_brainweb, 'A_nifti', 'BW' + sj, 'BW{}_CRISP.nii.gz'.format(sj))
 
-            pfi_input_T1W   = jph(pfo_brainweb, 'A_nifti', sj, 'BW{}_T1W.nii.gz'.format(sj))
-            pfi_input_crisp = jph(pfo_brainweb, 'A_nifti', sj, 'BW{}_CRISP.nii.gz'.format(sj))
+                assert os.path.exists(pfi_input_T1W), pfi_input_T1W
+                assert os.path.exists(pfi_input_crisp), pfi_input_crisp
 
-            assert os.path.exists(pfi_input_T1W), pfi_input_T1W
-            assert os.path.exists(pfi_input_crisp), pfi_input_crisp
+                pfi_skull_stripped    = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
+                pfi_brain_tissue_mask = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
 
-            pfi_skull_stripped    = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
-            pfi_brain_tissue_mask = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
+                # get mask with only the selected label_brain
+                nis_app = nis.App()
+                nis_app.manipulate_labels.assign_all_other_labels_the_same_value(
+                    pfi_input_crisp, pfi_brain_tissue_mask, labels_brain_to_keep, 0
+                )
+                nis_app.manipulate_labels.relabel(
+                    pfi_brain_tissue_mask, pfi_brain_tissue_mask, labels_brain_to_keep, [1, ] * len(labels_brain_to_keep)
+                )
 
-            # get mask with only the selected label_brain
-            nis_app = nis.App()
-            nis_app.manipulate_labels.assign_all_other_labels_the_same_value(
-                pfi_input_crisp, pfi_brain_tissue_mask, labels_brain_to_keep, 0
-            )
-            nis_app.manipulate_labels.relabel(
-                pfi_brain_tissue_mask, pfi_brain_tissue_mask, labels_brain_to_keep, [1, ] * len(labels_brain_to_keep)
-            )
-
-            # skull strip
-            nis_app.math.prod(pfi_brain_tissue_mask, pfi_input_T1W, pfi_skull_stripped)
+                # skull strip
+                nis_app.math.prod(pfi_brain_tissue_mask, pfi_input_T1W, pfi_skull_stripped)
 
         pfi_T1W_fixed = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(params['target_sj']))
         pfi_mask_fixed = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(params['target_sj']))
 
-        print('Affine registration to target')
+        if control['generate_dataset_aff']:
 
-        for sj in set(params['subjects']) - {params['target_sj']}:
+            for sj in set(params['subjects']) - {params['target_sj']}:
+                print('--------------------------------------------------')
+                print('Affine registration to target, sj {} \n'.format(sj))
 
-            pfi_T1W_moving  = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
-            pfi_mask_moving = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
+                pfi_T1W_moving  = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
+                pfi_mask_moving = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
 
-            pfi_moving_on_target = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp.nii.gz'.format(sj, params['target_sj']))
-            pfi_moving_on_target_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_aff.txt'.format(sj, params['target_sj']))
-            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -speeeeed '.format(
-                pfi_T1W_fixed, pfi_mask_fixed, pfi_T1W_moving, pfi_mask_moving, pfi_moving_on_target, pfi_moving_on_target_aff
-            )
-            os.system(cmd)
+                assert os.path.exists(pfi_T1W_moving), pfi_T1W_moving
+                assert os.path.exists(pfi_mask_moving), pfi_mask_moving
 
-            pfi_moving_on_target_mask = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}.nii.gz'.format(sj, params['target_sj']))
+                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_aff.nii.gz'.format(sj, params['target_sj']))
+                pfi_moving_on_target_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_aff.txt'.format(sj, params['target_sj']))
+                cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -speeeeed '.format(
+                    pfi_T1W_fixed, pfi_mask_fixed, pfi_T1W_moving, pfi_mask_moving, pfi_moving_on_target_warp_aff, pfi_moving_on_target_aff
+                )
+                print_and_run(cmd)
 
-            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
-                pfi_T1W_fixed, pfi_mask_moving, pfi_moving_on_target_aff, pfi_moving_on_target_mask
-            )
-            os.system(cmd)
+                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}_aff.nii.gz'.format(sj, params['target_sj']))
 
-        print('Non-rigid registration to target')
+                cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
+                    pfi_T1W_fixed, pfi_mask_moving, pfi_moving_on_target_aff, pfi_moving_on_target_mask_aff
+                )
+                print_and_run(cmd)
 
-        for sj in set(params['subjects']) - {params['target_sj']}:
-            pfi_moving_on_target = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp.nii.gz'.format(sj, params['target_sj']))
-            pfi_moving_on_target_mask = jph(pfo_output_A4_BW,
-                                            'BW{}_brain_mask_on_BW{}.nii.gz'.format(sj, params['target_sj']))
+        if control['generate_dataset_nrig']:
 
-            assert os.path.exists(pfi_moving_on_target)
-            assert os.path.exists(pfi_moving_on_target_mask)
+            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+                print('--------------------------------------------------')
+                print('Non-rigid registration to target, sj {} \n'.format(sj))
 
-            pfi_cpp
-            pfi_
+                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_aff.nii.gz'.format(sj, params['target_sj']))
+                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}_aff.nii.gz'.format(sj, params['target_sj']))
 
+                assert os.path.exists(pfi_moving_on_target_warp_aff), pfi_moving_on_target_warp_aff
+                assert os.path.exists(pfi_moving_on_target_mask_aff), pfi_moving_on_target_mask_aff
 
-        print('Exponentiate the obtained SVF')
-        for sj in params['subjects']:
+                pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
+                pfi_moving_on_target_nrig = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_nrig.nii.gz'.format(sj, params['target_sj']))
 
-            pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz')
-            im_svf1 = nib.load(pfi_svf1)
+                cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} ' \
+                      '-cpp {4} -res {5} -vel '.format(
+                            pfi_T1W_fixed, pfi_mask_fixed, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
+                            pfi_cpp, pfi_moving_on_target_nrig
+                        )
+                print_and_run(cmd)
 
-            svf1 = im_svf1.get_data()
-            flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
+        if control['generate_dataset_get_svf']:
 
-            pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj + 1))
-            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj + 1))
+            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+                print('--------------------------------------------------')
+                print('Get the svf from cpp, sj {}\n'.format(sj))
 
-            np.save(pfi_svf0, svf1)
-            np.save(pfi_flow, flow1_ground)
+                pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
+                assert os.path.exists(pfi_cpp), pfi_cpp
 
-            print('svf saved in {}'.format(pfi_svf0))
-            print('flow (dummy ground truth) saved in {}'.format(pfi_flow))
+                pfi_svf1_eul = jph(pfo_output_A4_BW, 'pre_svf-{}.nii.gz'.format(sj))
+                pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
+
+                cmd = 'reg_transform -ref {0} -flow {1} {2}'.format(
+                    pfi_T1W_fixed, pfi_cpp, pfi_svf1_eul
+                )
+                print_and_run(cmd)
+
+                # go in Lagrangian coordinates.
+                im_sfv1_eul = nib.load(pfi_svf1_eul)
+
+                data_svf1_lag = coord.eulerian_to_lagrangian(im_sfv1_eul.get_data())
+
+                im_svf_lag = set_new_data(im_sfv1_eul, data_svf1_lag)
+
+                nib.save(im_svf_lag, pfi_svf1)
+
+        if control['generate_dataset_get_exp']:
+
+            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+                print('--------------------------------------------------')
+                print('Exponentiate the obtained SVF, sj {}'.format(sj))
+
+                pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
+                assert os.path.exists(pfi_svf1)
+                im_svf1 = nib.load(pfi_svf1)
+
+                svf1 = im_svf1.get_data()
+                flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
+
+                pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
+                pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
+
+                np.save(pfi_svf1, svf1)
+                np.save(pfi_flow, flow1_ground)
+
+                print('svf saved in {}'.format(pfi_svf1))
+                print('flow (dummy ground truth) saved in {}'.format(pfi_flow))
 
         print('\n------------------------------------------')
         print('Data computed and saved in external files!')
@@ -167,10 +217,10 @@ if __name__ == '__main__':
 
     else:
 
-        for s in range(params['num_samples']):
-            pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(s + 1))
-            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(s + 1))
-            assert os.path.exists(pfi_svf0), pfi_svf0
+        for sj in set(params['subjects']) - {params['target_sj']}:
+            pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
+            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
+            assert os.path.exists(pfi_svf1), pfi_svf1
             assert os.path.exists(pfi_flow), pfi_flow
 
     ###########################
