@@ -143,7 +143,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_nrig']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+            for sj in set(params['subjects']) - {params['target_sj']}:
                 print('--------------------------------------------------')
                 print('Non-rigid registration to target, sj {} \n'.format(sj))
 
@@ -165,29 +165,29 @@ if __name__ == '__main__':
 
         if control['generate_dataset_get_svf']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+            for sj in set(params['subjects']) - {params['target_sj']}:
                 print('--------------------------------------------------')
                 print('Get the svf from cpp, sj {}\n'.format(sj))
 
                 pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
                 assert os.path.exists(pfi_cpp), pfi_cpp
 
-                pfi_svf1_eul = jph(pfo_output_A4_BW, 'pre_svf-{}.nii.gz'.format(sj))
+                # pfi_svf1_eul = jph(pfo_output_A4_BW, 'pre_svf-{}.nii.gz'.format(sj))
                 pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
 
-                cmd = 'reg_transform -ref {0} -flow {1} {2}'.format(
-                    pfi_T1W_fixed, pfi_cpp, pfi_svf1_eul
+                cmd = 'reg_transform -ref {0} -disp {1} {2}'.format(
+                    pfi_T1W_fixed, pfi_cpp, pfi_svf1
                 )
                 print_and_run(cmd)
-
-                # go in Lagrangian coordinates.
-                im_sfv1_eul = nib.load(pfi_svf1_eul)
-
-                data_svf1_lag = coord.eulerian_to_lagrangian(im_sfv1_eul.get_data())
-
-                im_svf_lag = set_new_data(im_sfv1_eul, data_svf1_lag)
-
-                nib.save(im_svf_lag, pfi_svf1)
+                #
+                # # go in Lagrangian coordinates.
+                # im_sfv1_eul = nib.load(pfi_svf1_eul)
+                #
+                # data_svf1_lag = coord.eulerian_to_lagrangian(im_sfv1_eul.get_data())
+                #
+                # im_svf_lag = set_new_data(im_sfv1_eul, data_svf1_lag)
+                #
+                # nib.save(im_svf_lag, pfi_svf1)
 
         if control['generate_dataset_get_exp']:
 
