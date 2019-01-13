@@ -30,9 +30,9 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset' : False,
-               'compute_exps'     : True,
-               'get_statistics'   : False,
-               'show_graphs'      : False}
+               'compute_exps'     : False,
+               'get_statistics'   : True,
+               'show_graphs'      : True}
 
     # parameters:
 
@@ -250,7 +250,7 @@ if __name__ == '__main__':
                                       linewidth=None)
                 ax.add_artist(el)
 
-        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.set_title('Time error for GL(2)', fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
@@ -259,8 +259,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposy='clip')
-        # ax.set_yscale('log', nonposy='clip')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_GL2, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

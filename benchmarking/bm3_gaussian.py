@@ -27,10 +27,10 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : False,
+    control = {'generate_dataset'   : True,
                'compute_exps'       : True,
                'get_statistics'     : True,
-               'show_graphs'        : False}
+               'show_graphs'        : True}
 
     # parameters:
 
@@ -49,6 +49,7 @@ if __name__ == '__main__':
     params.update({'sigma_init'      : 1})
     params.update({'sigma_filter'    : 1})
     params.update({'selected_ground' : 'rk4'})
+    params.update({'selected_n_steps': 7})
     params.update({'passepartout'    : 5})
     params.update({'centre_delta'    : centre_delta})
     params.update({'sio'             : spline_interpolation_order})
@@ -78,7 +79,7 @@ if __name__ == '__main__':
             # Generate SVF
 
             svf1         = gen.generate_random(omega, 1, (params['sigma_init'], params['sigma_filter']))
-            flow1_ground = methods[params['selected_ground']][0](svf1)
+            flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
 
             pfi_svf0 = jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1))
             pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))
@@ -105,11 +106,11 @@ if __name__ == '__main__':
     #   Compute exponentials   #
     ############################
 
-    print('--------------------------------------------------------------------------')
-    print('Compute exponentials GAU! filename: gau-<method>-STEPS_<steps>.csv        ')
-    print('--------------------------------------------------------------------------')
-
     if control['compute_exps']:
+
+        print('--------------------------------------------------------------------------')
+        print('Compute exponentials GAU! filename: gau-<method>-STEPS_<steps>.csv        ')
+        print('--------------------------------------------------------------------------')
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
@@ -127,7 +128,7 @@ if __name__ == '__main__':
                 for s in range(params['num_samples']):
 
                     pfi_svf0 = jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1))
-                    pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))
+                    pfi_flow = jph(pfo_output_A4_GAU, 'gau-{}-group.npy'.format(s + 1))  # Ground truth
 
                     svf1         = np.load(pfi_svf0)
                     flow1_ground = np.load(pfi_flow)
@@ -208,6 +209,10 @@ if __name__ == '__main__':
 
     if control['show_graphs']:
 
+        print('--------------------------------------------------------------------------')
+        print(' Showing figure                                                           ')
+        print('--------------------------------------------------------------------------')
+
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
         legend_prop = {'size': 12}
@@ -239,7 +244,7 @@ if __name__ == '__main__':
                                       linewidth=None)
                 ax.add_artist(el)
 
-        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.set_title('Time error for GAU', fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
@@ -248,8 +253,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposy='clip')
-        # ax.set_yscale('log', nonposy='clip')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_GAU, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

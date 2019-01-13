@@ -39,6 +39,33 @@ class Pgl2A(object):
             return s
 
 
+def randomgen_pgl2a(d=2, scale_factor=None, sigma=1.0, special=False):
+    """
+    Generate a random element in the projective linear algebra
+    :param d:
+    :param scale_factor:
+    :param sigma:
+    :param special:
+    :return:
+    """
+    random_h = sigma * np.random.randn(d+1,  d+1)
+
+    if scale_factor is not None:
+        random_h = scale_factor * random_h
+
+    if special:
+        random_h[0, 0] = -1 * np.sum(np.diagonal(random_h)[1:])
+
+    return Pgl2A(d=d, m=random_h, special=special)
+
+
+def pgl2a_exp(pgl2a):
+    return Pgl2G(pgl2a.dim, linalg.expm(pgl2a.matrix), special=pgl2a.special)
+
+
+""" Lie Group """
+
+
 class Pgl2G(object):
     """
     Real projective general/special linear Lie group of dimension 2.
@@ -61,7 +88,7 @@ class Pgl2G(object):
 
     shape = property(shape)
 
-    def centered_matrix(self, c):
+    def centering(self, c):
         """
         :param c: center = np.array([x_c, y_c])
         Returns: the matrix correspondent to self, centered in c. Non destructive over c.
@@ -91,42 +118,10 @@ class Pgl2G(object):
         :param c:
         :return:
         """
-        return Pgl2G(d=self.dim, m=self.centered_matrix(c))
-
-    def centering(self, c):
-        """
-        destructive, center the given homography to the given center
-        :param c:
-        :return:
-        """
-        self.matrix = self.centered_matrix(c)
+        return Pgl2G(d=self.dim, m=self.centering(c))
 
 
-def randomgen_Pgl2A(d=2, scale_factor=None, sigma=1.0, special=False):
-    """
-    Generate a random element in the projective linear algebra
-    :param d:
-    :param scale_factor:
-    :param sigma:
-    :param special:
-    :return:
-    """
-    random_h = sigma*np.random.randn(d+1,  d+1)
-
-    if scale_factor is not None:
-        random_h = scale_factor * random_h
-
-    if special:
-        random_h[0, 0] = -1 * np.sum(np.diagonal(random_h)[1:])
-
-    return Pgl2A(d=d, m=random_h, special=special)
-
-
-def Pgl2A_exp(pgl2a):
-    return Pgl2G(pgl2a.dim, linalg.expm(pgl2a.matrix), special=pgl2a.special)
-
-
-def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
+def randomgen_pgl2g(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
     """
     H = [A, T; B, 1]
     :param d:
@@ -146,7 +141,7 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
         random_h = scale_factor * random_h
 
     if center is not None:
-        random_h = Pgl2G(d=d, m=random_h).centered_matrix(center)
+        random_h = Pgl2G(d=d, m=random_h).centering(center)
 
     if special:
         random_h[0, 0] = -1 * np.sum(np.diagonal(random_h)[1:])
@@ -156,14 +151,14 @@ def randomgen_Pgl2G(d=2, center=None, scale_factor=None, sigma=1.0, special=Fals
     return Pgl2G(d=d, m=random_h, special=special)
 
 
-def pgl2a_log(pgl2g):
+def pgl2g_log(pgl2g):
     return Pgl2A(pgl2g.dim, np.copy(linalg.logm(pgl2g.matrix)), special=pgl2g.special)
 
 
 def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special=False, get_as_matrix=False,
                          random_kind='diag'):
     """
-
+    To create a 'well behaved' homography
     :param d:
     :param center:
     :param scale_factor:
@@ -173,7 +168,7 @@ def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special
     :param random_kind:
     :return:
     """
-    h_g = randomgen_Pgl2G(d=d, center=center, scale_factor=scale_factor, sigma=sigma, special=special)
+    h_g = randomgen_pgl2g(d=d, center=center, scale_factor=scale_factor, sigma=sigma, special=special)
     h_g_matrix = h_g.matrix
     if len(center) == 2:
         center = center + [1]
@@ -217,11 +212,73 @@ def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special
 
         h_g_matrix[2, 2] = 1
     else:
-        pass
+        raise IOError
 
-    h_a = pgl2a_log(h_g)
+    h_a = pgl2g_log(h_g)
 
     if get_as_matrix:
         return h_g.matrix, h_a.matrix
     else:
         return h_g, h_a
+
+
+def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False):
+    """
+    :param d: dimension of the homography in pgl by default or in psl
+    :param center: center of the homography, if any
+    :param scale_factor: scale factor of the homography
+    :param sigma: sigma for the random values of the initial matrix.
+    :param special: if the homography is in psl (True) or in pgl (False, default)
+    :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
+    """
+
+    h_a = randomgen_pgl2a(d=d, scale_factor=scale_factor, sigma=sigma, special=special)
+    h_g = pgl2a_exp(h_a)
+
+    return h_a.matrix, h_g.matrix
+
+
+if __name__ == '__main__':
+    # check if the well behaved are really well behaved
+    import matplotlib.pyplot as plt
+    from VECtorsToolkit.fields import generate as gen
+    from VECtorsToolkit.fields import queries as qr
+    from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
+
+    pp = 2  # passepartout
+    s_i_o = 3  # spline interpolation order
+
+    x_1, y_1, z_1 = 51, 51, 1
+
+    in_psl = False
+
+    if z_1 == 1:
+
+        d = 2
+        omega = (x_1, y_1)
+        shape = list(omega) + [1, 1, 2]
+
+        # center of the homography
+        x_c = x_1 / 2
+        y_c = y_1 / 2
+        z_c = 1
+
+        projective_center = [x_c, y_c, z_c]
+
+        # generate matrices homography
+        scale_factor = 15. / (np.max(omega) * 10)
+        hom_attributes = [d, scale_factor, 1.3, in_psl]
+
+        hom_a, hom_g = get_random_hom_a_matrices(d=hom_attributes[0],
+                                                 scale_factor=hom_attributes[1],
+                                                 sigma=hom_attributes[2],
+                                                 special=hom_attributes[3])
+
+        # Generate SVF and flow
+        svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')
+        flow1 = gen.generate_from_matrix(omega, hom_g, t=1, structure='group')
+
+        plt.close()
+        see_field(svf1, fig_tag=1, input_color='r')
+        see_field(flow1, fig_tag=1, input_color='b')
+        plt.show()

@@ -261,8 +261,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposy='clip')
-        # ax.set_yscale('log', nonposy='clip')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_SE2, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

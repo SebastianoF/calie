@@ -28,8 +28,8 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : False,
-               'compute_exps'       : True,
-               'get_statistics'     : True,
+               'compute_exps'       : False,
+               'get_statistics'     : False,
                'show_graphs'        : False}
 
     # parameters:

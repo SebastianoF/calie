@@ -24,8 +24,8 @@ def test_init_pgl_a_good_input():
 
 
 def test_randomgen_pgl_a():
-    m2 = pgl2.randomgen_Pgl2A()
-    m4 = pgl2.randomgen_Pgl2A(d=4)
+    m2 = pgl2.randomgen_pgl2a()
+    m4 = pgl2.randomgen_pgl2a(d=4)
     assert isinstance(m2, pgl2.Pgl2A)
     assert isinstance(m4, pgl2.Pgl2A)
     assert_array_equal(m2.shape, [3, 3])
@@ -33,10 +33,10 @@ def test_randomgen_pgl_a():
 
 
 def test_exponentiate_pgl_a_1():
-    m4_a = pgl2.randomgen_Pgl2A(d=4)
+    m4_a = pgl2.randomgen_pgl2a(d=4)
     m4_m = m4_a.matrix
 
-    exp_of_m4_a = pgl2.Pgl2A_exp(m4_a)
+    exp_of_m4_a = pgl2.pgl2a_exp(m4_a)
     exp_of_m4_m = expm(m4_m)
 
     # check class
@@ -47,10 +47,10 @@ def test_exponentiate_pgl_a_1():
 
 
 def test_exponentiate_pgl_a_2():
-    m6_a = pgl2.randomgen_Pgl2A(d=6)
+    m6_a = pgl2.randomgen_pgl2a(d=6)
     m6_m = m6_a.matrix
 
-    exp_of_m6_a = pgl2.Pgl2A_exp(m6_a)
+    exp_of_m6_a = pgl2.pgl2a_exp(m6_a)
     exp_of_m6_m = expm(m6_m)
 
     # check class and dim
@@ -63,7 +63,7 @@ def test_exponentiate_pgl_a_2():
 
 
 def test_ode_solution_pgl_a_1():
-    m_a = pgl2.randomgen_Pgl2A()
+    m_a = pgl2.randomgen_pgl2a()
     m_m = m_a.matrix
 
     exp_of_m_m = expm(m_m)
@@ -75,7 +75,7 @@ def test_ode_solution_pgl_a_1():
 
 
 def test_ode_solution_pgl_a_2():
-    m_a = pgl2.randomgen_Pgl2A(d=3)
+    m_a = pgl2.randomgen_pgl2a(d=3)
     m_m = m_a.matrix
 
     exp_of_m_m = expm(m_m)
@@ -109,14 +109,14 @@ def test_generated_psl_a_1():
     # special linear algebra element must have trace = 0.
     assert_equal(np.trace(m1.matrix), 0)
     # special linear group element should have det = 1.
-    assert_almost_equal(np.linalg.det(pgl2.Pgl2A_exp(m1).matrix), 1)
+    assert_almost_equal(np.linalg.det(pgl2.pgl2a_exp(m1).matrix), 1)
 
 
 def test_randomgen_psl_a_2():
     dd = 2
-    m1 = pgl2.randomgen_Pgl2A(d=dd, special=True)
+    m1 = pgl2.randomgen_pgl2a(d=dd, special=True)
 
     # special linear algebra element must have trace = 0.
     assert_almost_equal(np.trace(m1.matrix), 0)
     # special linear group element should have det = 1.
-    assert_almost_equal(np.linalg.det(pgl2.Pgl2A_exp(m1).matrix), 1)
+    assert_almost_equal(np.linalg.det(pgl2.pgl2a_exp(m1).matrix), 1)
