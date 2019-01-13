@@ -6,6 +6,8 @@ from collections import OrderedDict
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import nibabel as nib
+import nilabels as nis
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
@@ -17,7 +19,8 @@ from benchmarking.a_main_controller import methods, spline_interpolation_order, 
 from benchmarking.b_path_manager import pfo_output_A4_BW, pfo_brainweb
 
 """
-Module for the computation of a dataset of 3d gaussian generated with gaussian filters matrices.
+Module for the computation of a dataset of 3d SFV generated out of brain-web data-set.
+Cross sectional SVF experiment.
 It compares computational time and error for the exponential computation with different methods and time steps.
 """
 
@@ -47,10 +50,14 @@ if __name__ == '__main__':
     params.update({'experiment id'      : 'ex1'})
     params.update({'subjects'           : ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47',
                                            '48', '49', '50', '51', '52', '53', '54']})
+    params.update({'target_sj'          : '04'})
     params.update({'selected_ground'    : 'rk4'})
+    params.update({'selected_n_steps'   : 7})
     params.update({'passepartout'       : 5})
     params.update({'sio'                : spline_interpolation_order})
     params.update({'steps'              : steps})
+
+    labels_brain_to_keep = [2, 3]  # WM and GM
 
     # Path manager
 
@@ -67,28 +74,92 @@ if __name__ == '__main__':
         print('--------------------------------------------------------------------------')
 
         # prepare dataset to obtain 38 realistic svf
-        # for each subject, skull strip and then register all to one (BW04) with the brain tissue mask.
+        # for each subject, skull strip and save with their masks
+
+        # and then register all to one (BW04) with the brain tissue mask.
 
         # register all non-rigidly to BW04 and then all non-rigidly to BW05. The 38 obtained SVF are saved and
         # used in the next steps.
+
+        print('Extract masks and skull-strip')
         for sj in params['subjects']:
-            pass
 
-        for s in range(params['num_samples']):  # sample s
+            pfi_input_T1W   = jph(pfo_brainweb, 'A_nifti', sj, 'BW{}_T1W.nii.gz'.format(sj))
+            pfi_input_crisp = jph(pfo_brainweb, 'A_nifti', sj, 'BW{}_CRISP.nii.gz'.format(sj))
 
-            # Generate SVF from BrainWeb open dataset - Yuppy! TODO
+            assert os.path.exists(pfi_input_T1W), pfi_input_T1W
+            assert os.path.exists(pfi_input_crisp), pfi_input_crisp
 
-            svf1         = ''  # TODO
-            flow1_ground = methods[params['selected_ground']][0](svf1)
+            pfi_skull_stripped    = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
+            pfi_brain_tissue_mask = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
 
-            pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(s + 1))
-            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(s + 1))
+            # get mask with only the selected label_brain
+            nis_app = nis.App()
+            nis_app.manipulate_labels.assign_all_other_labels_the_same_value(
+                pfi_input_crisp, pfi_brain_tissue_mask, labels_brain_to_keep, 0
+            )
+            nis_app.manipulate_labels.relabel(
+                pfi_brain_tissue_mask, pfi_brain_tissue_mask, labels_brain_to_keep, [1, ] * len(labels_brain_to_keep)
+            )
+
+            # skull strip
+            nis_app.math.prod(pfi_brain_tissue_mask, pfi_input_T1W, pfi_skull_stripped)
+
+        pfi_T1W_fixed = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(params['target_sj']))
+        pfi_mask_fixed = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(params['target_sj']))
+
+        print('Affine registration to target')
+
+        for sj in set(params['subjects']) - {params['target_sj']}:
+
+            pfi_T1W_moving  = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
+            pfi_mask_moving = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
+
+            pfi_moving_on_target = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp.nii.gz'.format(sj, params['target_sj']))
+            pfi_moving_on_target_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_aff.txt'.format(sj, params['target_sj']))
+            cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -speeeeed '.format(
+                pfi_T1W_fixed, pfi_mask_fixed, pfi_T1W_moving, pfi_mask_moving, pfi_moving_on_target, pfi_moving_on_target_aff
+            )
+            os.system(cmd)
+
+            pfi_moving_on_target_mask = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}.nii.gz'.format(sj, params['target_sj']))
+
+            cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
+                pfi_T1W_fixed, pfi_mask_moving, pfi_moving_on_target_aff, pfi_moving_on_target_mask
+            )
+            os.system(cmd)
+
+        print('Non-rigid registration to target')
+
+        for sj in set(params['subjects']) - {params['target_sj']}:
+            pfi_moving_on_target = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp.nii.gz'.format(sj, params['target_sj']))
+            pfi_moving_on_target_mask = jph(pfo_output_A4_BW,
+                                            'BW{}_brain_mask_on_BW{}.nii.gz'.format(sj, params['target_sj']))
+
+            assert os.path.exists(pfi_moving_on_target)
+            assert os.path.exists(pfi_moving_on_target_mask)
+
+            pfi_cpp
+            pfi_
+
+
+        print('Exponentiate the obtained SVF')
+        for sj in params['subjects']:
+
+            pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz')
+            im_svf1 = nib.load(pfi_svf1)
+
+            svf1 = im_svf1.get_data()
+            flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
+
+            pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj + 1))
+            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj + 1))
 
             np.save(pfi_svf0, svf1)
             np.save(pfi_flow, flow1_ground)
 
             print('svf saved in {}'.format(pfi_svf0))
-            print('flow saved in {}'.format(pfi_flow))
+            print('flow (dummy ground truth) saved in {}'.format(pfi_flow))
 
         print('\n------------------------------------------')
         print('Data computed and saved in external files!')
@@ -102,9 +173,9 @@ if __name__ == '__main__':
             assert os.path.exists(pfi_svf0), pfi_svf0
             assert os.path.exists(pfi_flow), pfi_flow
 
-    ############################
-    #   Compute exponentials   #
-    ############################
+    ###########################
+    #   Compute exponentials  #
+    ###########################
 
     print('--------------------------------------------------------------------------')
     print('Compute exponentials GAU! filename: bw-<method>-STEPS_<steps>.csv        ')

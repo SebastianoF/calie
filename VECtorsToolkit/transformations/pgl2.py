@@ -31,6 +31,31 @@ class Pgl2A(object):
 
     shape = property(shape)
 
+    def centering(self, c):
+        """
+        TODO: debug
+        :param c: center = np.array([x_c, y_c])
+        Returns: the matrix correspondent to self, centered in c.
+        """
+        h = self.matrix[:]
+        h_prime = np.zeros_like(self.matrix)
+        d = self.dim
+        if isinstance(c, list):
+            c = np.array(c)
+        # den = one - Bc
+        den = 1 - h[d, :-1].dot(c)
+
+        # A prime
+        h_prime[:-1, :-1] = (h[:-1, :-1] + np.kron(c.reshape(1, 2), h[d, :-1].reshape(2, 1)))/den
+        # B prime
+        h_prime[d, :-1] = (h[d, :-1])/den
+        # T prime
+        h_prime[:-1, 2] = (-(h[:-1, :-1]).dot(c) - h[d, :-1].dot(c) * c + c)/den
+
+        h_prime[d, d] = 1
+
+        self.matrix = h_prime
+
     def ode_solution(self, init_cond=np.array([0, 0, 1]), affine_coordinates=True):
         s = linalg.expm(self.matrix).dot(init_cond)
         if affine_coordinates:
@@ -90,8 +115,9 @@ class Pgl2G(object):
 
     def centering(self, c):
         """
+        TODO: debug
         :param c: center = np.array([x_c, y_c])
-        Returns: the matrix correspondent to self, centered in c. Non destructive over c.
+        Returns: the matrix correspondent to self, centered in c.
         """
         h = self.matrix[:]
         h_prime = np.zeros_like(self.matrix)
@@ -110,15 +136,7 @@ class Pgl2G(object):
 
         h_prime[d, d] = 1
 
-        return h_prime
-
-    def centered(self, c):
-        """
-        Non destructive, provide a new homography as self, translated on c.
-        :param c:
-        :return:
-        """
-        return Pgl2G(d=self.dim, m=self.centering(c))
+        self.matrix = h_prime
 
 
 def randomgen_pgl2g(d=2, center=None, scale_factor=None, sigma=1.0, special=False):
@@ -222,17 +240,21 @@ def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special
         return h_g, h_a
 
 
-def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False):
+def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False, projective_center=None):
     """
     :param d: dimension of the homography in pgl by default or in psl
     :param center: center of the homography, if any
     :param scale_factor: scale factor of the homography
     :param sigma: sigma for the random values of the initial matrix.
     :param special: if the homography is in psl (True) or in pgl (False, default)
+    :param projective_center: center the homography
     :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
     """
 
     h_a = randomgen_pgl2a(d=d, scale_factor=scale_factor, sigma=sigma, special=special)
+    if projective_center is not None:
+        h_a.centering(projective_center)
+
     h_g = pgl2a_exp(h_a)
 
     return h_a.matrix, h_g.matrix
@@ -250,7 +272,7 @@ if __name__ == '__main__':
 
     x_1, y_1, z_1 = 51, 51, 1
 
-    in_psl = False
+    special = False
 
     if z_1 == 1:
 
@@ -263,16 +285,17 @@ if __name__ == '__main__':
         y_c = y_1 / 2
         z_c = 1
 
-        projective_center = [x_c, y_c, z_c]
+        centre_hom = [x_c, y_c]
 
         # generate matrices homography
         scale_factor = 15. / (np.max(omega) * 10)
-        hom_attributes = [d, scale_factor, 1.3, in_psl]
+        hom_attributes = [d, scale_factor, 1.3, special]
 
         hom_a, hom_g = get_random_hom_a_matrices(d=hom_attributes[0],
                                                  scale_factor=hom_attributes[1],
                                                  sigma=hom_attributes[2],
-                                                 special=hom_attributes[3])
+                                                 special=hom_attributes[3],
+                                                 projective_center=None)
 
         # Generate SVF and flow
         svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')
