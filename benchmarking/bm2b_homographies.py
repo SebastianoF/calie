@@ -36,7 +36,7 @@ if __name__ == '__main__':
                'get_statistics'   : True,
                'show_graphs'      : True}
 
-    see_one_and_stop = False
+    see_one_and_stop = True
 
     # parameters:
 
@@ -53,13 +53,13 @@ if __name__ == '__main__':
     params.update({'experiment id'   : 'ex1'})
     params.update({'omega'           : omega})
     params.update({'dim'             : len(omega)})
-    params.update({'scale_factor'    : 15. / (np.max(omega) * 10)})
-    params.update({'sigma'           : 1.3})
+    params.update({'scale_factor'    : 20. / (np.max(omega) * 10)})
+    params.update({'sigma'           : 3})
     params.update({'special'         : False})
     params.update({'passepartout'    : 5})
     params.update({'sio'             : spline_interpolation_order})
-    params.update({'random_seed'     : 0})
-    params.update({'num_samples'     : 50})
+    params.update({'random_seed'     : 24})
+    params.update({'num_samples'     : 1})
     params.update({'steps'           : steps})
 
     # Path manager
@@ -105,7 +105,6 @@ if __name__ == '__main__':
                 see_field(svf1, fig_tag=1, input_color='r')
                 see_field(flow1_ground, fig_tag=1, input_color='b')
                 plt.show()
-                break
 
             np.save(pfi_svf0, svf1)
             np.save(pfi_flow, flow1_ground)

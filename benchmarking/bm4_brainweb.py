@@ -33,12 +33,12 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : True,
-                   'generate_dataset_skul_strip' : False,
-                   'generate_dataset_aff'        : False,
-                   'generate_dataset_nrig'       : True,
-                   'generate_dataset_get_svf'    : True,
-                   'generate_dataset_get_exp'    : True,
+    control = {'generate_dataset'   : False,
+                   'generate_dataset_skull_strip' : True,
+                   'generate_dataset_aff'         : True,
+                   'generate_dataset_nrig'        : True,
+                   'generate_dataset_get_svf'     : True,
+                   'generate_dataset_get_exp'     : True,
                'compute_exps'       : True,
                'get_statistics'     : True,
                'show_graphs'        : True}
@@ -67,6 +67,9 @@ if __name__ == '__main__':
 
     labels_brain_to_keep = [2, 3]  # WM and GM
 
+    subjects_target_excluded = list(set(params['subjects']) - {params['target_sj']})
+    subjects_target_excluded.sort()
+
     # Path manager
 
     print("\nPath to results folder {}\n".format(pfo_output_A4_BW))
@@ -85,7 +88,7 @@ if __name__ == '__main__':
         # for each subject, skull strip and save with their masks
         # and then register all to one (target_sj) with the brain tissue mask.
 
-        if control['generate_dataset_skul_strip']:
+        if control['generate_dataset_skull_strip']:
 
             for sj in params['subjects']:
                 print('--------------------------------------------------')
@@ -117,7 +120,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_aff']:
 
-            for sj in set(params['subjects']) - {params['target_sj']}:
+            for sj in subjects_target_excluded:
                 print('--------------------------------------------------')
                 print('Affine registration to target, sj {} \n'.format(sj))
 
@@ -143,7 +146,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_nrig']:
 
-            for sj in set(params['subjects']) - {params['target_sj']}:
+            for sj in subjects_target_excluded:
                 print('--------------------------------------------------')
                 print('Non-rigid registration to target, sj {} \n'.format(sj))
 
@@ -165,7 +168,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_get_svf']:
 
-            for sj in set(params['subjects']) - {params['target_sj']}:
+            for sj in subjects_target_excluded:
                 print('--------------------------------------------------')
                 print('Get the svf from cpp, sj {}\n'.format(sj))
 
@@ -191,7 +194,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_get_exp']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+            for sj in subjects_target_excluded:
                 print('--------------------------------------------------')
                 print('Exponentiate the obtained SVF, sj {}'.format(sj))
 
@@ -217,7 +220,7 @@ if __name__ == '__main__':
 
     else:
 
-        for sj in set(params['subjects']) - {params['target_sj']}:
+        for sj in subjects_target_excluded:
             pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
             pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
             assert os.path.exists(pfi_svf1), pfi_svf1
@@ -244,12 +247,12 @@ if __name__ == '__main__':
 
                 # initialise pandas df
                 df_time_error = pd.DataFrame(columns=['subject', 'time (sec)', 'error (mm)'],
-                                             index=range(params['num_samples']))
+                                             index=subjects_target_excluded)
 
-                for s in range(params['num_samples']):
+                for sj in subjects_target_excluded:
 
-                    pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(s + 1))
-                    pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(s + 1))
+                    pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
+                    pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
 
                     svf1         = np.load(pfi_svf0)
                     flow1_ground = np.load(pfi_flow)
@@ -265,9 +268,9 @@ if __name__ == '__main__':
                     # compute error:
                     error = qr.norm(disp_computed - flow1_ground, passe_partout_size=params['passepartout'], normalized=True)
 
-                    df_time_error['subject'][s] = 'sj{}'.format(s+1)
-                    df_time_error['time (sec)'][s] = stop
-                    df_time_error['error (mm)'][s] = error
+                    df_time_error['subject'][sj] = 'BW{}'.format(sj)
+                    df_time_error['time (sec)'][sj] = stop
+                    df_time_error['error (mm)'][sj] = error
 
                 # save pandas df in csv
                 print(df_time_error)
@@ -361,7 +364,7 @@ if __name__ == '__main__':
                                       linewidth=None)
                 ax.add_artist(el)
 
-        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.set_title('Time error for BrainWeb cross sectional data', fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)

@@ -90,8 +90,8 @@ if __name__ == '__main__':
                 print('--------------------------------------------------')
                 print('Affine registration to target, sj {} \n'.format(sj))
 
-                pfi_T1W_moving  = jph(pfo_output_A4_BW, 'BW{}_T1W.nii.gz'.format(sj))
-                pfi_mask_moving = jph(pfo_output_A4_BW, 'BW{}_brain_mask.nii.gz'.format(sj))
+                pfi_T1W_moving  = jph(pfo_output_A4_AD, 'BW{}_T1W.nii.gz'.format(sj))  # TODO
+                pfi_mask_moving = jph(pfo_output_A4_AD, 'BW{}_brain_mask.nii.gz'.format(sj))
 
                 assert os.path.exists(pfi_T1W_moving), pfi_T1W_moving
                 assert os.path.exists(pfi_mask_moving), pfi_mask_moving

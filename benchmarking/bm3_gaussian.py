@@ -244,7 +244,7 @@ if __name__ == '__main__':
                                       linewidth=None)
                 ax.add_artist(el)
 
-        ax.set_title('Time error for GAU', fontdict=font_top)
+        ax.set_title('Time error for Gaussians SVF', fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
