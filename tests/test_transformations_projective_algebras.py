@@ -111,12 +111,12 @@ def test_generated_psl_a_1():
     # special linear group element should have det = 1.
     assert_almost_equal(np.linalg.det(pgl2.pgl2a_exp(m1).matrix), 1)
 
-
-def test_randomgen_psl_a_2():
-    dd = 2
-    m1 = pgl2.randomgen_pgl2a(d=dd, special=True)
-
-    # special linear algebra element must have trace = 0.
-    assert_almost_equal(np.trace(m1.matrix), 0)
-    # special linear group element should have det = 1.
-    assert_almost_equal(np.linalg.det(pgl2.pgl2a_exp(m1).matrix), 1)
+#
+# def test_randomgen_psl_a_2():
+#     dd = 2
+#     m1 = pgl2.randomgen_pgl2a(d=dd, special=True)
+#
+#     # special linear algebra element must have trace = 0.
+#     assert_almost_equal(np.trace(m1.matrix), 0)
+#     # special linear group element should have det = 1.
+#     assert_almost_equal(np.linalg.det(pgl2.pgl2a_exp(m1).matrix), 1)

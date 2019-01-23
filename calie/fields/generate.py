@@ -4,6 +4,7 @@ import scipy.ndimage.filters as fil
 from calie.fields import queries as qr
 from calie.fields import coordinate as cs
 from calie.fields import generate_identities as gen_id
+from calie.fields import coordinate as coord
 
 
 def generate_random(omega, t=1, parameters=(5, 2)):
@@ -100,11 +101,11 @@ def generate_from_matrix(omega, input_matrix, t=1, structure='algebra'):
     return vf
 
 
-def generate_from_projective_matrix(omega, input_homography, t=1, structure='algebra'):
+def generate_from_projective_matrix(omega, input_h, t=1, structure='algebra'):
     """
 
     :param omega: domain of the vector field.
-    :param input_homography: matrix representing an element form the homography group.
+    :param input_h: matrix representing an element form the homography group.
     :param t: number of timepoints.
     :param structure: can be 'algebra' or 'group'.
     :return: vector field with the given input parameters.
@@ -114,52 +115,72 @@ def generate_from_projective_matrix(omega, input_homography, t=1, structure='alg
         raise IndexError('Random generator not defined (yet) for multiple time points')
 
     d = qr.check_omega(omega)
-    v_shape = qr.shape_from_omega_and_timepoints(omega, t)
-    vf = np.zeros(v_shape)
-    idd = cs.affine_to_homogeneous(gen_id.id_eulerian(omega))
 
     if structure == 'algebra':
+
         if d == 2:
+
+            idd = gen_id.id_eulerian(omega)
+            vf = gen_id.id_lagrangian(omega)
+
+            idd = coord.affine_to_homogeneous(idd)
+
             x_intervals, y_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
-                    vf[i, j, 0, 0, 0] = input_homography[0, :].dot(idd[i, j, 0, 0, :]) - \
-                                        i * input_homography[2, :].dot(idd[i, j, 0, 0, :])
-                    vf[i, j, 0, 0, 1] = input_homography[1, :].dot(idd[i, j, 0, 0, :]) - \
-                                        j * input_homography[2, :].dot(idd[i, j, 0, 0, :])
+                    vf[i, j, 0, 0, 0] = input_h[0, :].dot(idd[i, j, 0, 0, :]) - i * input_h[2, :].dot(idd[i, j, 0, 0, :])
+                    vf[i, j, 0, 0, 1] = input_h[1, :].dot(idd[i, j, 0, 0, :]) - j * input_h[2, :].dot(idd[i, j, 0, 0, :])
+
+            return vf
+
         elif d == 3:
+
+            idd = gen_id.id_eulerian(omega)
+            vf = gen_id.id_lagrangian(omega)
+
+            idd = coord.affine_to_homogeneous(idd)
+
             x_intervals, y_intervals, z_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
                     for k in range(z_intervals):
-                        vf[i, j, k, 0, 0] = input_homography[0, :].dot(idd[i, j, k, 0, :]) - \
-                                            i * input_homography[3, :].dot(idd[i, j, k, 0, :])
-                        vf[i, j, k, 0, 1] = input_homography[1, :].dot(idd[i, j, k, 0, :]) - \
-                                            j * input_homography[3, :].dot(idd[i, j, k, 0, :])
-                        vf[i, j, k, 0, 2] = input_homography[2, :].dot(idd[i, j, k, 0, :]) - \
-                                            k * input_homography[3, :].dot(idd[i, j, k, 0, :])
+                        vf[i, j, k, 0, 0] = input_h[0, :].dot(idd[i, j, k, 0, :]) - i * input_h[3, :].dot(idd[i, j, k, 0, :])
+                        vf[i, j, k, 0, 1] = input_h[1, :].dot(idd[i, j, k, 0, :]) - j * input_h[3, :].dot(idd[i, j, k, 0, :])
+                        vf[i, j, k, 0, 2] = input_h[2, :].dot(idd[i, j, k, 0, :]) - k * input_h[3, :].dot(idd[i, j, k, 0, :])
+
+            return vf
+
     elif structure == 'group':
+
         if d == 2:
+
+            vf = gen_id.id_lagrangian(omega)
+
             x_intervals, y_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
 
-                    s = input_homography.dot(np.array([i, j, 1]))[:]
+                    s = input_h.dot(np.array([i, j, 1]))[:]
                     if abs(s[2]) > 1e-5:
-                        # subtract the id point-wise to have the result in Lagrangian coordinates
+                        # subtract the id to have the result in displacement coordinates
                         vf[i, j, 0, 0, :] = (s[0:2] / float(s[2])) - np.array([i, j])
 
+            return vf
+
         elif d == 3:
+
+            vf = gen_id.id_lagrangian(omega)
+
             x_intervals, y_intervals, z_intervals = omega
             for i in range(x_intervals):
                 for j in range(y_intervals):
                     for k in range(z_intervals):
 
-                        s = input_homography.dot(np.array([i, j, k, 1]))[:]
+                        s = input_h.dot(np.array([i, j, k, 1]))[:]
                         if abs(s[3]) > 1e-5:
                             vf[i, j, k, 0, :] = (s[0:3] / float(s[3])) - np.array([i, j, k])
 
+            return vf
+
     else:
         raise IOError("structure can be only 'algebra' or 'group' corresponding to the algebraic structure.")
-
-    return vf

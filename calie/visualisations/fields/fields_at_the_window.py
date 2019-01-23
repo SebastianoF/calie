@@ -207,7 +207,9 @@ def see_field(input_vf,
               scale=1,
               subtract_id=False,
               input_color='b',
-              annotate=None, annotate_position=(1, 1)):
+              annotate=None,
+              annotate_position=(1, 1),
+              width=0.03):
 
     qr.check_is_vf(input_vf)
 
@@ -227,7 +229,7 @@ def see_field(input_vf,
                    id_field[::sample[0], ::sample[1], h_slice, 0, 1],
                    input_field_copy[::sample[0], ::sample[1], h_slice, 0, 0],
                    input_field_copy[::sample[0], ::sample[1], h_slice, 0, 1],
-                   color=input_color, linewidths=0.01, width=0.03, scale=scale, scale_units='xy', units='xy',
+                   color=input_color, linewidths=0.01, width=width, scale=scale, scale_units='xy', units='xy',
                    angles='xy')
         ax0.set_xlabel('x')
         ax0.set_ylabel('y')
@@ -237,7 +239,7 @@ def see_field(input_vf,
                    id_field[::sample[0], h_slice, ::sample[1], 0, 1],
                    input_field_copy[::sample[0], h_slice, ::sample[1], 0, 0],
                    input_field_copy[::sample[0], h_slice, ::sample[1], 0, 1],
-                   color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale,
+                   color=input_color, linewidths=0.01, width=width, units='xy', angles='xy', scale=scale,
                    scale_units='xy')
 
     elif anatomical_plane == 'coronal':
@@ -245,7 +247,7 @@ def see_field(input_vf,
                    id_field[h_slice, ::sample[0], ::sample[1], 0, 1],
                    input_field_copy[h_slice, ::sample[0], ::sample[1], 0, 0],
                    input_field_copy[h_slice, ::sample[0], ::sample[1], 0, 1],
-                   color=input_color, linewidths=0.01, width=0.03, units='xy', angles='xy', scale=scale,
+                   color=input_color, linewidths=0.01, width=width, units='xy', angles='xy', scale=scale,
                    scale_units='xy')
     else:
         raise TypeError('Anatomical_plane must be axial, sagittal or coronal')

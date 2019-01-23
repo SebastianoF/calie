@@ -82,10 +82,10 @@ if __name__ == '__main__':
         for s in range(params['num_samples']):  # sample s
 
             # Generate homographies
-            hom_a, hom_g = pgl2.get_random_hom_a_matrices(d=params['dim'],
-                                                          scale_factor=params['scale_factor'],
-                                                          sigma=params['sigma'],
-                                                          special=params['special'])
+            hom_a, hom_g = pgl2.get_random_hom_matrices(d=params['dim'],
+                                                        scale_factor=params['scale_factor'],
+                                                        sigma=params['sigma'],
+                                                        special=params['special'])
 
             # Generate corresponding SVF and flow
             svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')

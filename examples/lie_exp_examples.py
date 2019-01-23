@@ -7,6 +7,7 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 from calie.operations import lie_exp
 from calie.transformations import se2
 from calie.visualisations.fields import fields_comparisons

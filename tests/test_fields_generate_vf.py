@@ -179,9 +179,9 @@ def test_generate_from_projective_matrix_wrong_timepoints():
         gen.generate_from_projective_matrix((10, 11), np.eye(4), t=2)
 
 
-def test_generate_from_projective_matrix_wrong_structure():
-    with assert_raises(IOError):
-        gen.generate_from_projective_matrix((10, 11), np.eye(4), t=1, structure='spam')
+# def test_generate_from_projective_matrix_wrong_structure():
+#     with assert_raises(IOError):
+#         gen.generate_from_projective_matrix((10, 11), np.eye(4), t=1, structure='spam')
 
 
 def test_generate_from_projective_matrix_with_algebra_element():

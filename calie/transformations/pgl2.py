@@ -52,7 +52,7 @@ class Pgl2A(object):
         # T prime
         h_prime[:-1, 2] = (-(h[:-1, :-1]).dot(c) - h[d, :-1].dot(c) * c + c)/den
 
-        h_prime[d, d] = 1
+        h_prime[d, d] = 0
 
         self.matrix = h_prime
 
@@ -80,6 +80,8 @@ def randomgen_pgl2a(d=2, scale_factor=None, sigma=1.0, special=False):
 
     if special:
         random_h[0, 0] = -1 * np.sum(np.diagonal(random_h)[1:])
+
+    random_h[-1, -1] = 0
 
     return Pgl2A(d=d, m=random_h, special=special)
 
@@ -240,7 +242,7 @@ def randomgen_homography(d=2, center=None, scale_factor=None, sigma=1.0, special
         return h_g, h_a
 
 
-def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False, projective_center=None):
+def get_random_hom_matrices(d=2, scale_factor=None, sigma=1.0, special=False, projective_center=None):
     """
     :param d: dimension of the homography in pgl by default or in psl
     :param center: center of the homography, if any
@@ -251,13 +253,21 @@ def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False, 
     :return: [h_g, h_a]random homography (in the GROUP) and the corresponding in the algebra h_g = expm(h_a)
     """
 
-    h_a = randomgen_pgl2a(d=d, scale_factor=scale_factor, sigma=sigma, special=special)
+    h_al = sigma * np.random.randn(d + 1, d + 1)
+
+    if scale_factor is not None:
+        h_al = scale_factor * h_al
+
+    if special:
+        h_al[0, 0] = -1 * np.sum(np.diagonal(h_al)[1:])
+
     if projective_center is not None:
-        h_a.centering(projective_center)
+        # TODO
+        raise IOError('work in progress')
 
-    h_g = pgl2a_exp(h_a)
+    h_gp = linalg.expm(h_al)
 
-    return h_a.matrix, h_g.matrix
+    return h_al, h_gp
 
 
 if __name__ == '__main__':
@@ -291,11 +301,11 @@ if __name__ == '__main__':
         scale_factor = 15. / (np.max(omega) * 10)
         hom_attributes = [d, scale_factor, 1.3, special]
 
-        hom_a, hom_g = get_random_hom_a_matrices(d=hom_attributes[0],
-                                                 scale_factor=hom_attributes[1],
-                                                 sigma=hom_attributes[2],
-                                                 special=hom_attributes[3],
-                                                 projective_center=None)
+        hom_a, hom_g = get_random_hom_matrices(d=hom_attributes[0],
+                                               scale_factor=hom_attributes[1],
+                                               sigma=hom_attributes[2],
+                                               special=hom_attributes[3],
+                                               projective_center=None)
 
         # Generate SVF and flow
         svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')
