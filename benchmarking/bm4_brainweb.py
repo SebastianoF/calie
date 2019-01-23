@@ -32,11 +32,11 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : True,
-                   'generate_dataset_skull_strip' : False,
-                   'generate_dataset_aff'         : False,
-                   'generate_dataset_nrig'        : False,
-                   'generate_dataset_get_svf'     : True,
-                   'generate_dataset_get_exp_svf_group_algebra'     : True,
+                   'generate_dataset_skull_strip'               : False,
+                   'generate_dataset_aff'                       : False,
+                   'generate_dataset_nrig'                      : False,
+                   'generate_dataset_get_svf'                   : False,
+                   'generate_dataset_get_exp_svf_group_algebra' : True,
                'compute_exps'       : True,
                'get_statistics'     : True,
                'show_graphs'        : True}
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     params = OrderedDict()
 
-    y_val = 120  # single slice selected for the computation of the exponential
+    z_val = 73  # single slice selected for the computation of the exponential
 
     params.update({'experiment id'      : 'ex1'})
     params.update({'subjects'           : ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47',
@@ -194,7 +194,16 @@ if __name__ == '__main__':
                 assert os.path.exists(pfi_svf1)
                 im_svf1 = nib.load(pfi_svf1)
 
-                svf1 = im_svf1.get_data()[:, y_val, :]
+                # take only one slice:
+                svf1_3d = im_svf1.get_data()
+                shape = list(svf1_3d.shape)
+                shape[2] = 1
+                shape[-1] = 2
+
+                svf1 = np.zeros(shape)
+                svf1[..., 0, 0, 0] = svf1_3d[:, :, z_val, 0, 0]
+                svf1[..., 0, 0, 1] = svf1_3d[:, :, z_val, 0, 1]
+                svf1
                 flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
 
                 pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
