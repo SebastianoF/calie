@@ -13,8 +13,10 @@ from calie.transformations import se2
 from calie.visualisations.fields import triptych
 from calie.fields import compose as cp
 from calie.fields import coordinate as coord
+
 from calie.operations import lie_exp
 from calie.transformations import linear
+from calie.transformations import pgl2
 from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 
@@ -31,14 +33,15 @@ if __name__ == '__main__':
                'show_results'    : True,
                'make_video'      : True}
 
-    params = {'deformation_model'    : 'rotation',
+    params = {'deformation_model'    : 'homography',
+              # can be: rotation, translation, linear, homography, gauss
               'integrate_with_scipy' : False}
 
     # more parameters and initialisations:
 
-    np.random.seed(42)
+    np.random.seed(1)
 
-    subject_id = 'BW38'
+    subject_id = 'BW38'  # subject to modify
     labels_brain_to_keep = [2, 3]  # WM and GM
     y_slice = 118
     x_lim = [40, -40]
@@ -60,7 +63,7 @@ if __name__ == '__main__':
 
     if params['deformation_model'] in {'translation', 'rotation', 'linear'} :
         sampling_svf = (20, 20)
-    elif params['deformation_model'] == 'gauss':
+    elif params['deformation_model'] in {'gauss', 'homography'}:
         sampling_svf = (10, 10)
     else:
         raise IOError
@@ -132,7 +135,7 @@ if __name__ == '__main__':
             print(dm_0.get_matrix)
 
             # Generate subsequent vector fields
-            sdisp_0 = gen.generate_from_matrix(list(omega)[::-1], m_0.get_matrix, structure='group')
+            flow = gen.generate_from_matrix(list(omega)[::-1], m_0.get_matrix, structure='group')
             svf_0 = gen.generate_from_matrix(list(omega)[::-1], dm_0.get_matrix, structure='algebra')
 
         elif params['deformation_model'] == 'linear':
@@ -144,13 +147,27 @@ if __name__ == '__main__':
 
             dm = beta * linear.randomgen_linear_by_taste(1, taste, (x_c, y_c))
             svf_0 = gen.generate_from_matrix(omega[::-1], dm, structure='algebra')
-            sdisp_0 = l_exp.gss_aei(svf_0)
+            flow = l_exp.gss_aei(svf_0)
+
+        elif params['deformation_model'] == 'homography':
+
+            scale_factor = 1. / (np.max(omega) * 10)
+            special = False
+            hom_attributes = [2, scale_factor, 2, special]
+
+            h_a, h_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
+                                                    scale_factor=hom_attributes[1],
+                                                    sigma=hom_attributes[2],
+                                                    special=hom_attributes[3])
+
+            svf_0 = gen.generate_from_projective_matrix(omega[::-1], h_a, structure='algebra')
+            flow = gen.generate_from_projective_matrix(omega[::-1], h_g, structure='group')
 
         elif params['deformation_model'] == 'gauss':
 
             svf_0 = gen.generate_random(omega[::-1], 1, (20, 2))
             # svf_0 = svf_0[0:omega[0], 1:omega[1], ...]
-            sdisp_0 = l_exp.scaling_and_squaring(svf_0)
+            flow = l_exp.scaling_and_squaring(svf_0)
 
         else:
             raise IOError
@@ -158,6 +175,11 @@ if __name__ == '__main__':
         # save svf:
         with open(pfi_svf0, 'wb') as f:
             pickle.dump(svf_0, f)
+
+        print('Shapes: ')
+        print('shape svf {}'.format(svf_0.shape))
+        print('shape flow {}'.format(flow.shape))
+        print('shape image {}'.format(coronal_slice.shape))
 
         # --- get integral curves and save ---
 
@@ -204,14 +226,14 @@ if __name__ == '__main__':
             for st in range(num_steps_integrations):
                 print('integrating step {}/{}'.format(st+1, num_steps_integrations))
                 alpha = (st + 1) / float(num_steps_integrations)
-                sdisp_0 = l_exp.gss_aei(alpha * svf_0)
+                flow = l_exp.gss_aei(alpha * svf_0)
 
-                sdisp_0 = coord.lagrangian_to_eulerian(sdisp_0)
+                flow = coord.lagrangian_to_eulerian(flow)
 
                 ind_ij = 0
                 for i in range(sampling_svf[0], omega[0] - sampling_svf[0], sampling_svf[0]):
                     for j in range(sampling_svf[1], omega[1] - sampling_svf[1], sampling_svf[1]):
-                        int_curves[ind_ij] = np.vstack([int_curves[ind_ij], sdisp_0[i, j, 0, 0, :]])
+                        int_curves[ind_ij] = np.vstack([int_curves[ind_ij], flow[i, j, 0, 0, :]])
                         ind_ij += 1
 
             with open(pfi_int_curves, 'wb') as f:
@@ -221,8 +243,8 @@ if __name__ == '__main__':
         for st in range(num_steps_integrations):
             # this is a possible option to address the right-left difference in 2D:
             alpha = -1 * (st + 1) / float(num_steps_integrations)
-            sdisp_0 = l_exp.gss_aei(alpha * svf_0)
-            coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, sdisp_0)
+            flow = l_exp.gss_aei(alpha * svf_0)
+            coronal_slice_resampled_st = cp.scalar_dot_lagrangian(coronal_slice, flow)
             pfi_coronal_slice_resampled_st = jph(pfo_output_A1, '{}_coronal_step_{}.jpg'.format(subject_id, st+1))
             scipy.misc.toimage(coronal_slice_resampled_st).save(pfi_coronal_slice_resampled_st)
 
@@ -291,6 +313,8 @@ if __name__ == '__main__':
                     )
             )
 
+        print('video over')
+
         # -- produce video --
         '''
         # manually with: 
@@ -328,4 +352,14 @@ if __name__ == '__main__':
         file 'final_linear5_sj_BW38_step_8.jpg'
         file 'final_linear5_sj_BW38_step_9.jpg'
         file 'final_linear5_sj_BW38_step_10.jpg' 
+        file 'final_homography_sj_BW38_step_1.jpg'
+        file 'final_homography_sj_BW38_step_2.jpg'
+        file 'final_homography_sj_BW38_step_3.jpg'
+        file 'final_homography_sj_BW38_step_4.jpg'
+        file 'final_homography_sj_BW38_step_5.jpg'
+        file 'final_homography_sj_BW38_step_6.jpg'
+        file 'final_homography_sj_BW38_step_7.jpg'
+        file 'final_homography_sj_BW38_step_8.jpg'
+        file 'final_homography_sj_BW38_step_9.jpg'
+        file 'final_homography_sj_BW38_step_10.jpg' 
         '''

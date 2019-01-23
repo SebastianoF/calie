@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     clear_cache()
 
-    random_seed = 5
+    random_seed = 0
 
     if random_seed > 0:
         np.random.seed(random_seed)
@@ -22,8 +22,6 @@ if __name__ == "__main__":
 
     # Parameters SVF:
     x_1, y_1, z_1 = 50, 50, 1
-
-    in_psl = False
 
     if z_1 == 1:
         d = 2
@@ -55,12 +53,13 @@ if __name__ == "__main__":
     print('---------------------')
 
     scale_factor = 1. / (np.max(domain) * 10)
-    hom_attributes = [d, scale_factor, 1, in_psl]
+    special = False
+    hom_attributes = [d, scale_factor, 2, special]
 
-    h_a, h_g = pgl2. get_random_hom_matrices(d=hom_attributes[0],
-                                             scale_factor=hom_attributes[1],
-                                             sigma=hom_attributes[2],
-                                             special=hom_attributes[3])
+    h_a, h_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
+                                            scale_factor=hom_attributes[1],
+                                            sigma=hom_attributes[2],
+                                            special=hom_attributes[3])
 
     svf_0 = gen.generate_from_projective_matrix(domain, h_a, structure='algebra')
     flow = gen.generate_from_projective_matrix(domain, h_g, structure='group')
