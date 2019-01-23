@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
     params = OrderedDict()
 
-    x_1, y_1, z_1 = 50, 50, 50
+    x_1, y_1, z_1 = 50, 50, 1
     if z_1 == 1:
         omega = (x_1, y_1)
     else:
@@ -53,13 +53,10 @@ if __name__ == '__main__':
     params.update({'experiment id'   : 'ex1'})
     params.update({'omega'           : omega})
     params.update({'dim'             : len(omega)})
-    params.update({'scale_factor'    : 20. / (np.max(omega) * 10)})
-    params.update({'sigma'           : 3})
-    params.update({'special'         : False})
     params.update({'passepartout'    : 5})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 24})
-    params.update({'num_samples'     : 1})
+    params.update({'num_samples'     : 50})
     params.update({'steps'           : steps})
 
     # Path manager
@@ -82,10 +79,17 @@ if __name__ == '__main__':
         for s in range(params['num_samples']):  # sample s
 
             # Generate homographies
-            hom_a, hom_g = pgl2.get_random_hom_matrices(d=params['dim'],
-                                                        scale_factor=params['scale_factor'],
-                                                        sigma=params['sigma'],
-                                                        special=params['special'])
+            scale_factor = 1. / (np.max(omega) * 10)
+            special = False
+            hom_attributes = [2, scale_factor, 2, special]
+
+            hom_a, hom_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
+                                                    scale_factor=hom_attributes[1],
+                                                    sigma=hom_attributes[2],
+                                                    special=hom_attributes[3])
+
+            svf_0 = gen.generate_from_projective_matrix(omega, hom_a, structure='algebra')
+            flow = gen.generate_from_projective_matrix(omega, hom_g, structure='group')
 
             # Generate corresponding SVF and flow
             svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')
@@ -99,12 +103,6 @@ if __name__ == '__main__':
 
             pfi_svf0 = jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1))
             pfi_flow = jph(pfo_output_A4_HOM, 'hom-{}-group.npy'.format(s + 1))
-
-            if see_one_and_stop:
-                plt.close()
-                see_field(svf1, fig_tag=1, input_color='r')
-                see_field(flow1_ground, fig_tag=1, input_color='b')
-                plt.show()
 
             np.save(pfi_svf0, svf1)
             np.save(pfi_flow, flow1_ground)

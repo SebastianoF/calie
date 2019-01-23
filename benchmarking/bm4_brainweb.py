@@ -13,10 +13,8 @@ import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
 
 from nilabels.tools.aux_methods.utils import print_and_run
-from nilabels.tools.aux_methods.utils_nib import set_new_data
 
 from calie.fields import queries as qr
-from calie.fields import coordinate as coord
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_BW, pfo_brainweb
@@ -33,12 +31,12 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : False,
-                   'generate_dataset_skull_strip' : True,
-                   'generate_dataset_aff'         : True,
-                   'generate_dataset_nrig'        : True,
+    control = {'generate_dataset'   : True,
+                   'generate_dataset_skull_strip' : False,
+                   'generate_dataset_aff'         : False,
+                   'generate_dataset_nrig'        : False,
                    'generate_dataset_get_svf'     : True,
-                   'generate_dataset_get_exp'     : True,
+                   'generate_dataset_get_exp_svf_group_algebra'     : True,
                'compute_exps'       : True,
                'get_statistics'     : True,
                'show_graphs'        : True}
@@ -47,13 +45,7 @@ if __name__ == '__main__':
 
     params = OrderedDict()
 
-    x_1, y_1, z_1 = 50, 50, 50
-    if z_1 == 1:
-        omega = (x_1, y_1)
-    else:
-        omega = (x_1, y_1, z_1)
-
-    centre_delta = (5, 5, 5)
+    y_val = 120  # single slice selected for the computation of the exponential
 
     params.update({'experiment id'      : 'ex1'})
     params.update({'subjects'           : ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47',
@@ -192,7 +184,7 @@ if __name__ == '__main__':
                 #
                 # nib.save(im_svf_lag, pfi_svf1)
 
-        if control['generate_dataset_get_exp']:
+        if control['generate_dataset_get_exp_svf_group_algebra']:
 
             for sj in subjects_target_excluded:
                 print('--------------------------------------------------')
@@ -202,7 +194,7 @@ if __name__ == '__main__':
                 assert os.path.exists(pfi_svf1)
                 im_svf1 = nib.load(pfi_svf1)
 
-                svf1 = im_svf1.get_data()
+                svf1 = im_svf1.get_data()[:, y_val, :]
                 flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
 
                 pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))

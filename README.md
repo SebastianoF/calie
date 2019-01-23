@@ -5,12 +5,13 @@
 </p>
 
 
-# calie - crazy about Lie (groups and algebras)
+# calie - crazy about Lie
 
 Python 3.7 back compatible with 2.7.
 
 Research code for testing and comparing numerical integrations of vector fields in 
-![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
+![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D) in the infinite dimensional Lie group / Lie
+algebra of diffeomorphisms setting.
 
 ![Output sample](https://github.com/SebastianoF/calie/blob/master/docs/figures/deformations.gif)
 
@@ -21,7 +22,7 @@ is transformed according to:
 + Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8)
 + Unstable node (linear transformation with real positive eigenvalues)
 + Inward spiral (linear transformation, complex conjugate eigenvectors with negative real part)
-+ Random homography
++ Random homographic transformation
 
 All transformations are parametrised with stationary velocity field
 in Lagrangian coordinates (in red),

@@ -28,16 +28,16 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : False,
-               'compute_exps'     : False,
-               'get_statistics'   : False,
+    control = {'generate_dataset' : True,
+               'compute_exps'     : True,
+               'get_statistics'   : True,
                'show_graphs'      : True}
 
     # parameters:
 
     params = OrderedDict()
 
-    x_1, y_1, z_1 = 50, 50, 50
+    x_1, y_1, z_1 = 50, 50, 1
     if z_1 == 1:
         omega = (x_1, y_1)
     else:

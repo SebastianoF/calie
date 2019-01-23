@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     params = OrderedDict()
 
-    x_1, y_1, z_1 = 50, 50, 50
+    x_1, y_1, z_1 = 50, 50, 1
     if z_1 == 1:
         omega = (x_1, y_1)
     else:
