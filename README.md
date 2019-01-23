@@ -1,71 +1,58 @@
-# VECtorsToolkit
+[![coverage](https://github.com/SebastianoF/calie/blob/master/coverage.svg)](https://github.com/SebastianoF/calie/blob/master/coverage.svg)
+
+<p align="center">
+<img src="https://github.com/SebastianoF/calie/blob/master/logo_low.png" width="300">
+</p>
+
+
+# calie - crazy about Lie (groups and algebras)
 
 Python 3.7 back compatible with 2.7.
 
 Research code for testing and comparing numerical integrations of vector fields in 
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
 
-![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/deformations.gif)
+![Output sample](https://github.com/SebastianoF/calie/blob/master/docs/figures/deformations.gif)
 
-Translation, rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8), unstable node
-(linear transformation with real positive eigenvalues)
-and then inward spiral
-(linear transformation, complex conjugate eigenvectors with negative real part) around the centre of the field.
- Transformed image is an axial
-slice from the [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset - Subject BW 38.
-The transformation is parametrised with stationary velocity field
+An axial slice from the [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) dataset - Subject BW 38
+is transformed according to:
+
++ Translation
++ Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8),
++ Unstable node (linear transformation with real positive eigenvalues)
++ Inward spiral (linear transformation, complex conjugate eigenvectors with negative real part) around the centre of the field.
+ Transformed image is
+
+All transformations are parametrised with stationary velocity field
 in Lagrangian coordinates (in red),
 whose integral or flow field between 0 and 1 represents the actual transformation (in blue).
 
-![Output sample](https://github.com/SebastianoF/VECtorsToolkit/blob/master/docs/figures/LieExpLog.png)
+![Output sample](https://github.com/SebastianoF/calie/blob/master/docs/figures/LieExpLog.png)
 
-The stationary velocity fields are in general elements of the infinite dimensional Lie algebra of diffeomorphisms
+A stationary velocity field is an elements of the infinite dimensional Lie algebra of diffeomorphisms
 that parametrise the transformation in an Euclidean space.
 A diffeomorphism ![img](http://latex.codecogs.com/svg.latex?\phi) is an element of the infinite dimensional Lie group
 over ![img](http://latex.codecogs.com/svg.latex?\Omega), subset of
 ![img](http://latex.codecogs.com/svg.latex?\mathbb{R}^D).
-In the schematic representation above, a stationary velocity field is represented with an arrow of the tangent
+In the figure above, a stationary velocity field is represented with an arrow of the tangent
 space of the group of diffeomorphisms.
 Lie exponential and Lie logarithm map the vector field in the corresponding flow and vice versa.
 
 ## Documentation
 
-+ [What](https://github.com/SebastianoF/VECtorsToolkit/wiki/What)
-+ [Why](https://github.com/SebastianoF/VECtorsToolkit/wiki/Why)
-+ [How](https://github.com/SebastianoF/VECtorsToolkit/wiki/How)
++ [What](https://github.com/SebastianoF/calie/wiki/What)
++ [Why](https://github.com/SebastianoF/calie/wiki/Why)
++ [How](https://github.com/SebastianoF/calie/wiki/How)
 
-## Installing
+## Set up
 
-+ Install the code in development mode in a newly created virtualenv.
-```
-virtualenv -p <local python 3 interpreter> --always-copy <folder with your venvs>
-source <folder with your venvs>/bin/activate
-git clone <this repository>
-cd VECtorsToolkit
-pip install -r requirements.txt
-pip install -e .
-```
++ [Install](https://github.com/SebastianoF/calie/wiki/How-to-install)
++ [Run unittest](https://github.com/SebastianoF/calie/wiki/Testing)
 
-+ Install [NiftyReg](https://github.com/KCL-BMEIS/niftyreg) (to reproduce advanced benchmarking)
-
-
-## Testing
-
-Run the tests:
-```
-pytest
-```
-
-Run the test and generate the coverage report:
-```
-pytest --cov --cov-report html
-coverage html
-open htmlcov/index.html
-```
 
 ## Licence 
 
-The code is licenced under [BSD 3-Clause](https://github.com/SebastianoF/VECtorsToolkit/blob/master/LICENCE.txt). 
+The code is licenced under [BSD 3-Clause](https://github.com/SebastianoF/calie/blob/master/LICENCE.txt).
 
 ## Acknowledgements
 

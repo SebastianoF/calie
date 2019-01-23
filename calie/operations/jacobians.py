@@ -1,7 +1,7 @@
 import numpy as np
 
-from VECtorsToolkit.aux import matrices
-from VECtorsToolkit.fields import queries as qr
+from calie.aux import matrices
+from calie.fields import queries as qr
 
 
 def initialise_jacobian(input_vf):

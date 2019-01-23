@@ -1,6 +1,6 @@
 import numpy as np
 
-from VECtorsToolkit.transformations import se2
+from calie.transformations import se2
 
 
 def get_taste(dm):

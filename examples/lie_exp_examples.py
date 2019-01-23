@@ -7,12 +7,12 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations import lie_exp
-from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.visualisations.fields import fields_comparisons
+from calie.operations import lie_exp
+from calie.transformations import se2
+from calie.visualisations.fields import fields_comparisons
 
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.fields import queries as qr
+from calie.fields import generate as gen
+from calie.fields import queries as qr
 
 if __name__ == '__main__':
 

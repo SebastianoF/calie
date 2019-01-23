@@ -1,4 +1,4 @@
-from VECtorsToolkit.aux import bernoulli as bern
+from calie.aux import bernoulli as bern
 
 ''' test bernoulli number and poly '''
 

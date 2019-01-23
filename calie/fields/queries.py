@@ -9,9 +9,9 @@ def check_omega(omega):
     """
     d = len(omega)
     if not all(isinstance(x, int) for x in omega):
-        raise IOError('Input omega {} of the wrong type. \n'.format(omega))
+        raise IOError('Input omega {} of the wrong type. i'.format(omega))
     if not (d == 2 or d == 3):
-        raise IOError('Input omega  {} of the wrong dimension. \n'.format(omega))
+        raise IOError('Input omega  {} of the wrong dimension. i'.format(omega))
     return d
 
 
@@ -68,16 +68,16 @@ def norm(input_vf, passe_partout_size=1, normalized=False):
     (the discrete domain is reduced on each side by the same value, keeping the proportion
     of the original image) and can be normalized with the size of the domain.
 
-    -> F vector field from a compact \Omega to R^d
-    \norm{F} = (\frac{1}{|\Omega|}\int_{\Omega}|F(x)|^{2}dx)^{1/2}
+    -> F vector field from a compact Omega to R^d
+    form{F} = (frac{1}{|Omega|}int_{Omega}|F(x)|^{2}dx)^{1/2}
     Discretisation:
-    \Delta\norm{F} = \frac{1}{\sqrt{dim(x)dim(y)dim(z)}}\sum_{v \in \Delta\Omega}|v|^{2})^{1/2}
-                   = \frac{1}{\sqrt{XYZ}}\sum_{i,j,k}^{ X,Y,Z}|a_{i,j,k}|^{2})^{1/2}
+    Deltaiorm{F} = frac{1}{sqrt{dim(x)dim(y)dim(z)}}sum_{v in DeltaOmega}|v|^{2})^{1/2}
+                   = frac{1}{sqrt{XYZ}}sum_{i,j,k}^{ X,Y,Z}|a_{i,j,k}|^{2})^{1/2}
 
-    -> f scalar field from \Omega to R, f is an element of the L^s space
-    \norm{f} = (\frac{1}{|\Omega|}\int_{\Omega}f(x)^{2}dx)^{1/2}
+    -> f scalar field from Omega to R, f is an element of the L^s space
+    iorm{f} = (frac{1}{|Omega|}int_{Omega}f(x)^{2}dx)^{1/2}
     Discretisation:
-    \Delta\norm{F} = \frac{1}{\sqrt{XYZ}}\sum_{i,j,k}^{ X,Y,Z} a_{i,j,k}^{2})^{1/2}
+    Deltaiorm{F} = frac{1}{sqrt{XYZ}}sum_{i,j,k}^{ X,Y,Z} a_{i,j,k}^{2})^{1/2}
 
     Parameters:
     ------------

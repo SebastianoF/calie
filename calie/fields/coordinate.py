@@ -1,6 +1,6 @@
 import numpy as np
 
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import generate_identities as gen_id
 
 
 def affine_to_homogeneous(input_vf):

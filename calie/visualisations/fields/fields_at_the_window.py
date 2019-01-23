@@ -7,8 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import queries as qr
+from calie.fields import generate_identities as gen_id
 
 
 def see_array(in_array, extra_image=None, scale=None, num_fig=1):
@@ -448,9 +448,9 @@ if __name__ == '__main__':
 
     import scipy
 
-    from VECtorsToolkit.transformations import linear
-    from VECtorsToolkit.fields import generate as gen
-    from VECtorsToolkit.operations import lie_exp
+    from calie.transformations import linear
+    from calie.fields import generate as gen
+    from calie.operations import lie_exp
 
     # --- Linear example
 

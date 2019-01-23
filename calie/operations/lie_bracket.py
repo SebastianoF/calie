@@ -1,7 +1,7 @@
 import numpy as np
 
-from VECtorsToolkit.operations import jacobians as jac
-from VECtorsToolkit.fields import queries as qr
+from calie.operations import jacobians as jac
+from calie.fields import queries as qr
 
 
 def lie_bracket(left, right):

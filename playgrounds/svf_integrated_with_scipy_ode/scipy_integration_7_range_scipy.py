@@ -5,12 +5,12 @@ import time
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.operations.lie_exp import LieExp
-from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_special
+from calie.operations.lie_exp import LieExp
+from calie.transformations import se2
+from calie.visualisations.fields.fields_comparisons import see_n_fields_special
 
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.fields import queries as qr
+from calie.fields import generate as gen
+from calie.fields import queries as qr
 
 
 if __name__ == '__main__':

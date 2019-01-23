@@ -10,11 +10,12 @@ Afterwards we compose exp(v) and exp(-v) to see the approximated identity with t
 """
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.operations import lie_exp
-from VECtorsToolkit.visualisations.fields import fields_at_the_window
 
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.fields import compose as cp
+from calie.operations import lie_exp
+from calie.visualisations.fields import fields_at_the_window
+
+from calie.fields import generate as gen
+from calie.fields import compose as cp
 
 if __name__ == '__main__':
 

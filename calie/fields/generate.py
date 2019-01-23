@@ -1,9 +1,9 @@
 import numpy as np
 import scipy.ndimage.filters as fil
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import coordinate as cs
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import queries as qr
+from calie.fields import coordinate as cs
+from calie.fields import generate_identities as gen_id
 
 
 def generate_random(omega, t=1, parameters=(5, 2)):

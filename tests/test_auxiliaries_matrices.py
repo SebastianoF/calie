@@ -4,8 +4,8 @@ import numpy as np
 import scipy.linalg as lin
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_raises
 
-from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.aux import matrices as mat #import bch_right_jacobian, matrix_vector_field_product, \
+from calie.transformations import se2
+from calie.aux import matrices as mat #import bch_right_jacobian, matrix_vector_field_product, \
 # matrix_fields_product, matrix_fields_product_iterative, id_matrix_field, split_the_time
 
 ''' test BCH right Jacobian '''

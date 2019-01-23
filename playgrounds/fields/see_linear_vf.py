@@ -1,12 +1,12 @@
 from matplotlib import pyplot
 import scipy
 
-from VECtorsToolkit.operations import lie_exp
-from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
-from VECtorsToolkit.visualisations.fields.fields_comparisons import see_n_fields_separate
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.transformations import linear
-from VECtorsToolkit.fields import queries as qr
+from calie.operations import lie_exp
+from calie.visualisations.fields.fields_at_the_window import see_field
+from calie.visualisations.fields.fields_comparisons import see_n_fields_separate
+from calie.fields import generate as gen
+from calie.transformations import linear
+from calie.fields import queries as qr
 
 if __name__ == '__main__':
 

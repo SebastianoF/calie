@@ -1,8 +1,8 @@
 import copy
 from matplotlib import pyplot
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import queries as qr
+from calie.fields import generate_identities as gen_id
 
 
 def image_quiver_image(image_1,

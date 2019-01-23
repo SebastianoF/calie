@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.visualisations.fields import fields_at_the_window
+from calie.visualisations.fields import fields_at_the_window
 
 
 def f_vcon(t, x):

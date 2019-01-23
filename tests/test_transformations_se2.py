@@ -4,8 +4,8 @@ import numpy as np
 import scipy.linalg as lin
 from numpy.testing import assert_array_almost_equal, assert_array_equal, assert_equal, assert_raises
 
-from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.aux import angles
+from calie.transformations import se2
+from calie.aux import angles
 
 '''
 Test for the module translation

@@ -3,7 +3,7 @@ from random import uniform
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from VECtorsToolkit.transformations import se2
+from calie.transformations import se2
 
 
 ### confirm that exp and log are ones other inverse for matrices ###

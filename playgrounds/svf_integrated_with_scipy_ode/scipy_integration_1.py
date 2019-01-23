@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import ode
 
-from VECtorsToolkit.fields import compose as cp
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import compose as cp
+from calie.fields import generate_identities as gen_id
 
 
 # Function input:

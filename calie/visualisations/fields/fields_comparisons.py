@@ -6,8 +6,8 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import queries as qr
+from calie.fields import generate_identities as gen_id
 
 
 def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,

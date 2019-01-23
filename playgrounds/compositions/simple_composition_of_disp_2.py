@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from VECtorsToolkit.visualisations.fields import fields_at_the_window
+from calie.visualisations.fields import fields_at_the_window
 
-from VECtorsToolkit.fields import compose as cp
+from calie.fields import compose as cp
 
 if __name__ == '__main__':
     shape = (6, 6, 1, 1, 2)

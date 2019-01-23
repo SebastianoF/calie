@@ -7,8 +7,8 @@ import copy
 
 import matplotlib.pyplot as plt
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import queries as qr
+from calie.fields import generate_identities as gen_id
 
 
 def see_overlay_of_n_fields_and_flow(list_of_obj,

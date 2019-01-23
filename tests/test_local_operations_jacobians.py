@@ -2,8 +2,8 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.operations import jacobians as jac
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.operations import jacobians as jac
+from calie.fields import generate_identities as gen_id
 
 
 # -- Jacobian tests for the class Image 2d

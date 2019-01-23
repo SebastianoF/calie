@@ -8,7 +8,7 @@ Eulerian   -> deformation
 """
 import numpy as np
 
-from VECtorsToolkit.fields import queries as qr
+from calie.fields import queries as qr
 
 
 def id_lagrangian(omega, t=1):

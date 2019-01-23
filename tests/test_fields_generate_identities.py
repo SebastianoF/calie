@@ -4,7 +4,7 @@ import nibabel as nib
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises
 
-from VECtorsToolkit.fields import generate_identities as gen_id
+from calie.fields import generate_identities as gen_id
 
 
 ''' test vf_identity_lagrangian '''

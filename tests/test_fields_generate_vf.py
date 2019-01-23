@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises
 
-from VECtorsToolkit.fields import generate as gen
+from calie.fields import generate as gen
 
 
 ''' test generate_random '''

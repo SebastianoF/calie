@@ -3,7 +3,7 @@ import nibabel as nib
 import numpy as np
 from numpy.testing import assert_array_equal, assert_raises, assert_equal, assert_almost_equal
 
-from VECtorsToolkit.fields import queries as qr
+from calie.fields import queries as qr
 
 from .decorators_tools import create_and_erase_temporary_folder_with_a_dummy_nifti_image, pfo_tmp_test
 

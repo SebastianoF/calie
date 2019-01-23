@@ -5,10 +5,10 @@ from scipy import integrate
 from scipy.linalg import expm
 from scipy.misc import factorial as fact
 
-from VECtorsToolkit.aux import matrices
-from VECtorsToolkit.operations import jacobians as jac
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import compose as cp
+from calie.aux import matrices
+from calie.operations import jacobians as jac
+from calie.fields import queries as qr
+from calie.fields import compose as cp
 
 
 class LieExp:

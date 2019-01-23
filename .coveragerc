@@ -1,12 +1,12 @@
 [run]
-source = VECtorsToolkit
-include = */VECtorsToolkit/*,
-omit = VECtorsToolkit/visualisations/*
-       VECtorsToolkit/z_tests/*
+source = calie
+include = */calie/*,
+omit = calie/visualisations/*
+       calie/z_tests/*
        */z_*
 
 [report]
-include = */VECtorsToolkit/*,
-omit = VECtorsToolkit/visualisations/*
+include = */calie/*,
+omit = calie/visualisations/*
        */z_*
        */__init__.py

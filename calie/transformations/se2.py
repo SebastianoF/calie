@@ -3,7 +3,7 @@ from random import uniform
 
 import numpy as np
 
-from VECtorsToolkit.aux import angles
+from calie.aux import angles
 
 
 class Se2A(object):

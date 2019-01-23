@@ -2,7 +2,7 @@ import numpy as np
 from numpy.testing import assert_array_equal, assert_equal, assert_raises, assert_almost_equal
 from scipy.linalg import expm
 
-from VECtorsToolkit.transformations import pgl2
+from calie.transformations import pgl2
 
 
 # TESTS projective general linear algebra and group #

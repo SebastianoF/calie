@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
 
-from VECtorsToolkit.transformations import linear
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.fields import queries as qr
+from calie.transformations import linear
+from calie.fields import generate as gen
+from calie.fields import queries as qr
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_GL2

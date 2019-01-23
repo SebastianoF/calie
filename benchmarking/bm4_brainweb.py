@@ -15,8 +15,8 @@ from sympy.core.cache import clear_cache
 from nilabels.tools.aux_methods.utils import print_and_run
 from nilabels.tools.aux_methods.utils_nib import set_new_data
 
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import coordinate as coord
+from calie.fields import queries as qr
+from calie.fields import coordinate as coord
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_BW, pfo_brainweb

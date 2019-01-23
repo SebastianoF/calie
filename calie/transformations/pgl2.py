@@ -263,9 +263,9 @@ def get_random_hom_a_matrices(d=2, scale_factor=None, sigma=1.0, special=False, 
 if __name__ == '__main__':
     # check if the well behaved are really well behaved
     import matplotlib.pyplot as plt
-    from VECtorsToolkit.fields import generate as gen
-    from VECtorsToolkit.fields import queries as qr
-    from VECtorsToolkit.visualisations.fields.fields_at_the_window import see_field
+    from calie.fields import generate as gen
+    from calie.fields import queries as qr
+    from calie.visualisations.fields.fields_at_the_window import see_field
 
     pp = 2  # passepartout
     s_i_o = 3  # spline interpolation order

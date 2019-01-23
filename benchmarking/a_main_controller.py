@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-from VECtorsToolkit.operations import lie_exp
+from calie.operations import lie_exp
 
 
 spline_interpolation_order = 3

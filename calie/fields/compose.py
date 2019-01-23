@@ -2,9 +2,9 @@ import numpy as np
 from scipy import ndimage
 from scipy.interpolate import griddata, Rbf
 
-from VECtorsToolkit.aux import matrices
-from VECtorsToolkit.fields import queries as qr
-from VECtorsToolkit.fields import coordinate as cs
+from calie.aux import matrices
+from calie.fields import queries as qr
+from calie.fields import coordinate as cs
 
 
 def one_point_interpolation(input_vf, point, method='linear', as_float=True):
@@ -226,7 +226,7 @@ def scalar_dot_lagrangian(sf_left,
 #
 # if __name__ == '__main__':
 #
-#     from VECtorsToolkit.tools.fields.generate_identities import vf_identity_lagrangian
+#     from calie.tools.fields.generate_identities import vf_identity_lagrangian
 #
 #     def u(x, y):
 #         return x, y

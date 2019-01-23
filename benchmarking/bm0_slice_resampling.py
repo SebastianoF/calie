@@ -8,13 +8,13 @@ import scipy
 import nilabels as nis
 import pickle
 
-from VECtorsToolkit.fields import generate as gen
-from VECtorsToolkit.transformations import se2
-from VECtorsToolkit.visualisations.fields import triptych
-from VECtorsToolkit.fields import compose as cp
-from VECtorsToolkit.fields import coordinate as coord
-from VECtorsToolkit.operations import lie_exp
-from VECtorsToolkit.transformations import linear
+from calie.fields import generate as gen
+from calie.transformations import se2
+from calie.visualisations.fields import triptych
+from calie.fields import compose as cp
+from calie.fields import coordinate as coord
+from calie.operations import lie_exp
+from calie.transformations import linear
 from benchmarking.b_path_manager import pfo_brainweb, pfo_output_A1
 
 
