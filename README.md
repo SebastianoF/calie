@@ -18,10 +18,9 @@ An axial slice from the [BrainWeb](http://brainweb.bic.mni.mcgill.ca/brainweb/) 
 is transformed according to:
 
 + Translation
-+ Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8),
++ Rotation of ![img](http://latex.codecogs.com/svg.latex?\pi/8)
 + Unstable node (linear transformation with real positive eigenvalues)
 + Inward spiral (linear transformation, complex conjugate eigenvectors with negative real part) around the centre of the field.
- Transformed image is
 
 All transformations are parametrised with stationary velocity field
 in Lagrangian coordinates (in red),
