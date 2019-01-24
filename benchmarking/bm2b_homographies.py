@@ -2,9 +2,9 @@ import os
 import time
 from os.path import join as jph
 from collections import OrderedDict
-import tabulate
+from pprint import pprint
 
-import scipy
+import tabulate
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -16,6 +16,8 @@ from calie.transformations import pgl2
 from calie.fields import generate as gen
 from calie.fields import queries as qr
 from calie.visualisations.fields.fields_at_the_window import see_field
+from calie.operations import lie_exp
+from calie.visualisations.fields import fields_at_the_window
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_HOM
@@ -32,12 +34,12 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : True,
-               'compute_exps'     : True,
-               'get_statistics'   : True,
+    control = {'generate_dataset' : False,
+               'compute_exps'     : False,
+               'get_statistics'   : False,
                'show_graphs'      : True}
 
-    see_one_and_stop = True
+    verbose = 1
 
     # parameters:
 
@@ -49,14 +51,21 @@ if __name__ == '__main__':
     else:
         omega = (x_1, y_1, z_1)
 
-    centre_delta = (5, 5, 5)
+    # Homographies parameters
+
+    d = len(omega)
+    scale_factor = 1. / (np.max(omega) * 3)
+    special = False
+    sigma = 2
+    hom_attributes = [d, scale_factor, sigma, special]
+    projective_centre = np.array([25, 25])
 
     params.update({'experiment id'   : 'ex1'})
     params.update({'omega'           : omega})
     params.update({'dim'             : len(omega)})
-    params.update({'passepartout'    : 5})
+    params.update({'passepartout'    : 4})
     params.update({'sio'             : spline_interpolation_order})
-    params.update({'random_seed'     : 24})
+    params.update({'random_seed'     : 5})
     params.update({'num_samples'     : 50})
     params.update({'steps'           : steps})
 
@@ -77,40 +86,42 @@ if __name__ == '__main__':
         print('Generating dataset HOM! filename: linear-<s>-<algebra/group>.npy j = 1,...,N ')
         print('--------------------------------------------------------------------------')
 
+        print('Error-bar and time for one hom generated SVF')
+        print('---------------------------------------------')
+        print('\nParameters of the transformation hom:')
+        print('domain            = {}'.format(omega))
+        print('center            = {}'.format(None))
+        print('scale factor      = {}'.format(hom_attributes[1]))
+        print('sigma             = {}'.format(hom_attributes[2]))
+        print('special           = {}'.format(hom_attributes[3]))
+        print('projective centre = {}'.format(projective_centre))
+
         for s in range(params['num_samples']):  # sample s
 
-            # Generate homographies
-            d = len(omega)
-            scale_factor = 1. / (np.max(omega) * 3)
-            special = True
-            sigma = 5
-            hom_attributes = [d, scale_factor, sigma, special]
-
-            hom_a, hom_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
+            h_a, h_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
                                                     scale_factor=hom_attributes[1],
                                                     sigma=hom_attributes[2],
-                                                    special=hom_attributes[3])
+                                                    special=hom_attributes[3],
+                                                    projective_center=projective_centre)
 
-            svf_0 = gen.generate_from_projective_matrix(omega, hom_a, structure='algebra')
-            flow = gen.generate_from_projective_matrix(omega, hom_g, structure='group')
+            svf1 = gen.generate_from_projective_matrix(omega, h_a, structure='algebra')
+            flow1_ground = gen.generate_from_projective_matrix(omega, h_g, structure='group')
 
             # Generate corresponding SVF and flow
-            svf1 = gen.generate_from_matrix(omega, hom_a, t=1, structure='algebra')
-            flow1_ground = gen.generate_from_matrix(omega, hom_g, t=1, structure='group')
 
             print('\nSampling ' + str(s + 1) + '/' + str(params['num_samples']) + '.')
             print('hom_a = ')
-            print(hom_a)
+            print(h_a)
             print('hom_g = ')
-            print(hom_g)
+            print(h_g)
 
-            pfi_svf0 = jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1))
+            pfi_svf1 = jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1))
             pfi_flow = jph(pfo_output_A4_HOM, 'hom-{}-group.npy'.format(s + 1))
 
-            np.save(pfi_svf0, svf1)
+            np.save(pfi_svf1, svf1)
             np.save(pfi_flow, flow1_ground)
 
-            print('svf saved in {}'.format(pfi_svf0))
+            print('svf saved in {}'.format(pfi_svf1))
             print('flow saved in {}'.format(pfi_flow))
 
         print('\n------------------------------------------')
@@ -137,6 +148,10 @@ if __name__ == '__main__':
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
+            # matrices for tabulation:
+            tab_errors    = np.zeros([params['num_samples'], len(params['steps'])])
+            tab_comp_time = np.zeros([params['num_samples'], len(params['steps'])])
+
             for st in params['steps']:
 
                 print('\n Computing method {} for steps {}'.format(method_name, st))
@@ -150,10 +165,10 @@ if __name__ == '__main__':
 
                 for s in range(params['num_samples']):
 
-                    pfi_svf0 = jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1))
+                    pfi_svf1 = jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1))
                     pfi_flow = jph(pfo_output_A4_HOM, 'hom-{}-group.npy'.format(s + 1))
 
-                    svf1         = np.load(pfi_svf0)
+                    svf1         = np.load(pfi_svf1)
                     flow1_ground = np.load(pfi_flow)
 
                     if methods[method_name][6]:
@@ -161,23 +176,36 @@ if __name__ == '__main__':
 
                     # compute exponetial with time:
                     start = time.time()
-                    disp_computed = exp_method(svf1, input_num_steps=st)
+                    flow1_computed = exp_method(svf1, input_num_steps=st)
                     stop = (time.time() - start)
 
                     # compute error:
-                    error = qr.norm(disp_computed - flow1_ground, passe_partout_size=params['passepartout'], normalized=True)
+                    error = qr.norm(flow1_ground - flow1_computed, passe_partout_size=params['passepartout'], normalized=True)
 
                     df_time_error['subject'][s] = 'sj{}'.format(s+1)
                     df_time_error['time (sec)'][s] = stop
                     df_time_error['error (mm)'][s] = error
 
                 # save pandas df in csv
-                print(df_time_error)
                 pfi_df_time_error = jph(pfo_output_A4_HOM, 'hom-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error.to_csv(pfi_df_time_error)
 
-    else:
+                # print something if you fancy:
+                if verbose == 2:
+                    print(df_time_error)
+                if verbose == 1:
 
+                    tab_errors[:, params['steps'].index(st)]    = df_time_error['error (mm)'].values
+                    tab_comp_time[:, params['steps'].index(st)] = df_time_error['time (sec)'].values
+
+                    print('\n')
+                    print('Errors:')
+                    print(tabulate.tabulate(tab_errors, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('Computational time:')
+                    print(tabulate.tabulate(tab_comp_time, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('\n')
+
+    else:
         # assert pandas dataframes exists
         for method_name in [k for k in methods.keys() if methods[k][1]]:
             for st in params['steps']:
@@ -272,8 +300,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
+        ax.set_xscale('log', nonposx="mask")
+        ax.set_yscale('log', nonposy="mask")
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_HOM, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

@@ -36,9 +36,9 @@ if __name__ == '__main__':
                    'generate_dataset_aff'                       : False,
                    'generate_dataset_nrig'                      : False,
                    'generate_dataset_get_svf'                   : False,
-                   'generate_dataset_get_exp_svf_group_algebra' : True,
-               'compute_exps'       : True,
-               'get_statistics'     : True,
+                   'generate_dataset_get_exp_svf_group_algebra' : False,
+               'compute_exps'       : False,
+               'get_statistics'     : False,
                'show_graphs'        : True}
 
     # parameters:
@@ -232,7 +232,7 @@ if __name__ == '__main__':
     ###########################
 
     print('--------------------------------------------------------------------------')
-    print('Compute exponentials GAU! filename: bw-<method>-STEPS_<steps>.csv        ')
+    print('Compute exponentials BW! filename: bw-<method>-STEPS_<steps>.csv        ')
     print('--------------------------------------------------------------------------')
 
     if control['compute_exps']:
@@ -342,7 +342,7 @@ if __name__ == '__main__':
 
         fig, ax = plt.subplots(figsize=(7, 7))
 
-        fig.canvas.set_window_title('gau_times_vs_errors.pdf')
+        fig.canvas.set_window_title('bw_times_vs_errors.pdf')
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
@@ -374,8 +374,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposy='clip')
-        # ax.set_yscale('log', nonposy='clip')
+        ax.set_xscale('log', nonposx="mask")
+        ax.set_yscale('log', nonposy="mask")
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_BW, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

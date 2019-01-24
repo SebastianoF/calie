@@ -262,8 +262,25 @@ def get_random_hom_matrices(d=2, scale_factor=None, sigma=1.0, special=False, pr
         h_al[0, 0] = -1 * np.sum(np.diagonal(h_al)[1:])
 
     if projective_center is not None:
-        # TODO
-        raise IOError('work in progress')
+
+        h_center = np.zeros_like(h_al)
+        if isinstance(projective_center, list):
+            projective_center = np.array(projective_center)
+        # den = one - Bc
+        den = 1 - h_al[d, :-1].dot(projective_center)
+
+        # A prime
+        h_center[:-1, :-1] = (h_al[:-1, :-1] +
+                              np.kron(projective_center.reshape(1, 2), h_al[d, :-1].reshape(2, 1))) / den
+        # B prime
+        h_center[d, :-1] = (h_al[d, :-1]) / den
+        # T prime
+        h_center[:-1, 2] = (-(h_al[:-1, :-1]).dot(projective_center) -
+                            h_al[d, :-1].dot(projective_center) * projective_center + projective_center) / den
+
+        h_center[d, d] = 1
+
+        h_al = h_center[:]
 
     h_gp = linalg.expm(h_al)
 

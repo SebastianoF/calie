@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     clear_cache()
 
-    random_seed = 0
+    random_seed = 5
 
     if random_seed > 0:
         np.random.seed(random_seed)
@@ -54,25 +54,33 @@ if __name__ == "__main__":
     print('---------------------')
 
     scale_factor = 1. / (np.max(domain) * 3)
-    special = True
-    sigma = 5
+    special = False
+    sigma = 1
     hom_attributes = [d, scale_factor, sigma, special]
 
     h_a, h_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
                                             scale_factor=hom_attributes[1],
                                             sigma=hom_attributes[2],
-                                            special=hom_attributes[3])
+                                            special=hom_attributes[3],
+                                            projective_center=np.array([25, 25]))
 
-    svf_0 = gen.generate_from_projective_matrix(domain, h_a, structure='algebra')
+    print(h_a)
+    print(h_g)
+
+    svf1 = gen.generate_from_projective_matrix(domain, h_a, structure='algebra')
     flow = gen.generate_from_projective_matrix(domain, h_g, structure='group')
 
     l_exp = lie_exp.LieExp()
-    flow_ss = l_exp.scaling_and_squaring(svf_0, input_num_steps=3)
+    flow_ss = l_exp.scaling_and_squaring(svf1, input_num_steps=10)
 
     print(qr.norm(flow - flow_ss, passe_partout_size=4))
 
-    fields_at_the_window.see_field(svf_0, input_color='r')
+    fields_at_the_window.see_field(svf1, input_color='r')
     fields_at_the_window.see_field(flow, input_color='b')
     fields_at_the_window.see_field(flow_ss, input_color='g', width=0.01)
 
     plt.show()
+
+    for tp in [1, 2, 3, 4, 6, 7, 10, 12, 20]:
+        flow_ss = l_exp.scaling_and_squaring(svf1, input_num_steps=tp)
+        print(qr.norm(flow - flow_ss, passe_partout_size=4))
