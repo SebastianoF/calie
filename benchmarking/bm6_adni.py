@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import nibabel as nib
-import nilabels as nis
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
@@ -94,11 +93,11 @@ if __name__ == '__main__':
                 print('--------------------------------------------------')
                 print('Affine registration to target, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
 
-                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1_{}.nii.gz'.format(sj_first_tp))
-                pfi_mask_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
+                pfi_T1W_fixed_tp1 = jph(pfo_adni, 'FirstTP', 'MaskedT1_{}.nii.gz'.format(sj_first_tp))
+                pfi_mask_fixed_tp1 = jph(pfo_adni, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
 
-                pfi_T1W_moving_tp2  = jph(pfo_output_A4_AD, 'LastTP', 'MaskedT1_{}.nii.gz'.format(sj_second_tp))
-                pfi_mask_moving_tp2 = jph(pfo_output_A4_AD, 'LastTP', '{}_GIF_B1.nii.gz'.format(sj_second_tp))
+                pfi_T1W_moving_tp2  = jph(pfo_adni, 'LastTP', 'MaskedT1_{}.nii.gz'.format(sj_second_tp))
+                pfi_mask_moving_tp2 = jph(pfo_adni, 'LastTP', '{}_GIF_B1.nii.gz'.format(sj_second_tp))
 
                 assert os.path.exists(pfi_T1W_fixed_tp1), pfi_T1W_fixed_tp1
                 assert os.path.exists(pfi_mask_fixed_tp1), pfi_mask_fixed_tp1
