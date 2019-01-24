@@ -6,6 +6,7 @@ from calie.transformations import pgl2
 from calie.operations import lie_exp
 from calie.visualisations.fields import fields_at_the_window
 from calie.fields import generate as gen
+from calie.fields import queries as qr
 
 
 if __name__ == "__main__":
@@ -52,9 +53,10 @@ if __name__ == "__main__":
     print('Computations started!')
     print('---------------------')
 
-    scale_factor = 1. / (np.max(domain) * 10)
-    special = False
-    hom_attributes = [d, scale_factor, 2, special]
+    scale_factor = 1. / (np.max(domain) * 3)
+    special = True
+    sigma = 5
+    hom_attributes = [d, scale_factor, sigma, special]
 
     h_a, h_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
                                             scale_factor=hom_attributes[1],
@@ -65,7 +67,9 @@ if __name__ == "__main__":
     flow = gen.generate_from_projective_matrix(domain, h_g, structure='group')
 
     l_exp = lie_exp.LieExp()
-    flow_ss = l_exp.scaling_and_squaring(svf_0)
+    flow_ss = l_exp.scaling_and_squaring(svf_0, input_num_steps=3)
+
+    print(qr.norm(flow - flow_ss, passe_partout_size=4))
 
     fields_at_the_window.see_field(svf_0, input_color='r')
     fields_at_the_window.see_field(flow, input_color='b')

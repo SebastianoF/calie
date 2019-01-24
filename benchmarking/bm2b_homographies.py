@@ -2,6 +2,7 @@ import os
 import time
 from os.path import join as jph
 from collections import OrderedDict
+import tabulate
 
 import scipy
 import pandas as pd
@@ -79,9 +80,11 @@ if __name__ == '__main__':
         for s in range(params['num_samples']):  # sample s
 
             # Generate homographies
-            scale_factor = 1. / (np.max(omega) * 10)
-            special = False
-            hom_attributes = [2, scale_factor, 2, special]
+            d = len(omega)
+            scale_factor = 1. / (np.max(omega) * 3)
+            special = True
+            sigma = 5
+            hom_attributes = [d, scale_factor, sigma, special]
 
             hom_a, hom_g = pgl2.get_random_hom_matrices(d=hom_attributes[0],
                                                     scale_factor=hom_attributes[1],

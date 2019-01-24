@@ -29,8 +29,8 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : True,
-               'compute_exps'     : True,
+    control = {'generate_dataset' : False,
+               'compute_exps'     : False,
                'get_statistics'   : True,
                'show_graphs'      : True}
 
