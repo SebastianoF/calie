@@ -3,6 +3,7 @@ import time
 from os.path import join as jph
 from collections import OrderedDict
 
+import tabulate
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -31,6 +32,8 @@ if __name__ == '__main__':
                'compute_exps'       : True,
                'get_statistics'     : True,
                'show_graphs'        : True}
+
+    verbose = 1
 
     # parameters:
 
@@ -114,6 +117,10 @@ if __name__ == '__main__':
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
+            # matrices for tabulation:
+            tab_errors = np.zeros([params['num_samples'], len(params['steps'])])
+            tab_comp_time = np.zeros([params['num_samples'], len(params['steps'])])
+
             for st in params['steps']:
 
                 print('\n Computing method {} for steps {}'.format(method_name, st))
@@ -149,9 +156,22 @@ if __name__ == '__main__':
                     df_time_error['error (mm)'][s] = error
 
                 # save pandas df in csv
-                print(df_time_error)
                 pfi_df_time_error = jph(pfo_output_A4_GAU, 'gau-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error.to_csv(pfi_df_time_error)
+
+                # print something if you fancy:
+                if verbose == 2:
+                    print(df_time_error)
+                if verbose == 1:
+                    tab_errors[:, params['steps'].index(st)] = df_time_error['error (mm)'].values
+                    tab_comp_time[:, params['steps'].index(st)] = df_time_error['time (sec)'].values
+
+                    print('\n')
+                    print('Errors:')
+                    print(tabulate.tabulate(tab_errors, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('Computational time:')
+                    print(tabulate.tabulate(tab_comp_time, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('\n')
 
     else:
 
@@ -253,8 +273,8 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        ax.set_xscale('log')
-        ax.set_yscale('log')
+        ax.set_xscale('log', nonposx="mask")
+        ax.set_yscale('log', nonposy="mask")
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_GAU, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)

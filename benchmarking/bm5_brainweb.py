@@ -3,6 +3,7 @@ import time
 from os.path import join as jph
 from collections import OrderedDict
 
+import tabulate
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -32,20 +33,22 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : True,
-                   'generate_dataset_skull_strip'               : False,
-                   'generate_dataset_aff'                       : False,
-                   'generate_dataset_nrig'                      : False,
-                   'generate_dataset_get_svf'                   : False,
-                   'generate_dataset_get_exp_svf_group_algebra' : False,
-               'compute_exps'       : False,
-               'get_statistics'     : False,
+                   'generate_dataset_skull_strip'               : True,
+                   'generate_dataset_aff'                       : True,
+                   'generate_dataset_nrig'                      : True,
+                   'generate_dataset_get_svf'                   : True,
+                   'generate_dataset_get_exp_svf_group_algebra' : True,
+               'compute_exps'       : True,
+               'get_statistics'     : True,
                'show_graphs'        : True}
+
+    verbose = 1
 
     # parameters:
 
-    params = OrderedDict()
-
     z_val = 73  # single slice selected for the computation of the exponential
+
+    params = OrderedDict()
 
     params.update({'experiment id'      : 'ex1'})
     params.update({'subjects'           : ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47',
@@ -67,7 +70,7 @@ if __name__ == '__main__':
     print("\nPath to results folder {}\n".format(pfo_output_A4_BW))
 
     ####################
-    # Generate dataset #
+    # Generate data set #
     ####################
 
     if control['generate_dataset']:
@@ -167,22 +170,12 @@ if __name__ == '__main__':
                 pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
                 assert os.path.exists(pfi_cpp), pfi_cpp
 
-                # pfi_svf1_eul = jph(pfo_output_A4_BW, 'pre_svf-{}.nii.gz'.format(sj))
                 pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
 
                 cmd = 'reg_transform -ref {0} -disp {1} {2}'.format(
                     pfi_T1W_fixed, pfi_cpp, pfi_svf1
                 )
                 print_and_run(cmd)
-                #
-                # # go in Lagrangian coordinates.
-                # im_sfv1_eul = nib.load(pfi_svf1_eul)
-                #
-                # data_svf1_lag = coord.eulerian_to_lagrangian(im_sfv1_eul.get_data())
-                #
-                # im_svf_lag = set_new_data(im_sfv1_eul, data_svf1_lag)
-                #
-                # nib.save(im_svf_lag, pfi_svf1)
 
         if control['generate_dataset_get_exp_svf_group_algebra']:
 
@@ -203,7 +196,7 @@ if __name__ == '__main__':
                 svf1 = np.zeros(shape)
                 svf1[..., 0, 0, 0] = svf1_3d[:, :, z_val, 0, 0]
                 svf1[..., 0, 0, 1] = svf1_3d[:, :, z_val, 0, 1]
-                svf1
+
                 flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
 
                 pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
@@ -238,6 +231,10 @@ if __name__ == '__main__':
     if control['compute_exps']:
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
+
+            # matrices for tabulation:
+            tab_errors = np.zeros([params['num_samples'], len(params['steps'])])
+            tab_comp_time = np.zeros([params['num_samples'], len(params['steps'])])
 
             for st in params['steps']:
 
@@ -274,9 +271,22 @@ if __name__ == '__main__':
                     df_time_error['error (mm)'][sj] = error
 
                 # save pandas df in csv
-                print(df_time_error)
                 pfi_df_time_error = jph(pfo_output_A4_BW, 'bw-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error.to_csv(pfi_df_time_error)
+
+                # print something if you fancy:
+                if verbose == 2:
+                    print(df_time_error)
+                if verbose == 1:
+                    tab_errors[:, params['steps'].index(st)] = df_time_error['error (mm)'].values
+                    tab_comp_time[:, params['steps'].index(st)] = df_time_error['time (sec)'].values
+
+                    print('\n')
+                    print('Errors:')
+                    print(tabulate.tabulate(tab_errors, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('Computational time:')
+                    print(tabulate.tabulate(tab_comp_time, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('\n')
 
     else:
 

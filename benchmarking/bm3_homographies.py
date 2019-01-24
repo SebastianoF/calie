@@ -2,7 +2,6 @@ import os
 import time
 from os.path import join as jph
 from collections import OrderedDict
-from pprint import pprint
 
 import tabulate
 import pandas as pd
@@ -15,9 +14,6 @@ from sympy.core.cache import clear_cache
 from calie.transformations import pgl2
 from calie.fields import generate as gen
 from calie.fields import queries as qr
-from calie.visualisations.fields.fields_at_the_window import see_field
-from calie.operations import lie_exp
-from calie.visualisations.fields import fields_at_the_window
 
 from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
 from benchmarking.b_path_manager import pfo_output_A4_HOM
@@ -34,9 +30,9 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : False,
-               'compute_exps'     : False,
-               'get_statistics'   : False,
+    control = {'generate_dataset' : True,
+               'compute_exps'     : True,
+               'get_statistics'   : True,
                'show_graphs'      : True}
 
     verbose = 1

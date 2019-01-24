@@ -3,6 +3,7 @@ import time
 from os.path import join as jph
 from collections import OrderedDict
 
+import tabulate
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -33,17 +34,20 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : True,
-                   'generate_dataset_aff'        : False,
+                   'generate_dataset_aff'        : True,
                    'generate_dataset_nrig'       : True,
                    'generate_dataset_get_svf'    : True,
-                   'generate_dataset_get_exp'    : True,
+                   'generate_dataset_get_exp_svf_group_algebra'    : True,
                'compute_exps'       : True,
                'get_statistics'     : True,
                'show_graphs'        : True}
 
+    verbose = 1
     nifty_reg_source = ''
 
     # parameters:
+
+    z_val = 130  # single slice selected for the computation of the exponential
 
     params = OrderedDict()
 
@@ -56,15 +60,15 @@ if __name__ == '__main__':
     centre_delta = (5, 5, 5)
 
     params.update({'experiment id'      : 'ex1'})
-    params.update({'subjects'           : ['4039', '4172', '4195', '4501', '4526', '4625', '4657', '4676', '4379',
-                                           '4672']})
+    params.update({'subjects_FirstTP'   : ['4039_01', '4172_01', '4195_01', '4379_01', '4501_01', '4526_01', '4625_01', '4657_01',
+                                            '4672_01', '4676_01']})
+    params.update({'subjects_SecondTP'  : ['4039_05', '4172_05', '4195_05', '4379_04', '4501_05', '4526_05', '4625_01', '4657_01',
+                                            '4672_04', '4676_05']})
     params.update({'selected_ground'    : 'rk4'})
     params.update({'selected_n_steps'   : 7})
     params.update({'passepartout'       : 5})
     params.update({'sio'                : spline_interpolation_order})
     params.update({'steps'              : steps})
-
-    labels_brain_to_keep = [2, 3]  # WM and GM
 
     # Path manager
 
@@ -77,7 +81,7 @@ if __name__ == '__main__':
     if control['generate_dataset']:
 
         print('---------------------------------------------------------------------------')
-        print('Generating dataset BW! filename: bw-<s>-<algebra/group>.npy sj in BrainWeb ')
+        print('Generating dataset ADNI! filename: ad-<s>-<algebra/group>.npy sj in BrainWeb ')
         print('---------------------------------------------------------------------------')
 
         # prepare dataset to obtain 38 realistic svf
@@ -86,66 +90,82 @@ if __name__ == '__main__':
 
         if control['generate_dataset_aff']:
 
-            for sj in params['subjects']:
+            for sj_first_tp, sj_second_tp in zip(params['subjects_FirstTP'], params['subjects_SecondTP']):
                 print('--------------------------------------------------')
-                print('Affine registration to target, sj {} \n'.format(sj))
+                print('Affine registration to target, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
 
-                pfi_T1W_moving  = jph(pfo_output_A4_AD, 'BW{}_T1W.nii.gz'.format(sj))  # TODO
-                pfi_mask_moving = jph(pfo_output_A4_AD, 'BW{}_brain_mask.nii.gz'.format(sj))
+                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1_{}.nii.gz'.format(sj_first_tp))
+                pfi_mask_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
 
-                assert os.path.exists(pfi_T1W_moving), pfi_T1W_moving
-                assert os.path.exists(pfi_mask_moving), pfi_mask_moving
+                pfi_T1W_moving_tp2  = jph(pfo_output_A4_AD, 'LastTP', 'MaskedT1_{}.nii.gz'.format(sj_second_tp))
+                pfi_mask_moving_tp2 = jph(pfo_output_A4_AD, 'LastTP', '{}_GIF_B1.nii.gz'.format(sj_second_tp))
 
-                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_aff.nii.gz'.format(sj, params['target_sj']))
-                pfi_moving_on_target_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_aff.txt'.format(sj, params['target_sj']))
+                assert os.path.exists(pfi_T1W_fixed_tp1), pfi_T1W_fixed_tp1
+                assert os.path.exists(pfi_mask_fixed_tp1), pfi_mask_fixed_tp1
+
+                assert os.path.exists(pfi_T1W_moving_tp2), pfi_T1W_moving_tp2
+                assert os.path.exists(pfi_mask_moving_tp2), pfi_mask_moving_tp2
+
+                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_AD, '{}_on_{}_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
+                pfi_moving_on_target_aff = jph(pfo_output_A4_AD, '{}_on_{}_aff.txt'.format(sj_second_tp, sj_first_tp))
                 cmd = 'reg_aladin -ref {0} -rmask {1} -flo {2} -fmask {3} -res {4} -aff {5} -speeeeed '.format(
-                    pfi_T1W_fixed, pfi_mask_fixed, pfi_T1W_moving, pfi_mask_moving, pfi_moving_on_target_warp_aff, pfi_moving_on_target_aff
+                    pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_T1W_moving_tp2, pfi_mask_moving_tp2,
+                    pfi_moving_on_target_warp_aff, pfi_moving_on_target_aff
                 )
                 print_and_run(cmd)
 
-                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}_aff.nii.gz'.format(sj, params['target_sj']))
+                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_AD, '{}_on_{}_mask_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
 
                 cmd = 'reg_resample -ref {0} -flo {1} -trans {2} -res {3} -inter 0 '.format(
-                    pfi_T1W_fixed, pfi_mask_moving, pfi_moving_on_target_aff, pfi_moving_on_target_mask_aff
+                    pfi_T1W_fixed_tp1, pfi_mask_moving_tp2, pfi_moving_on_target_aff, pfi_moving_on_target_mask_aff
                 )
                 print_and_run(cmd)
 
         if control['generate_dataset_nrig']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
-                print('--------------------------------------------------')
-                print('Non-rigid registration to target, sj {} \n'.format(sj))
+            for sj_first_tp, sj_second_tp in zip(params['subjects_FirstTP'], params['subjects_SecondTP']):
 
-                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_aff.nii.gz'.format(sj, params['target_sj']))
-                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_BW, 'BW{}_brain_mask_on_BW{}_aff.nii.gz'.format(sj, params['target_sj']))
+                print('--------------------------------------------------------------------------------------------------')
+                print('Non-rigid registration to target, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
+
+                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1{}.nii.gz'.format(sj_first_tp))
+                pfi_mask_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
+
+                pfi_moving_on_target_warp_aff = jph(pfo_output_A4_AD, '{}_on_{}_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
+                pfi_moving_on_target_mask_aff = jph(pfo_output_A4_AD, '{}_on_{}_mask_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
 
                 assert os.path.exists(pfi_moving_on_target_warp_aff), pfi_moving_on_target_warp_aff
                 assert os.path.exists(pfi_moving_on_target_mask_aff), pfi_moving_on_target_mask_aff
 
-                pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
-                pfi_moving_on_target_nrig = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_warp_nrig.nii.gz'.format(sj, params['target_sj']))
+                pfi_cpp = jph(pfo_output_A4_AD, '{}_on_{}_cpp.nii.gz'.format(sj_second_tp, sj_first_tp))
+                pfi_moving_on_target_nrig = jph(pfo_output_A4_AD, '{}_on_{}_warp_nrig.nii.gz'.format(sj_second_tp, sj_first_tp))
 
-                cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} ' \
-                      '-cpp {4} -res {5} -vel '.format(
-                            pfi_T1W_fixed, pfi_mask_fixed, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
-                            pfi_cpp, pfi_moving_on_target_nrig
-                        )
+                cmd = 'reg_f3d -ref {0} -rmask {1} -flo {2} -fmask {3} -cpp {4} -res {5} -vel '.format(
+                    pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
+                    pfi_cpp, pfi_moving_on_target_nrig
+                )
                 print_and_run(cmd)
 
         if control['generate_dataset_get_svf']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
-                print('--------------------------------------------------')
-                print('Get the svf from cpp, sj {}\n'.format(sj))
+            for sj_first_tp, sj_second_tp in zip(params['subjects_FirstTP'], params['subjects_SecondTP']):
 
-                pfi_cpp = jph(pfo_output_A4_BW, 'BW{}_on_BW{}_cpp.nii.gz'.format(sj, params['target_sj']))
+                print('--------------------------------------------------------------------------------------')
+                print('Get the svf from cpp, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
+
+                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1{}.nii.gz'.format(sj_first_tp))
+                assert os.path.exists(pfi_T1W_fixed_tp1), pfi_T1W_fixed_tp1
+
+                pfi_cpp = jph(pfo_output_A4_AD, '{}_on_{}_cpp.nii.gz'.format(sj_second_tp, sj_first_tp))
                 assert os.path.exists(pfi_cpp), pfi_cpp
 
-                pfi_svf1_eul = jph(pfo_output_A4_BW, 'pre_svf-{}.nii.gz'.format(sj))
-                pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
+                sj = sj_first_tp.split('-')[0]
+
+                pfi_svf1_eul = jph(pfo_output_A4_AD, 'pre_svf-{}.nii.gz'.format(sj))
+                pfi_svf1 = jph(pfo_output_A4_AD, 'svf-{}.nii.gz'.format(sj))
 
                 cmd = 'reg_transform -ref {0} -flow {1} {2}'.format(
-                    pfi_T1W_fixed, pfi_cpp, pfi_svf1_eul
+                    pfi_T1W_fixed_tp1, pfi_cpp, pfi_svf1_eul
                 )
                 print_and_run(cmd)
 
@@ -158,21 +178,33 @@ if __name__ == '__main__':
 
                 nib.save(im_svf_lag, pfi_svf1)
 
-        if control['generate_dataset_get_exp']:
+        if control['generate_dataset_get_exp_svf_group_algebra']:
 
-            for sj in {'05'}:  # set(params['subjects']) - {params['target_sj']}:
+            for sj_first_tp, sj_second_tp in zip(params['subjects_FirstTP'], params['subjects_SecondTP']):
+
+                sj = sj_first_tp.split('-')[0]
+
                 print('--------------------------------------------------')
                 print('Exponentiate the obtained SVF, sj {}'.format(sj))
 
-                pfi_svf1 = jph(pfo_output_A4_BW, 'svf-{}.nii.gz'.format(sj))
+                pfi_svf1 = jph(pfo_output_A4_AD, 'svf-{}.nii.gz'.format(sj))
                 assert os.path.exists(pfi_svf1)
                 im_svf1 = nib.load(pfi_svf1)
 
-                svf1 = im_svf1.get_data()
+                # take only one slice:
+                svf1_3d = im_svf1.get_data()
+                shape = list(svf1_3d.shape)
+                shape[2] = 1
+                shape[-1] = 2
+
+                svf1 = np.zeros(shape)
+                svf1[..., 0, 0, 0] = svf1_3d[:, :, z_val, 0, 0]
+                svf1[..., 0, 0, 1] = svf1_3d[:, :, z_val, 0, 1]
+
                 flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
 
-                pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
-                pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
+                pfi_svf1 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
+                pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
 
                 np.save(pfi_svf1, svf1)
                 np.save(pfi_flow, flow1_ground)
@@ -187,8 +219,8 @@ if __name__ == '__main__':
     else:
 
         for sj in set(params['subjects']) - {params['target_sj']}:
-            pfi_svf1 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj))
-            pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(sj))
+            pfi_svf1 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
+            pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
             assert os.path.exists(pfi_svf1), pfi_svf1
             assert os.path.exists(pfi_flow), pfi_flow
 
@@ -197,12 +229,16 @@ if __name__ == '__main__':
     ###########################
 
     print('--------------------------------------------------------------------------')
-    print('Compute exponentials GAU! filename: bw-<method>-STEPS_<steps>.csv        ')
+    print('Compute exponentials ADNI! filename: ad-<method>-STEPS_<steps>.csv        ')
     print('--------------------------------------------------------------------------')
 
     if control['compute_exps']:
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
+
+            # matrices for tabulation:
+            tab_errors = np.zeros([params['num_samples'], len(params['steps'])])
+            tab_comp_time = np.zeros([params['num_samples'], len(params['steps'])])
 
             for st in params['steps']:
 
@@ -217,8 +253,8 @@ if __name__ == '__main__':
 
                 for s in range(params['num_samples']):
 
-                    pfi_svf0 = jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(s + 1))
-                    pfi_flow = jph(pfo_output_A4_BW, 'bw-{}-group.npy'.format(s + 1))
+                    pfi_svf0 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(s + 1))
+                    pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(s + 1))
 
                     svf1         = np.load(pfi_svf0)
                     flow1_ground = np.load(pfi_flow)
@@ -239,16 +275,29 @@ if __name__ == '__main__':
                     df_time_error['error (mm)'][s] = error
 
                 # save pandas df in csv
-                print(df_time_error)
-                pfi_df_time_error = jph(pfo_output_A4_BW, 'bw-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_AD, 'ad-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error.to_csv(pfi_df_time_error)
+
+                # print something if you fancy:
+                if verbose == 2:
+                    print(df_time_error)
+                if verbose == 1:
+                    tab_errors[:, params['steps'].index(st)] = df_time_error['error (mm)'].values
+                    tab_comp_time[:, params['steps'].index(st)] = df_time_error['time (sec)'].values
+
+                    print('\n')
+                    print('Errors:')
+                    print(tabulate.tabulate(tab_errors, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('Computational time:')
+                    print(tabulate.tabulate(tab_comp_time, headers=['steps {}'.format(s) for s in params['steps']]))
+                    print('\n')
 
     else:
 
         # assert pandas dataframes exists
         for method_name in [k for k in methods.keys() if methods[k][1]]:
             for st in params['steps']:
-                pfi_df_time_error = jph(pfo_output_A4_BW, 'bw-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_AD, 'ad-{}-steps-{}.csv'.format(method_name, st))
                 assert os.path.exists(pfi_df_time_error), pfi_df_time_error
 
     ##################
@@ -259,7 +308,7 @@ if __name__ == '__main__':
 
         # for each method get mean and std indexed by num-steps.
         # | steps | mu_error | sigma_error | mu_time | sigma_error |
-        # in a file called bw-stats-<method>.csv
+        # in a file called ad-stats-<method>.csv
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
@@ -273,7 +322,7 @@ if __name__ == '__main__':
 
                 print('\n Steps {}'.format(st))
 
-                pfi_df_time_error = jph(pfo_output_A4_BW, 'bw-{}-steps-{}.csv'.format(method_name, st))
+                pfi_df_time_error = jph(pfo_output_A4_AD, 'ad-{}-steps-{}.csv'.format(method_name, st))
                 df_time_error = pd.read_csv(pfi_df_time_error)
 
                 df_mean_std['steps'][st_index] = st
@@ -284,13 +333,13 @@ if __name__ == '__main__':
                 df_mean_std['mu_error'][st_index]  = df_time_error['error (mm)'].mean()
                 df_mean_std['std_error'][st_index] = df_time_error['error (mm)'].std()
 
-            pfi_df_mean_std = jph(pfo_output_A4_BW, 'bw-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_AD, 'ad-stats-{}.csv'.format(method_name))
             df_mean_std.to_csv(pfi_df_mean_std)
 
     else:
 
         for method_name in [k for k in methods.keys() if methods[k][1]][:1]:
-            pfi_df_mean_std = jph(pfo_output_A4_BW, 'bw-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_AD, 'ad-stats-{}.csv'.format(method_name))
             assert os.path.exists(pfi_df_mean_std), pfi_df_mean_std
 
     ###############
@@ -307,11 +356,11 @@ if __name__ == '__main__':
 
         fig, ax = plt.subplots(figsize=(7, 7))
 
-        fig.canvas.set_window_title('gau_times_vs_errors.pdf')
+        fig.canvas.set_window_title('ad_times_vs_errors.pdf')
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
-            pfi_df_mean_std = jph(pfo_output_A4_BW, 'bw-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A4_AD, 'ad-stats-{}.csv'.format(method_name))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
             ax.plot(df_mean_std['mu_time'].values,
@@ -339,10 +388,10 @@ if __name__ == '__main__':
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposy='clip')
-        # ax.set_yscale('log', nonposy='clip')
+        ax.set_xscale('log', nonposx="mask")
+        ax.set_yscale('log', nonposy="mask")
 
-        pfi_figure_time_vs_error = jph(pfo_output_A4_BW, 'graph_time_vs_error.pdf')
+        pfi_figure_time_vs_error = jph(pfo_output_A4_AD, 'graph_time_vs_error.pdf')
         plt.savefig(pfi_figure_time_vs_error, dpi=150)
 
         plt.show(block=True)
