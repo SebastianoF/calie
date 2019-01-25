@@ -14,7 +14,7 @@ from sympy.core.cache import clear_cache
 from calie.fields import generate as gen
 from calie.fields import queries as qr
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, num_samples
 from benchmarking.b_path_manager import pfo_output_A4_GAU
 
 """
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     params.update({'centre_delta'    : centre_delta})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 0})
-    params.update({'num_samples'     : 50})
+    params.update({'num_samples'     : num_samples})
     params.update({'steps'           : steps})
 
     # Path manager

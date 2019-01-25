@@ -1,3 +1,8 @@
+"""
+Module for the computation of a dataset of 3d SFV generated out of ADNI data-set.
+Longitudinal SVF experiment.
+It compares computational time and error for the exponential integrations with different methods and time steps.
+"""
 import os
 import time
 from os.path import join as jph
@@ -18,13 +23,10 @@ from nilabels.tools.aux_methods.utils_nib import set_new_data
 from calie.fields import queries as qr
 from calie.fields import coordinate as coord
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, \
+    ad_subjects, ad_subjects_first_time_point, ad_subjects_second_time_point
 from benchmarking.b_path_manager import pfo_output_A4_AD, pfo_adni
-"""
-Module for the computation of a dataset of 3d SFV generated out of ADNI data-set.
-Longitudinal SVF experiment.
-It compares computational time and error for the exponential computation with different methods and time steps.
-"""
+
 
 if __name__ == '__main__':
 
@@ -32,7 +34,7 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : True,
+    control = {'generate_dataset'   : False,
                    'generate_dataset_aff'        : True,
                    'generate_dataset_nrig'       : True,
                    'generate_dataset_get_svf'    : True,
@@ -59,15 +61,18 @@ if __name__ == '__main__':
     centre_delta = (5, 5, 5)
 
     params.update({'experiment id'      : 'ex1'})
-    params.update({'subjects_FirstTP'   : ['4039_01', '4172_01', '4195_01', '4379_01', '4501_01', '4526_01', '4625_01', '4657_01',
-                                            '4672_01', '4676_01']})
-    params.update({'subjects_SecondTP'  : ['4039_05', '4172_05', '4195_05', '4379_04', '4501_05', '4526_05', '4625_01', '4657_01',
-                                            '4672_04', '4676_05']})
+    params.update({'subjects_FirstTP'   : ad_subjects_first_time_point})
+    params.update({'subjects_SecondTP'  : ad_subjects_second_time_point})
     params.update({'selected_ground'    : 'rk4'})
-    params.update({'selected_n_steps'   : 7})
+    params.update({'selected_n_steps'   : 10})
     params.update({'passepartout'       : 5})
     params.update({'sio'                : spline_interpolation_order})
     params.update({'steps'              : steps})
+
+    assert len(params['subjects_FirstTP']) == len(params['subjects_SecondTP'])
+
+    # list of subjects id both time-points:
+    subjects = ad_subjects
 
     # Path manager
 
@@ -127,8 +132,11 @@ if __name__ == '__main__':
                 print('--------------------------------------------------------------------------------------------------')
                 print('Non-rigid registration to target, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
 
-                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1{}.nii.gz'.format(sj_first_tp))
-                pfi_mask_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
+                pfi_T1W_fixed_tp1 = jph(pfo_adni, 'FirstTP', 'MaskedT1_{}.nii.gz'.format(sj_first_tp))
+                pfi_mask_fixed_tp1 = jph(pfo_adni, 'FirstTP', '{}_GIF_B1.nii.gz'.format(sj_first_tp))
+
+                assert os.path.exists(pfi_T1W_fixed_tp1), pfi_T1W_fixed_tp1
+                assert os.path.exists(pfi_mask_fixed_tp1), pfi_mask_fixed_tp1
 
                 pfi_moving_on_target_warp_aff = jph(pfo_output_A4_AD, '{}_on_{}_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
                 pfi_moving_on_target_mask_aff = jph(pfo_output_A4_AD, '{}_on_{}_mask_warp_aff.nii.gz'.format(sj_second_tp, sj_first_tp))
@@ -152,7 +160,7 @@ if __name__ == '__main__':
                 print('--------------------------------------------------------------------------------------')
                 print('Get the svf from cpp, sj first tp {}, second tp {}\n'.format(sj_first_tp, sj_second_tp))
 
-                pfi_T1W_fixed_tp1 = jph(pfo_output_A4_AD, 'FirstTP', 'MaskedT1{}.nii.gz'.format(sj_first_tp))
+                pfi_T1W_fixed_tp1 = jph(pfo_adni, 'FirstTP', 'MaskedT1_{}.nii.gz'.format(sj_first_tp))
                 assert os.path.exists(pfi_T1W_fixed_tp1), pfi_T1W_fixed_tp1
 
                 pfi_cpp = jph(pfo_output_A4_AD, '{}_on_{}_cpp.nii.gz'.format(sj_second_tp, sj_first_tp))
@@ -179,9 +187,7 @@ if __name__ == '__main__':
 
         if control['generate_dataset_get_exp_svf_group_algebra']:
 
-            for sj_first_tp, sj_second_tp in zip(params['subjects_FirstTP'], params['subjects_SecondTP']):
-
-                sj = sj_first_tp.split('-')[0]
+            for sj in subjects:
 
                 print('--------------------------------------------------')
                 print('Exponentiate the obtained SVF, sj {}'.format(sj))
@@ -217,7 +223,8 @@ if __name__ == '__main__':
 
     else:
 
-        for sj in set(params['subjects']) - {params['target_sj']}:
+        for sj in subjects:
+
             pfi_svf1 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
             pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
             assert os.path.exists(pfi_svf1), pfi_svf1
@@ -236,8 +243,8 @@ if __name__ == '__main__':
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
             # matrices for tabulation:
-            tab_errors = np.zeros([params['num_samples'], len(params['steps'])])
-            tab_comp_time = np.zeros([params['num_samples'], len(params['steps'])])
+            tab_errors = np.zeros([len(params['subjects_FirstTP']), len(params['steps'])])
+            tab_comp_time = np.zeros([len(params['subjects_FirstTP']), len(params['steps'])])
 
             for st in params['steps']:
 
@@ -248,14 +255,17 @@ if __name__ == '__main__':
 
                 # initialise pandas df
                 df_time_error = pd.DataFrame(columns=['subject', 'time (sec)', 'error (mm)'],
-                                             index=range(params['num_samples']))
+                                             index=subjects)
 
-                for s in range(params['num_samples']):
+                for sj in subjects:
 
-                    pfi_svf0 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(s + 1))
-                    pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(s + 1))
+                    pfi_svf1 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
+                    pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
 
-                    svf1         = np.load(pfi_svf0)
+                    assert os.path.exists(pfi_svf1), pfi_svf1
+                    assert os.path.exists(pfi_flow), pfi_flow
+
+                    svf1         = np.load(pfi_svf1)
                     flow1_ground = np.load(pfi_flow)
 
                     if methods[method_name][6]:
@@ -269,9 +279,9 @@ if __name__ == '__main__':
                     # compute error:
                     error = qr.norm(disp_computed - flow1_ground, passe_partout_size=params['passepartout'], normalized=True)
 
-                    df_time_error['subject'][s] = 'sj{}'.format(s+1)
-                    df_time_error['time (sec)'][s] = stop
-                    df_time_error['error (mm)'][s] = error
+                    df_time_error['subject'][sj] = 'sj{}'.format(sj)
+                    df_time_error['time (sec)'][sj] = stop
+                    df_time_error['error (mm)'][sj] = error
 
                 # save pandas df in csv
                 pfi_df_time_error = jph(pfo_output_A4_AD, 'ad-{}-steps-{}.csv'.format(method_name, st))

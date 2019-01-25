@@ -17,7 +17,7 @@ from nilabels.tools.aux_methods.utils import print_and_run
 
 from calie.fields import queries as qr
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, bw_subjects
 from benchmarking.b_path_manager import pfo_output_A4_BW, pfo_brainweb
 
 """
@@ -51,8 +51,7 @@ if __name__ == '__main__':
     params = OrderedDict()
 
     params.update({'experiment id'      : 'ex1'})
-    params.update({'subjects'           : ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47',
-                                           '48', '49', '50', '51', '52', '53', '54']})
+    params.update({'subjects'           : bw_subjects})
     params.update({'target_sj'          : '04'})
     params.update({'selected_ground'    : 'rk4'})
     params.update({'selected_n_steps'   : 7})

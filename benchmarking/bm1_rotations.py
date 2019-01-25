@@ -15,7 +15,7 @@ from calie.transformations import se2
 from calie.fields import generate as gen
 from calie.fields import queries as qr
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, num_samples
 from benchmarking.b_path_manager import pfo_output_A4_SE2
 
 """
@@ -60,7 +60,7 @@ if __name__ == '__main__':
                                         int(omega[1] / 2 - centre_delta[1]), int(omega[1] / 2 + centre_delta[1]))})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 0})
-    params.update({'num_samples'     : 50})
+    params.update({'num_samples'     : num_samples})
     params.update({'steps'           : steps})
 
     # Path manager

@@ -15,7 +15,7 @@ from calie.transformations import pgl2
 from calie.fields import generate as gen
 from calie.fields import queries as qr
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, num_samples
 from benchmarking.b_path_manager import pfo_output_A4_HOM
 
 """
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     params.update({'passepartout'    : 4})
     params.update({'sio'             : spline_interpolation_order})
     params.update({'random_seed'     : 5})
-    params.update({'num_samples'     : 50})
+    params.update({'num_samples'     : num_samples})
     params.update({'steps'           : steps})
 
     # Path manager
