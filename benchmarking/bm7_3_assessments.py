@@ -8,6 +8,7 @@ These three measures are not computed against any ground truth flow field and ar
 unbiased (or better less biased) than the measure of errors in the previous experiments.
 
 """
+import os
 from os.path import join as jph
 import tabulate
 import pandas as pd
@@ -24,31 +25,17 @@ from nilabels.tools.aux_methods.utils_nib import set_new_data
 from calie.fields import queries as qr
 from calie.fields import coordinate as coord
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, num_samples
+from benchmarking.a_main_controller import methods, spline_interpolation_order, steps, num_samples, bw_subjects, \
+    ad_subjects
 from benchmarking.b_path_manager import pfo_output_A4_SE2, pfo_output_A4_GL2, pfo_output_A4_HOM, \
     pfo_output_A4_GAU, pfo_output_A4_BW, pfo_output_A4_AD
 
 
-if __name__ == '__main__':
-
-    clear_cache()
-
-    # controller
-
-    control = {'svf_dataset'   : 'rotation',  # can be rotation, translation, linear, homography, gauss, brainweb, adni
-               'compute'       : 'IC',  # can be IC, SA, SE
-               'show'          : True}
-
-    bw_subjects   = []
-    adni_subjects = []
-
-    verbose = 1
+def three_assessments_collector(control, verbose):
 
     # ----------------------- #
     # Retrieve data set paths
     # ----------------------- #
-
-    data_paths = []
 
     if control['svf_dataset'].lower() in {'rotation', 'rotations'}:
         pfi_svf_list = [jph(pfo_output_A4_SE2, 'se2-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
@@ -60,17 +47,41 @@ if __name__ == '__main__':
         pfi_svf_list = [jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
 
     elif control['svf_dataset'].lower() in {'gauss'}:
-        pfi_svf_list = [jph(pfo_output_A4_HOM, 'gau-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
+        pfi_svf_list = [jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
 
     elif control['svf_dataset'].lower() in {'brainweb'}:
-        pass
+        pfi_svf_list = [jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj)) for sj in bw_subjects]
 
     elif control['svf_dataset'].lower() in {'adni'}:
-        pass
-
+        pfi_svf_list = [jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj)) for sj in ad_subjects]
     else:
         raise IOError('Svf data set not given'.format(control['svf_dataset']))
 
+    for pfi in pfi_svf_list:
+        assert os.path.exists(pfi)
+
+    if control['collect']:
+
+        print('---------------------------------------------------------------------------')
+        print('Collecting {} dataset  : bw-<s>-<algebra/group>.npy sj in BrainWeb '.format('computation'))
+        print('---------------------------------------------------------------------------')
+
+        pass
+
+    if control['show']:
+        pass
 
 
+if __name__ == '__main__':
 
+    clear_cache()
+
+    # controller
+
+    control_ = {'svf_dataset'   : 'rotation',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'   : 'IC',  # can be IC, SA, SE
+                'collect'       : True,
+                'show'          : True}
+
+    verbose_ = 1
+    three_assessments_collector(control_, verbose_)
