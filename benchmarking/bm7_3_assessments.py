@@ -10,29 +10,21 @@ unbiased (or better less biased) than the measure of errors in the previous expe
 """
 import os
 from os.path import join as jph
-import tabulate
 import pandas as pd
 import numpy as np
 import seaborn as sns
-import nibabel as nib
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 from sympy.core.cache import clear_cache
-
-from nilabels.tools.aux_methods.utils import print_and_run
-from nilabels.tools.aux_methods.utils_nib import set_new_data
 
 from calie.fields import queries as qr
 from calie.fields import compose as cp
-from calie.fields import coordinate as coord
 
-from benchmarking.a_main_controller import methods, spline_interpolation_order, num_samples, bw_subjects, \
-    ad_subjects
+from benchmarking.a_main_controller import methods, num_samples, bw_subjects, ad_subjects
 from benchmarking.b_path_manager import pfo_output_A4_SE2, pfo_output_A4_GL2, pfo_output_A4_HOM, \
     pfo_output_A4_GAU, pfo_output_A4_BW, pfo_output_A4_AD, pfo_output_A5_3T
 
 
-def three_assessments_collector(control, verbose):
+def three_assessments_collector(control):
 
     # ----------------------- #
     # Retrieve data set paths
@@ -85,39 +77,42 @@ def three_assessments_collector(control, verbose):
             sj_id = os.path.basename(pfi_svf).split('-')[:2]
             sj_id = sj_id[0] + '-' + sj_id[1]
 
+            print('Computation for subject {}.'.format(sj_id))
+
             method_names = [k for k in methods.keys() if methods[k][1]]
 
             df_steps_measures = pd.DataFrame(columns=method_names, index=steps)
             svf1 = np.load(pfi_svf)
 
             for met in method_names:
-                print('Computing method {}.'.format(met))
+                print(' --> Computing method {}.'.format(met))
                 exp_method = methods[met][0]
 
                 for st in steps:
+                    print(' ---> step {}'.format(st))
 
                     if control['computation'] == 'IC':
                         exp_st_svf1     = exp_method(svf1, input_num_steps=st)
                         exp_st_neg_svf1 = exp_method(-1 * svf1, input_num_steps=st)
-                        error = 0.5 * (qr.norm(cp.lagrangian_dot_lagrangian(exp_st_svf1, exp_st_neg_svf1)) +
-                                       qr.norm(cp.lagrangian_dot_lagrangian(exp_st_neg_svf1, exp_st_svf1)))
+                        error = 0.5 * (qr.norm(cp.lagrangian_dot_lagrangian(exp_st_svf1, exp_st_neg_svf1), normalized=True) +
+                                       qr.norm(cp.lagrangian_dot_lagrangian(exp_st_neg_svf1, exp_st_svf1), normalized=True))
 
                     elif control['computation'] == 'SA':
                         a, b, c = 0.3, 0.3, 0.4
                         exp_st_a_svf1 = exp_method(a * svf1, input_num_steps=st)
                         exp_st_b_svf1 = exp_method(b * svf1, input_num_steps=st)
                         exp_st_c_svf1 = exp_method(c * svf1, input_num_steps=st)
-                        error = qr.norm(cp.lagrangian_dot_lagrangian(cp.lagrangian_dot_lagrangian(exp_st_a_svf1, exp_st_b_svf1), exp_st_c_svf1))
+                        error = qr.norm(cp.lagrangian_dot_lagrangian(cp.lagrangian_dot_lagrangian(exp_st_a_svf1, exp_st_b_svf1), exp_st_c_svf1), normalized=True)
 
                     elif control['computation'] == 'SE':
                         exp_st_svf1          = exp_method(svf1, input_num_steps=st)
                         exp_st_plus_one_svf1 = exp_method(svf1, input_num_steps=st+1)
-                        error = qr.norm(exp_st_svf1 - exp_st_plus_one_svf1)
+                        error = qr.norm(exp_st_svf1 - exp_st_plus_one_svf1, normalized=True)
 
                     else:
                         raise IOError('Input control computation {} not defined.'.format(control['computation']))
 
-                    df_steps_measures['measure'][st] = error
+                    df_steps_measures[met][st] = error
 
                 print(df_steps_measures)
 
@@ -141,27 +136,57 @@ def three_assessments_collector(control, verbose):
 
     if control['get_statistics']:
 
-        print('------------------------------------------------')
-        print('\n Statistics for computation {} '.format(control['computation']))
+        print('---------------------------------------------------------------------------')
+        print('Get statistics for {}, dataset {}. '.format(control['computation'], control['svf_dataset']))
+        print('---------------------------------------------------------------------------')
 
-        method_names = [k for k in methods.keys() if methods[k][1]]
+        # for each method get mean and std indexed by num-steps.
+        # | steps | mu_error | sigma_error | mu_time | sigma_error |
+        # in a file called stats-<computation>-<method>.csv
 
-        df_means_methods = pd.DataFrame(columns=method_names, index=steps)
-        df_stds_methods  = pd.DataFrame(columns=method_names, index=steps)
+        for method_name in [k for k in methods.keys() if methods[k][1]]:
 
-        for pfi_svf in pfi_svf_list:
-            sj_id = os.path.basename(pfi_svf).split('-')[:2]
-            sj_id = sj_id[0] + '-' + sj_id[1]
+            print('\n Statistics for method {} \n'.format(method_name))
 
+            # for each method stack all the measurements in a single matrix STEPS x SVFs
 
+            steps_times_subjects = np.nan * np.ones([len(steps), len(pfi_svf_list)])
 
-        pass
+            for pfi_svf_index, pfi_svf in enumerate(pfi_svf_list):
+
+                sj_id = os.path.basename(pfi_svf).split('-')[:2]
+                sj_id = sj_id[0] + '-' + sj_id[1]
+                fin_test = 'test_{}_{}.csv'.format(control['computation'], sj_id)
+                df_steps_measures = pd.read_csv(jph(pfo_output_A5_3T, fin_test))
+
+                steps_times_subjects[:, pfi_svf_index] = df_steps_measures[method_name].as_matrix()
+
+            df_mean_std = pd.DataFrame(columns=['steps', 'mu_error', 'std_error'], index=range(len(steps)))
+
+            df_mean_std['steps']     = steps
+            df_mean_std['mu_error']  = np.mean(steps_times_subjects, axis=1)
+            df_mean_std['std_error'] = np.std(steps_times_subjects, axis=1)
+
+            print(df_mean_std)
+
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
+            df_mean_std.to_csv(jph(pfi_df_mean_std))
+
+    else:
+
+        for method_name in [k for k in methods.keys() if methods[k][1]][:1]:
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
+            assert os.path.exists(pfi_df_mean_std), pfi_df_mean_std
 
     ###############
     # show graphs #
     ###############
 
     if control['show_graphs']:
+
+        print('---------------------------------------------------------------------------')
+        print('Showing graphs for {}, dataset {}. '.format(control['computation'], control['svf_dataset']))
+        print('---------------------------------------------------------------------------')
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
@@ -174,27 +199,20 @@ def three_assessments_collector(control, verbose):
         fig.canvas.set_window_title('{}_{}.pdf'.format(control['svf_dataset'], control['computation']))
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
-
-            pfi_df_mean_std = jph(pfo_output_A4_SE2, 'se2-stats-{}.csv'.format(method_name))
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
-            ax.plot(df_mean_std['mu_time'].values,
+            ax.plot(df_mean_std['steps'].values,
                     df_mean_std['mu_error'].values,
                     label=method_name,
                     color=methods[method_name][3],
                     linestyle=methods[method_name][4],
                     marker=methods[method_name][5])
 
-            for i in df_mean_std.index:
-                el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
-                                      df_mean_std['std_time'][i], df_mean_std['std_error'][i],
-                                      angle=0,
-                                      alpha=0.2,
-                                      color=methods[method_name][3],
-                                      linewidth=None)
-                ax.add_artist(el)
+            plt.errorbar(df_mean_std['steps'].values, df_mean_std['mu_error'].values, df_mean_std['std_error'].values,
+                         linestyle='None', marker='None', color=methods[method_name][3], alpha=0.5, elinewidth=0.8)
 
-        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.set_title('Experiment {} for {}'.format(control['computation'], control['svf_dataset']), fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
@@ -203,7 +221,7 @@ def three_assessments_collector(control, verbose):
 
         ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        ax.set_xscale('log', nonposx="mask")
+        # ax.set_xscale('log', nonposx="mask")
         ax.set_yscale('log', nonposy="mask")
 
         pfi_figure_time_vs_error = jph(pfo_output_A4_SE2, 'graph_time_vs_error.pdf')
@@ -216,12 +234,130 @@ if __name__ == '__main__':
 
     clear_cache()
 
-    # controller
+    # Show all the columns when displaying methods.
+    pd.set_option('display.max_columns', 50)
 
-    control_ = {'svf_dataset'   : 'rotation',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'   : 'IC',  # can be IC, SA, SE
-                'collect'       : True,
-                'show_graphs'   : True}
+    # controller Brainweb
 
-    verbose_ = 1
-    three_assessments_collector(control_, verbose_)
+    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'IC',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+
+    #
+
+    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SA',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+
+    #
+
+    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SE',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+
+    '''
+    # linear
+    
+    control_ = {'svf_dataset'    : 'linear',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'IC',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'linear',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SA',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'linear',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SE',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    # Homography
+    
+    control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'IC',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SA',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SE',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    
+    # gauss
+    
+    control_ = {'svf_dataset'    : 'gauss',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'IC',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'gauss',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SA',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    #
+    
+    control_ = {'svf_dataset'    : 'gauss',  # can be rotation, linear, homography, gauss, brainweb, adni
+                'computation'    : 'SE',  # can be IC, SA, SE
+                'collect'        : False,
+                'get_statistics' : False,
+                'show_graphs'    : True}
+
+    three_assessments_collector(control_)
+    
+    
+    '''
