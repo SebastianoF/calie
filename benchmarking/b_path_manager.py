@@ -30,3 +30,7 @@ assert os.path.exists(pfo_output_A4_GAU)
 assert os.path.exists(pfo_output_A4_BW)
 assert os.path.exists(pfo_output_A4_AD)
 assert os.path.exists(pfo_output_A5_3T)
+
+pfo_output_A6_BNR  = jph(root_data, 'A6_bench_niftyreg')
+
+assert os.path.exists(pfo_output_A6_BNR)

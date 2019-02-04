@@ -1,7 +1,9 @@
 matplotlib
-nibabel
 numpy
 scipy
 sympy
 utils
 tabulate
+nilabels
+seaborn
+pandas

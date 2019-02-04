@@ -43,7 +43,7 @@ def three_assessments_collector(control):
         pfi_svf_list = [jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
 
     elif control['svf_dataset'].lower() in {'brainweb'}:
-        pfi_svf_list = [jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj)) for sj in bw_subjects]
+        pfi_svf_list = [jph(pfo_output_A4_BW, 'bw-{}-algebra.npy'.format(sj)) for sj in bw_subjects[1:]]
 
     elif control['svf_dataset'].lower() in {'adni'}:
         pfi_svf_list = [jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj)) for sj in ad_subjects]
@@ -51,7 +51,7 @@ def three_assessments_collector(control):
         raise IOError('Svf data set not given'.format(control['svf_dataset']))
 
     for pfi in pfi_svf_list:
-        assert os.path.exists(pfi)
+        assert os.path.exists(pfi), pfi
 
     # --------------------------------------- #
     # Select number of steps for each method
@@ -241,9 +241,9 @@ if __name__ == '__main__':
 
     control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
                 'computation'    : 'IC',  # can be IC, SA, SE
-                'collect'        : False,
-                'get_statistics' : False,
-                'show_graphs'    : True}
+                'collect'        : True,
+                'get_statistics' : True,
+                'show_graphs'    : False}
 
     three_assessments_collector(control_)
 
@@ -251,9 +251,9 @@ if __name__ == '__main__':
 
     control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
                 'computation'    : 'SA',  # can be IC, SA, SE
-                'collect'        : False,
-                'get_statistics' : False,
-                'show_graphs'    : True}
+                'collect'        : True,
+                'get_statistics' : True,
+                'show_graphs'    : False}
 
     three_assessments_collector(control_)
 
@@ -261,9 +261,9 @@ if __name__ == '__main__':
 
     control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
                 'computation'    : 'SE',  # can be IC, SA, SE
-                'collect'        : False,
-                'get_statistics' : False,
-                'show_graphs'    : True}
+                'collect'        : True,
+                'get_statistics' : True,
+                'show_graphs'    : False}
 
     three_assessments_collector(control_)
 
