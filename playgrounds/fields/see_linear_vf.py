@@ -71,5 +71,6 @@ if __name__ == '__main__':
                           input_figsize=(15, 8),
                           title_input=titles,
                           fig_tag=3,
-                          xy_lims=(10, 30, 10, 30))
-    pyplot.show(block=False)
+                          xy_lims=(15, 25, 15, 25),
+                          width=0.05)
+    pyplot.show(block=True)

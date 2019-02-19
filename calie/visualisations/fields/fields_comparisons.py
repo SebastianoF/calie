@@ -5,9 +5,17 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 from calie.fields import queries as qr
 from calie.fields import generate_identities as gen_id
+
+
+font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
+font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
+legend_prop = {'size': 11}
+
+sns.set_style()
 
 
 def see_2_fields_separate_and_overlay(input_vf_0, input_vf_1,
@@ -172,7 +180,9 @@ def see_n_fields_separate(list_of_vf,
                           xy_lims=None,
                           set_aspect_equal=True,
                           subtract_id=None,
-                          input_color=None):
+                          input_color=None,
+                          linewidths=0.01,
+                          width=0.03):
     """
     :param list_of_vf:
     :param row_fig:
@@ -189,6 +199,8 @@ def see_n_fields_separate(list_of_vf,
     :param set_aspect_equal: set equals ratio of x and y axes
     :param subtract_id:
     :param input_color:
+    :param linewidths:
+    :param width:
     :return:
     """
     # TODO: input sanity check
@@ -228,7 +240,7 @@ def see_n_fields_separate(list_of_vf,
                                id_field[::sample[0], ::sample[1], h_slice, 0, 1],
                                input_field_copy[::sample[0], ::sample[1], h_slice, 0, 0],
                                input_field_copy[::sample[0], ::sample[1], h_slice, 0, 1],
-                               color=input_color[num_vf], linewidths=0.01, width=0.03, scale=scale, scale_units='xy', units='xy', angles='xy', )
+                               color=input_color[num_vf], linewidths=linewidths, width=width, scale=scale, scale_units='xy', units='xy', angles='xy', )
 
             elif anatomical_plane == 'sagittal':
                 ax.quiver(id_field[::sample[0], h_slice, ::sample[1], 0, 0],
@@ -246,7 +258,7 @@ def see_n_fields_separate(list_of_vf,
             else:
                 raise TypeError('Anatomical_plane must be axial, sagittal or coronal')
 
-            ax.set_title(title_input[num_vf])
+            ax.set_title(title_input[num_vf], fontdict=font_top)
 
             if xy_lims is not None:
                 ax.set_xlim(xy_lims[0], xy_lims[1])

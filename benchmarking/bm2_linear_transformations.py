@@ -30,9 +30,9 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset' : True,
-               'compute_exps'     : True,
-               'get_statistics'   : True,
+    control = {'generate_dataset' : False,
+               'compute_exps'     : False,
+               'get_statistics'   : False,
                'show_graphs'      : True}
 
     verbose = 1
@@ -241,11 +241,11 @@ if __name__ == '__main__':
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 12}
+        legend_prop = {'size': 11}
 
         sns.set_style()
 
-        fig, ax = plt.subplots(figsize=(7, 7))
+        fig, ax = plt.subplots(figsize=(11, 7))
 
         fig.canvas.set_window_title('gl2_times_vs_errors.pdf')
 
@@ -254,18 +254,25 @@ if __name__ == '__main__':
             pfi_df_mean_std = jph(pfo_output_A4_GL2, 'gl2-stats-{}.csv'.format(method_name))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
+            if method_name in ['gss_ei', 'gss_ei_mod', 'gss_aei', 'gss_rk4', 'euler_aei']:
+                method_name_bypass = method_name + ' *'
+            elif method_name in ['scaling_and_squaring']:
+                method_name_bypass = 'ss'
+            else:
+                method_name_bypass = method_name
+
             ax.plot(df_mean_std['mu_time'].values,
                     df_mean_std['mu_error'].values,
-                    label=method_name,
+                    label=method_name_bypass,
                     color=methods[method_name][3],
                     linestyle=methods[method_name][4],
                     marker=methods[method_name][5])
 
-            for i in df_mean_std.index:
+            for i in [df_mean_std.index[0], df_mean_std.index[-1]]:
                 el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
                                       df_mean_std['std_time'][i], df_mean_std['std_error'][i],
                                       angle=0,
-                                      alpha=0.2,
+                                      alpha=0.1,
                                       color=methods[method_name][3],
                                       linewidth=None)
                 ax.add_artist(el)
