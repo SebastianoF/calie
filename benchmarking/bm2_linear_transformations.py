@@ -241,11 +241,11 @@ if __name__ == '__main__':
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 11}
+        legend_prop = {'size': 10}
 
         sns.set_style()
 
-        fig, ax = plt.subplots(figsize=(11, 7))
+        fig, ax = plt.subplots(figsize=(11, 6))
 
         fig.canvas.set_window_title('gl2_times_vs_errors.pdf')
 

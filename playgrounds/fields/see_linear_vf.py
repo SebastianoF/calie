@@ -53,14 +53,14 @@ if __name__ == '__main__':
         dm = linear.randomgen_linear_by_taste(1, taste, (20, 20))
         svf = beta * gen.generate_from_matrix((40, 40), dm, structure='algebra')
         vfs.append(svf)
-        titles.append('Taste {}'.format(taste))
+        titles.append('Kind {}'.format(taste))
 
-    extra_titles = {'Taste 1': 'Unstable node',
-                    'Taste 2': 'Stable node',
-                    'Taste 3': 'Saddle',
-                    'Taste 4': 'Outward spiral',
-                    'Taste 5': 'Inward spiral',
-                    'Taste 6': 'circles'}
+    extra_titles = {'Kind 1': 'Unstable node',
+                    'Kind 2': 'Stable node',
+                    'Kind 3': 'Saddle',
+                    'Kind 4': 'Outward spiral',
+                    'Kind 5': 'Inward spiral',
+                    'Kind 6': 'circles'}
 
     titles = [ti + ': ' + extra_titles[ti] for ti in titles]
 
