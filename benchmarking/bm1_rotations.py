@@ -241,6 +241,10 @@ if __name__ == '__main__':
 
     if control['show_graphs']:
 
+        print('--------------------------------------------------------------------------')
+        print(' Showing figure                                                           ')
+        print('--------------------------------------------------------------------------')
+
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
         legend_prop = {'size': 11}

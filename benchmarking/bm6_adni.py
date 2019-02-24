@@ -35,12 +35,12 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : False,
-                   'generate_dataset_aff'        : True,
-                   'generate_dataset_nrig'       : True,
-                   'generate_dataset_get_svf'    : True,
-                   'generate_dataset_get_exp_svf_group_algebra'    : True,
-               'compute_exps'       : True,
-               'get_statistics'     : True,
+                   'generate_dataset_aff'        : False,
+                   'generate_dataset_nrig'       : False,
+                   'generate_dataset_get_svf'    : False,
+                   'generate_dataset_get_exp_svf_group_algebra'    : False,
+               'compute_exps'       : False,
+               'get_statistics'     : False,
                'show_graphs'        : True}
 
     verbose = 1
@@ -52,19 +52,11 @@ if __name__ == '__main__':
 
     params = OrderedDict()
 
-    x_1, y_1, z_1 = 50, 50, 50
-    if z_1 == 1:
-        omega = (x_1, y_1)
-    else:
-        omega = (x_1, y_1, z_1)
-
-    centre_delta = (5, 5, 5)
-
     params.update({'experiment id'      : 'ex1'})
     params.update({'subjects_FirstTP'   : ad_subjects_first_time_point})
     params.update({'subjects_SecondTP'  : ad_subjects_second_time_point})
     params.update({'selected_ground'    : 'rk4'})
-    params.update({'selected_n_steps'   : 10})
+    params.update({'selected_n_steps'   : 7})
     params.update({'passepartout'       : 5})
     params.update({'sio'                : spline_interpolation_order})
     params.update({'steps'              : steps})

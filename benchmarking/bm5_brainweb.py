@@ -32,14 +32,14 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'   : True,
-                   'generate_dataset_skull_strip'               : True,
-                   'generate_dataset_aff'                       : True,
-                   'generate_dataset_nrig'                      : True,
-                   'generate_dataset_get_svf'                   : True,
-                   'generate_dataset_get_exp_svf_group_algebra' : True,
-               'compute_exps'       : True,
-               'get_statistics'     : True,
+    control = {'generate_dataset'   : False,
+                   'generate_dataset_skull_strip'               : False,
+                   'generate_dataset_aff'                       : False,
+                   'generate_dataset_nrig'                      : False,
+                   'generate_dataset_get_svf'                   : False,
+                   'generate_dataset_get_exp_svf_group_algebra' : False,
+               'compute_exps'       : False,
+               'get_statistics'     : False,
                'show_graphs'        : True}
 
     verbose = 1
@@ -343,13 +343,24 @@ if __name__ == '__main__':
 
     if control['show_graphs']:
 
+        # ---- Changes to make the graph reasonable:
+
+        # switch off the ground truth in the visualisation
+        methods['rk4'][1] = False
+        methods['midpoint'][1] = False
+        steps = steps[:-1]  # go only up to 30 steps
+
+        print('--------------------------------------------------------------------------')
+        print(' Showing figure                                                           ')
+        print('--------------------------------------------------------------------------')
+
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 12}
+        legend_prop = {'size': 11}
 
         sns.set_style()
 
-        fig, ax = plt.subplots(figsize=(7, 7))
+        fig, ax = plt.subplots(figsize=(11, 6))
 
         fig.canvas.set_window_title('bw_times_vs_errors.pdf')
 
@@ -358,14 +369,21 @@ if __name__ == '__main__':
             pfi_df_mean_std = jph(pfo_output_A4_BW, 'bw-stats-{}.csv'.format(method_name))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
+            if method_name in ['gss_ei', 'gss_ei_mod', 'gss_aei', 'gss_rk4', 'euler_aei']:
+                method_name_bypass = method_name + ' *'
+            elif method_name in ['scaling_and_squaring']:
+                method_name_bypass = 'ss'
+            else:
+                method_name_bypass = method_name
+
             ax.plot(df_mean_std['mu_time'].values,
                     df_mean_std['mu_error'].values,
-                    label=method_name,
+                    label=method_name_bypass,
                     color=methods[method_name][3],
                     linestyle=methods[method_name][4],
                     marker=methods[method_name][5])
 
-            for i in df_mean_std.index:
+            for i in [df_mean_std.index[0], df_mean_std.index[1], df_mean_std.index[-1]]:
                 el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
                                       df_mean_std['std_time'][i], df_mean_std['std_error'][i],
                                       angle=0,

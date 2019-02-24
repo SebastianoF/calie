@@ -5,7 +5,7 @@ from calie.operations import lie_exp
 
 spline_interpolation_order = 3
 
-steps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 40]
+steps = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30]
 
 num_samples = 50
 bw_subjects = ['04', '05', '06', '18', '20', '38', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51',
