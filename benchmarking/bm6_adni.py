@@ -35,10 +35,10 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'   : False,
-                   'generate_dataset_aff'        : False,
-                   'generate_dataset_nrig'       : False,
-                   'generate_dataset_get_svf'    : False,
-                   'generate_dataset_get_exp_svf_group_algebra'    : False,
+                   'generate_dataset_aff'                        : False,
+                   'generate_dataset_nrig'                       : False,
+                   'generate_dataset_get_svf'                    : False,
+                   'generate_dataset_get_exp_svf_group_algebra'  : False,
                'compute_exps'       : False,
                'get_statistics'     : False,
                'show_graphs'        : True}
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     params.update({'subjects_FirstTP'   : ad_subjects_first_time_point})
     params.update({'subjects_SecondTP'  : ad_subjects_second_time_point})
     params.update({'selected_ground'    : 'rk4'})
-    params.update({'selected_n_steps'   : 7})
+    params.update({'selected_n_steps'   : 8})
     params.update({'passepartout'       : 5})
     params.update({'sio'                : spline_interpolation_order})
     params.update({'steps'              : steps})
@@ -160,22 +160,12 @@ if __name__ == '__main__':
 
                 sj = sj_first_tp.split('-')[0]
 
-                pfi_svf1_eul = jph(pfo_output_A4_AD, 'pre_svf-{}.nii.gz'.format(sj))
                 pfi_svf1 = jph(pfo_output_A4_AD, 'svf-{}.nii.gz'.format(sj))
 
-                cmd = 'reg_transform -ref {0} -flow {1} {2}'.format(
-                    pfi_T1W_fixed_tp1, pfi_cpp, pfi_svf1_eul
+                cmd = 'reg_transform -ref {0} -disp {1} {2}'.format(
+                    pfi_T1W_fixed_tp1, pfi_cpp, pfi_svf1
                 )
                 print_and_run(cmd)
-
-                # go in Lagrangian coordinates.
-                im_sfv1_eul = nib.load(pfi_svf1_eul)
-
-                data_svf1_lag = coord.eulerian_to_lagrangian(im_sfv1_eul.get_data())
-
-                im_svf_lag = set_new_data(im_sfv1_eul, data_svf1_lag)
-
-                nib.save(im_svf_lag, pfi_svf1)
 
         if control['generate_dataset_get_exp_svf_group_algebra']:
 
@@ -194,20 +184,20 @@ if __name__ == '__main__':
                 shape[2] = 1
                 shape[-1] = 2
 
-                svf1 = np.zeros(shape)
-                svf1[..., 0, 0, 0] = svf1_3d[:, :, z_val, 0, 0]
-                svf1[..., 0, 0, 1] = svf1_3d[:, :, z_val, 0, 1]
+                svf1_1slice = np.zeros(shape)
+                svf1_1slice[..., 0, 0, 0] = svf1_3d[:, :, z_val, 0, 0]
+                svf1_1slice[..., 0, 0, 1] = svf1_3d[:, :, z_val, 0, 1]
 
-                flow1_ground = methods[params['selected_ground']][0](svf1, input_num_steps=params['selected_n_steps'])
+                flow1_ground = methods[params['selected_ground']][0](svf1_1slice, input_num_steps=params['selected_n_steps'])
 
-                pfi_svf1 = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
-                pfi_flow = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
+                pfi_svf1_algebra = jph(pfo_output_A4_AD, 'ad-{}-algebra.npy'.format(sj))
+                pfi_flow_group = jph(pfo_output_A4_AD, 'ad-{}-group.npy'.format(sj))
 
-                np.save(pfi_svf1, svf1)
-                np.save(pfi_flow, flow1_ground)
+                np.save(pfi_svf1_algebra, svf1_1slice)
+                np.save(pfi_flow_group, flow1_ground)
 
                 print('svf saved in {}'.format(pfi_svf1))
-                print('flow (dummy ground truth) saved in {}'.format(pfi_flow))
+                print('flow (dummy ground truth) saved in {}'.format(pfi_flow_group))
 
         print('\n------------------------------------------')
         print('Data computed and saved in external files!')
@@ -226,11 +216,11 @@ if __name__ == '__main__':
     #   Compute exponentials  #
     ###########################
 
-    print('--------------------------------------------------------------------------')
-    print('Compute exponentials ADNI! filename: ad-<method>-STEPS_<steps>.csv        ')
-    print('--------------------------------------------------------------------------')
-
     if control['compute_exps']:
+
+        print('--------------------------------------------------------------------------')
+        print('Compute exponentials ADNI! filename: ad-<method>-STEPS_<steps>.csv        ')
+        print('--------------------------------------------------------------------------')
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
 
@@ -349,13 +339,24 @@ if __name__ == '__main__':
 
     if control['show_graphs']:
 
+        # ---- Changes to make the graph reasonable:
+
+        # switch off the ground truth in the visualisation
+        methods['rk4'][1] = False
+        methods['midpoint'][1] = False
+        steps = steps[:-1]  # go only up to 30 steps
+
+        print('--------------------------------------------------------------------------')
+        print(' Showing figure                                                           ')
+        print('--------------------------------------------------------------------------')
+
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 12}
+        legend_prop = {'size': 11}
 
         sns.set_style()
 
-        fig, ax = plt.subplots(figsize=(7, 7))
+        fig, ax = plt.subplots(figsize=(11, 6))
 
         fig.canvas.set_window_title('ad_times_vs_errors.pdf')
 
@@ -364,14 +365,21 @@ if __name__ == '__main__':
             pfi_df_mean_std = jph(pfo_output_A4_AD, 'ad-stats-{}.csv'.format(method_name))
             df_mean_std = pd.read_csv(pfi_df_mean_std)
 
-            ax.plot(df_mean_std['mu_time'].values,
-                    df_mean_std['mu_error'].values,
-                    label=method_name,
+            if method_name in ['gss_ei', 'gss_ei_mod', 'gss_aei', 'gss_rk4', 'euler_aei']:
+                method_name_bypass = method_name + ' *'
+            elif method_name in ['scaling_and_squaring']:
+                method_name_bypass = 'ss'
+            else:
+                method_name_bypass = method_name
+
+            ax.plot(df_mean_std['mu_time'].values[:-1],
+                    df_mean_std['mu_error'].values[:-1],
+                    label=method_name_bypass,
                     color=methods[method_name][3],
                     linestyle=methods[method_name][4],
                     marker=methods[method_name][5])
 
-            for i in df_mean_std.index:
+            for i in [df_mean_std.index[0], df_mean_std.index[1], df_mean_std.index[-2]]:
                 el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
                                       df_mean_std['std_time'][i], df_mean_std['std_error'][i],
                                       angle=0,
@@ -380,7 +388,7 @@ if __name__ == '__main__':
                                       linewidth=None)
                 ax.add_artist(el)
 
-        ax.set_title('Time error for SE(2)', fontdict=font_top)
+        ax.set_title('Time error for ADNI dataset longitudinal', fontdict=font_top)
         ax.legend(loc='upper right', shadow=True, prop=legend_prop)
 
         ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)

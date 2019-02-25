@@ -37,7 +37,7 @@ def three_assessments_collector(control):
         pfi_svf_list = [jph(pfo_output_A4_GL2, 'gl2-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
 
     elif control['svf_dataset'].lower() in {'homography', 'homographies'}:
-        pfi_svf_list = [jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
+        pfi_svf_list = [jph(pfo_output_A4_HOM, 'hom-{}-algebra.npy'.format(s + 1)) for s in range(12)]  # TODO
 
     elif control['svf_dataset'].lower() in {'gauss'}:
         pfi_svf_list = [jph(pfo_output_A4_GAU, 'gau-{}-algebra.npy'.format(s + 1)) for s in range(num_samples)]
@@ -169,13 +169,19 @@ def three_assessments_collector(control):
 
             print(df_mean_std)
 
-            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}-{}.csv'.format(
+                control['svf_dataset'], control['computation'], method_name)
+            )
+
             df_mean_std.to_csv(jph(pfi_df_mean_std))
 
     else:
 
         for method_name in [k for k in methods.keys() if methods[k][1]][:1]:
-            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
+
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}-{}.csv'.format(
+                control['svf_dataset'], control['computation'], method_name)
+            )
             assert os.path.exists(pfi_df_mean_std), pfi_df_mean_std
 
     ###############
@@ -190,21 +196,32 @@ def three_assessments_collector(control):
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 12}
+        legend_prop = {'size': 11}
 
         sns.set_style()
 
-        fig, ax = plt.subplots(figsize=(7, 7))
+        fig, ax = plt.subplots(figsize=(11, 6))
 
         fig.canvas.set_window_title('{}_{}.pdf'.format(control['svf_dataset'], control['computation']))
 
         for method_name in [k for k in methods.keys() if methods[k][1]]:
-            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}.csv'.format(method_name, control['computation']))
+
+            pfi_df_mean_std = jph(pfo_output_A5_3T, 'stats-3T-{}-{}-{}.csv'.format(
+                control['svf_dataset'], control['computation'], method_name)
+            )
+
             df_mean_std = pd.read_csv(pfi_df_mean_std)
+
+            if method_name in ['gss_ei', 'gss_ei_mod', 'gss_aei', 'gss_rk4', 'euler_aei']:
+                method_name_bypass = method_name + ' *'
+            elif method_name in ['scaling_and_squaring']:
+                method_name_bypass = 'ss'
+            else:
+                method_name_bypass = method_name
 
             ax.plot(df_mean_std['steps'].values,
                     df_mean_std['mu_error'].values,
-                    label=method_name,
+                    label=method_name_bypass,
                     color=methods[method_name][3],
                     linestyle=methods[method_name][4],
                     marker=methods[method_name][5])
@@ -224,7 +241,7 @@ def three_assessments_collector(control):
         # ax.set_xscale('log', nonposx="mask")
         ax.set_yscale('log', nonposy="mask")
 
-        pfi_figure_time_vs_error = jph(pfo_output_A4_SE2, 'graph_time_vs_error.pdf')
+        pfi_figure_time_vs_error = jph(pfo_output_A5_3T, 'three_experiments_{}_{}.pdf'.format(control['computation'], control['svf_dataset']))
         plt.savefig(pfi_figure_time_vs_error, dpi=150)
 
         plt.show(block=True)
@@ -239,33 +256,33 @@ if __name__ == '__main__':
 
     # controller Brainweb
 
-    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'    : 'IC',  # can be IC, SA, SE
-                'collect'        : True,
-                'get_statistics' : True,
-                'show_graphs'    : False}
-
-    three_assessments_collector(control_)
-
+    # control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+    #             'computation'    : 'IC',  # can be IC, SA, SE
+    #             'collect'        : False,
+    #             'get_statistics' : True,
+    #             'show_graphs'    : True}
     #
-
-    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'    : 'SA',  # can be IC, SA, SE
-                'collect'        : True,
-                'get_statistics' : True,
-                'show_graphs'    : False}
-
-    three_assessments_collector(control_)
-
+    # three_assessments_collector(control_)
     #
-
-    control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'    : 'SE',  # can be IC, SA, SE
-                'collect'        : True,
-                'get_statistics' : True,
-                'show_graphs'    : False}
-
-    three_assessments_collector(control_)
+    # #
+    #
+    # control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+    #             'computation'    : 'SA',  # can be IC, SA, SE
+    #             'collect'        : False,
+    #             'get_statistics' : True,
+    #             'show_graphs'    : True}
+    #
+    # three_assessments_collector(control_)
+    #
+    # #
+    #
+    # control_ = {'svf_dataset'    : 'brainweb',  # can be rotation, linear, homography, gauss, brainweb, adni
+    #             'computation'    : 'SE',  # can be IC, SA, SE
+    #             'collect'        : False,
+    #             'get_statistics' : True,
+    #             'show_graphs'    : True}
+    #
+    # three_assessments_collector(control_)
 
     '''
     # linear
@@ -297,7 +314,8 @@ if __name__ == '__main__':
                 'show_graphs'    : True}
 
     three_assessments_collector(control_)
-    
+    '''
+
     # Homography
     
     control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
@@ -328,7 +346,7 @@ if __name__ == '__main__':
 
     three_assessments_collector(control_)
     
-    
+    '''
     # gauss
     
     control_ = {'svf_dataset'    : 'gauss',  # can be rotation, linear, homography, gauss, brainweb, adni
