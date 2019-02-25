@@ -27,6 +27,7 @@ if __name__ == '__main__':
     # controller
 
     control = {'generate_dataset'  : True,
+               'elaborate_output'  : True,
                'show_graphs'       : True}
 
     verbose = 1
@@ -95,22 +96,28 @@ if __name__ == '__main__':
             pfi_moving_on_target_nrig_time_comp = jph(pfo_output_A4_AD,
                                             'time_comp_{}_on_{}_warp_nrig.nii.gz'.format(sj_second_tp, sj_first_tp))
 
-            cmd_standard = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -omp 8 '.format(
+            pfi_niftyreg_output_standard = jph(pfo_output_A4_AD, 'time_comparison_standard_sj_{}.txt'.format(sj_name))
+            cmd_standard = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -omp 8 -ln 1 -maxit 500 > {7}'.format(
                 pfo_nifty_reg_app_standard,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
-                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp
+                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
+                pfi_niftyreg_output_standard
             )
 
-            cmd_diff     = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 '.format(
+            pfi_niftyreg_output_diff = jph(pfo_output_A4_AD, 'time_comparison_diff_sj_{}.txt'.format(sj_name))
+            cmd_diff     = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 -ln 1 -maxit 500  '.format(
                 pfo_nifty_reg_app_standard,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
-                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp
+                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
+                pfi_niftyreg_output_diff
             )
 
-            cmd_diff_ei  = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 '.format(
+            pfi_niftyreg_output_aei = jph(pfo_output_A4_AD, 'time_comparison_diff_aei_sj_{}.txt'.format(sj_name))
+            cmd_diff_ei  = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 -ln 1 -maxit 500  '.format(
                 pfo_nifty_reg_app_ei,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
-                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp
+                pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
+                pfi_niftyreg_output_aei
             )
 
             # standard
@@ -146,6 +153,12 @@ if __name__ == '__main__':
         pfi_df_time_comparison = jph(pfo_output_A4_AD, 'time_comparison.csv')
         assert os.path.exists(pfi_df_time_comparison)
 
+    ####################
+    # elaborate output #
+    ####################
+    if control['elaborate_output']:
+        pass
+
     ###############
     # show graphs #
     ###############
@@ -154,7 +167,7 @@ if __name__ == '__main__':
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
-        legend_prop = {'size': 12}
+        legend_prop = {'size': 11}
 
         # sns.set_style()
         #
