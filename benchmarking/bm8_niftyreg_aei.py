@@ -26,9 +26,9 @@ if __name__ == '__main__':
 
     # controller
 
-    control = {'generate_dataset'  : True,
+    control = {'generate_dataset'  : False,
                'elaborate_output'  : True,
-               'show_graphs'       : True}
+               'show_graphs'       : False}
 
     verbose = 1
 
@@ -41,6 +41,8 @@ if __name__ == '__main__':
         pfo_output_A4_AD = pfo_output_A4_AD + '_omp'
 
     # parameters:
+
+    experiments = ['standard', 'diff', 'diff aei']
 
     params = OrderedDict()
 
@@ -69,8 +71,6 @@ if __name__ == '__main__':
         print(' USING OMP : {}'.format(add_OMP))
         print('---------------------------------------------------------------------------')
 
-        experiments = ['standard', 'diff', 'diff ei']
-
         df_computational_time = pd.DataFrame(columns=experiments, index=subjects)
 
         for sj_name, sj_first_tp, sj_second_tp in zip(subjects, params['subjects_FirstTP'], params['subjects_SecondTP']):
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                                             'time_comp_{}_on_{}_warp_nrig.nii.gz'.format(sj_second_tp, sj_first_tp))
 
             pfi_niftyreg_output_standard = jph(pfo_output_A4_AD, 'time_comparison_standard_sj_{}.txt'.format(sj_name))
-            cmd_standard = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -omp 8 -ln 1 -maxit 500 > {7}'.format(
+            cmd_standard = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -omp 8 -ln 1 -maxit 400 > {7}'.format(  # -ln 1 -maxit 500
                 pfo_nifty_reg_app_standard,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
                 pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
@@ -105,7 +105,7 @@ if __name__ == '__main__':
             )
 
             pfi_niftyreg_output_diff = jph(pfo_output_A4_AD, 'time_comparison_diff_sj_{}.txt'.format(sj_name))
-            cmd_diff     = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 -ln 1 -maxit 500  '.format(
+            cmd_diff     = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel -omp 8 -ln 1 -maxit 400 > {7}  '.format(
                 pfo_nifty_reg_app_standard,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
                 pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
@@ -113,7 +113,7 @@ if __name__ == '__main__':
             )
 
             pfi_niftyreg_output_aei = jph(pfo_output_A4_AD, 'time_comparison_diff_aei_sj_{}.txt'.format(sj_name))
-            cmd_diff_ei  = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 -ln 1 -maxit 500  '.format(
+            cmd_diff_ei  = '{0}/reg_f3d -ref {1} -rmask {2} -flo {3} -fmask {4} -cpp {5} -res {6} -vel  -omp 8 -ln 1 -maxit 400  > {7}  '.format(
                 pfo_nifty_reg_app_ei,
                 pfi_T1W_fixed_tp1, pfi_mask_fixed_tp1, pfi_moving_on_target_warp_aff, pfi_moving_on_target_mask_aff,
                 pfi_cpp_time_comp, pfi_moving_on_target_nrig_time_comp,
@@ -127,6 +127,7 @@ if __name__ == '__main__':
             stop_standard = (time.time() - start)
 
             df_computational_time['standard'][sj_name] = stop_standard
+            print(stop_standard)
 
             # diff
 
@@ -135,6 +136,7 @@ if __name__ == '__main__':
             stop_diff = (time.time() - start)
 
             df_computational_time['diff'][sj_name] = stop_diff
+            print(stop_diff)
 
             # diff ei
 
@@ -142,7 +144,8 @@ if __name__ == '__main__':
             print_and_run(cmd_diff_ei)
             stop_diff_ei = (time.time() - start)
 
-            df_computational_time['diff ei'][sj_name] = stop_diff
+            df_computational_time['diff aei'][sj_name] = stop_diff_ei
+            print(stop_diff_ei)
 
             print(df_computational_time)
 
@@ -157,19 +160,91 @@ if __name__ == '__main__':
     # elaborate output #
     ####################
     if control['elaborate_output']:
-        pass
+
+        print('---------------------------------------------------------------------------')
+        print('  Elaborating dataset dataset COMPARISON NIFTYREG COMPUTATIONAL TIME!      ')
+        print('---------------------------------------------------------------------------')
+
+        pfi_df_time_comparison = jph(pfo_output_A4_AD, 'time_comparison.csv')
+        print('computational time table')
+        df_computational_time = pd.read_csv(pfi_df_time_comparison)
+        print(df_computational_time.to_latex())
+
+        print()
+
+        df_had_converged_before_limit = df_computational_time.copy()
+        df_had_converged_before_limit[:] = 0
+
+        df_main = pd.DataFrame(columns=['subject', 'experiment', 'objective function'])
+
+        for sj_name in subjects:
+            for exper in experiments:
+
+                pfi_niftireg_output = jph(pfo_output_A4_AD, 'time_comparison_{}_sj_{}.txt'.format(exper.replace(' ', '_'), sj_name))
+                print('\n\n Elaborating {}\n\n'.format(pfi_niftireg_output))
+
+                assert os.path.exists(pfi_niftireg_output)
+
+                df_local = pd.DataFrame(index=range(401), columns=['experiment', 'objective function'])
+
+                f = open(pfi_niftireg_output, 'r')
+                for line in f.readlines():
+
+                    print(line)
+
+                    if 'Initial objective function' in line:
+                        val = line.replace('Initial objective function:', '').replace('[NiftyReg F3D]', '').replace('[NiftyReg F3D2]', '').split('=')[0].strip()
+                        of_value = float(val)
+                        step = 0
+                        df_local['objective function'][step] = of_value
+
+                    if 'Current objective function' in line:
+                        vals = line.replace('[NiftyReg F3D]', '').replace('[NiftyReg F3D2]', '').replace('Current objective function', '').split('=')[0].strip().replace('[', '').replace(']', '').split(':')
+                        of_value = float(vals[1].strip())
+                        step = int(vals[0].strip())
+                        df_local['objective function'][step] = of_value
+
+                    if 'The current level reached the maximum number of iteration' in line:
+                        df_had_converged_before_limit[exper][sj_name] = False
+
+                    if 'Current registration level done' in line:
+                        df_had_converged_before_limit[exper][sj_name] = True
+
+                f.close()
+                df_local['subject'] = sj_name
+                df_local['experiment'] = exper
+                df_local['objective function'] = df_local['objective function'].astype(float).interpolate(method='polynomial', order=1)
+
+                df_main = df_main.append(df_local)
+
+        pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
+        df_main.to_csv(pfi_df_main_experiments_values)
 
     ###############
     # show graphs #
     ###############
 
     if control['show_graphs']:
+        print('---------------------------------------------------------------------------')
+        print('  Showing graphs      ')
+        print('---------------------------------------------------------------------------')
+
+        pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
+        pd.read_csv(pfi_df_main_experiments_values)
+
+        df_main['timepoint'] = df_main.index
+
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
         legend_prop = {'size': 11}
 
-        # sns.set_style()
+
+        sns.set_style('darkgrid')
+
+        ax = sns.lineplot(x="timepoint", y="objective function", hue="experiment", data=df_main)
+
+
         #
         # fig, ax = plt.subplots(figsize=(7, 7))
         #

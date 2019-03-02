@@ -236,10 +236,10 @@ def three_assessments_collector(control):
         ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
         ax.set_axisbelow(True)
 
-        ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
+        ax.set_xlabel('Steps', fontdict=font_bl, labelpad=5)
         ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
         # ax.set_xscale('log', nonposx="mask")
-        ax.set_yscale('log', nonposy="mask")
+        # ax.set_yscale('log', nonposy="mask")
 
         pfi_figure_time_vs_error = jph(pfo_output_A5_3T, 'three_experiments_{}_{}.pdf'.format(control['computation'], control['svf_dataset']))
         plt.savefig(pfi_figure_time_vs_error, dpi=150)
@@ -328,24 +328,24 @@ if __name__ == '__main__':
     
     #
     
-    control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'    : 'SA',  # can be IC, SA, SE
-                'collect'        : False,
-                'get_statistics' : False,
-                'show_graphs'    : True}
-
-    three_assessments_collector(control_)
-    
+    # control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
+    #             'computation'    : 'SA',  # can be IC, SA, SE
+    #             'collect'        : False,
+    #             'get_statistics' : False,
+    #             'show_graphs'    : True}
     #
-    
-    control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
-                'computation'    : 'SE',  # can be IC, SA, SE
-                'collect'        : False,
-                'get_statistics' : False,
-                'show_graphs'    : True}
-
-    three_assessments_collector(control_)
-    
+    # three_assessments_collector(control_)
+    #
+    # #
+    #
+    # control_ = {'svf_dataset'    : 'homography',  # can be rotation, linear, homography, gauss, brainweb, adni
+    #             'computation'    : 'SE',  # can be IC, SA, SE
+    #             'collect'        : False,
+    #             'get_statistics' : False,
+    #             'show_graphs'    : True}
+    #
+    # three_assessments_collector(control_)
+    #
     '''
     # gauss
     
