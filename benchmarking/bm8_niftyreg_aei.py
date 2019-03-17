@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     control = {'generate_dataset'  : False,
                'elaborate_output'  : True,
-               'show_graphs'       : False}
+               'show_graphs'       : True}
 
     verbose = 1
 
@@ -173,11 +173,11 @@ if __name__ == '__main__':
         print()
 
         df_had_converged_before_limit = df_computational_time.copy()
-        df_had_converged_before_limit[:] = 0
+        df_had_converged_before_limit[:] = True
 
         df_main = pd.DataFrame(columns=['subject', 'experiment', 'objective function'])
 
-        for sj_name in subjects:
+        for sj_name_idx, sj_name in enumerate(subjects):
             for exper in experiments:
 
                 pfi_niftireg_output = jph(pfo_output_A4_AD, 'time_comparison_{}_sj_{}.txt'.format(exper.replace(' ', '_'), sj_name))
@@ -189,8 +189,6 @@ if __name__ == '__main__':
 
                 f = open(pfi_niftireg_output, 'r')
                 for line in f.readlines():
-
-                    print(line)
 
                     if 'Initial objective function' in line:
                         val = line.replace('Initial objective function:', '').replace('[NiftyReg F3D]', '').replace('[NiftyReg F3D2]', '').split('=')[0].strip()
@@ -204,86 +202,53 @@ if __name__ == '__main__':
                         step = int(vals[0].strip())
                         df_local['objective function'][step] = of_value
 
-                    if 'The current level reached the maximum number of iteration' in line:
-                        df_had_converged_before_limit[exper][sj_name] = False
+                    if 'WARNING' in line:
+                        df_had_converged_before_limit[exper][sj_name_idx] = False
 
-                    if 'Current registration level done' in line:
-                        df_had_converged_before_limit[exper][sj_name] = True
 
                 f.close()
                 df_local['subject'] = sj_name
                 df_local['experiment'] = exper
-                df_local['objective function'] = df_local['objective function'].astype(float).interpolate(method='polynomial', order=1)
+                df_local['objective function'] = df_local['objective function'].astype(float).interpolate(method='polynomial', order=3)
 
                 df_main = df_main.append(df_local)
 
-        pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
-        df_main.to_csv(pfi_df_main_experiments_values)
-
-    ###############
-    # show graphs #
-    ###############
-
-    if control['show_graphs']:
-        print('---------------------------------------------------------------------------')
-        print('  Showing graphs      ')
-        print('---------------------------------------------------------------------------')
-
-        pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
-        pd.read_csv(pfi_df_main_experiments_values)
-
+    #     pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
+    #     df_main.to_csv(pfi_df_main_experiments_values)
+    #
+    #     # print(df_main)
+    #     print(df_had_converged_before_limit)
+    #
+    # ###############
+    # # show graphs #
+    # ###############
+    #
+    # if control['show_graphs']:
+    #     print('---------------------------------------------------------------------------')
+    #     print('  Showing graphs      ')
+    #     print('---------------------------------------------------------------------------')
+    #
+    #     pfi_df_main_experiments_values = jph(pfo_output_A4_AD, 'steps_time_dataframe.csv')
+    #     df_main = pd.read_csv(pfi_df_main_experiments_values)
+    #
         df_main['timepoint'] = df_main.index
-
 
         font_top = {'family': 'serif', 'color': 'darkblue', 'weight': 'normal', 'size': 14}
         font_bl = {'family': 'serif', 'color': 'black', 'weight': 'normal', 'size': 12}
         legend_prop = {'size': 11}
 
-
         sns.set_style('darkgrid')
+
+        plt.subplots(figsize=(11, 6))
 
         ax = sns.lineplot(x="timepoint", y="objective function", hue="experiment", data=df_main)
 
+        ax.set_title('Objective function per step', fontdict=font_top)
 
-        #
-        # fig, ax = plt.subplots(figsize=(7, 7))
-        #
-        # fig.canvas.set_window_title('ad_times_vs_errors.pdf')
-        #
-        # for method_name in [k for k in methods.keys() if methods[k][1]]:
-        #
-        #     pfi_df_mean_std = jph(pfo_output_A4_AD, 'ad-stats-{}.csv'.format(method_name))
-        #     df_mean_std = pd.read_csv(pfi_df_mean_std)
-        #
-        #     ax.plot(df_mean_std['mu_time'].values,
-        #             df_mean_std['mu_error'].values,
-        #             label=method_name,
-        #             color=methods[method_name][3],
-        #             linestyle=methods[method_name][4],
-        #             marker=methods[method_name][5])
-        #
-        #     for i in df_mean_std.index:
-        #         el = mpatches.Ellipse((df_mean_std['mu_time'][i], df_mean_std['mu_error'][i]),
-        #                               df_mean_std['std_time'][i], df_mean_std['std_error'][i],
-        #                               angle=0,
-        #                               alpha=0.2,
-        #                               color=methods[method_name][3],
-        #                               linewidth=None)
-        #         ax.add_artist(el)
-        #
-        # ax.set_title('Time error for SE(2)', fontdict=font_top)
-        # ax.legend(loc='upper right', shadow=True, prop=legend_prop)
-        #
-        # ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
-        # ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
-        # ax.set_axisbelow(True)
-        #
-        # ax.set_xlabel('Time (sec)', fontdict=font_bl, labelpad=5)
-        # ax.set_ylabel('Error (mm)', fontdict=font_bl, labelpad=5)
-        # ax.set_xscale('log', nonposx="mask")
-        # ax.set_yscale('log', nonposy="mask")
-        #
-        # pfi_figure_time_vs_error = jph(pfo_output_A4_AD, 'graph_time_vs_error.pdf')
-        # plt.savefig(pfi_figure_time_vs_error, dpi=150)
-        #
-        # plt.show(block=True)
+        ax.set_xlabel('Steps', fontdict=font_bl, labelpad=5)
+        ax.set_ylabel('Cost Function', fontdict=font_bl, labelpad=5)
+
+        pfi_figure_time_vs_error = jph(pfo_output_A4_AD, 'steps_cost_functions.pdf')
+        plt.savefig(pfi_figure_time_vs_error, dpi=150)
+
+        plt.show(block=True)
